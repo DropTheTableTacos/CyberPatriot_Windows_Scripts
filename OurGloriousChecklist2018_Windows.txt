@@ -97,14 +97,16 @@ WIP
 
 45.) Use processlibrary.com to check sketchy processes
 
-46.) Try vulnerabilities from the other images
+46.) Use process explorer and net stat to check for sketchy ports
 
-47.) Read past comp vulnerabilities (IMPORTANT)
+47.) Try vulnerabilities from the other images
 
-48.) Go through everything again to not miss stuff
+48.) Read past comp vulnerabilities (IMPORTANT)
 
-49.) Triple check i guess
+49.) Go through everything again to not miss stuff
 
-50.) Use Dr. Kowal's basic checklist
+50.) Triple check i guess
 
-51.) Despacito
+51.) Use Dr. Kowal's basic checklist
+
+52.) Despacito
