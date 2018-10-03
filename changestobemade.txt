@@ -8,6 +8,7 @@ Changes that need to be made:
 	- make choco install seperate script to open in background
 	- files owned by unauthorized users all over the dang place
 		- dir /s /q /a-d /o-d /tc C:\
+	- Program archives/files ooof
 
 NOTES:
 
