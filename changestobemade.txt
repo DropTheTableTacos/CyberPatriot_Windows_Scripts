@@ -9,6 +9,21 @@ Changes that need to be made:
 	- files owned by unauthorized users all over the dang place
 		- dir /s /q /a-d /o-d /tc C:\
 	- Program archives/files ooof
+NMAP scanner
+Nikto scanner
+REFOG
+Spyrix
+Actual
+Free Key Logger
+bitcomet
+speedbot
+teamspeak
+brutus password cracker
+advanced ip scanner
+angry ip scanner
+
+NOTE:
+also setup files
 
 NOTES:
 
