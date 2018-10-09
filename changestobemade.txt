@@ -14,13 +14,15 @@ Nikto scanner
 REFOG
 Spyrix
 Actual
-Free Key Logger
+Free Key Logger (system32\MPK, ctrl+alt+shift+k to open, runrefog, rkf-8-9-2-3110)
 bitcomet
 speedbot
 teamspeak
-brutus password cracker
+brutus password cracker (.bad, .bru, BrutusA2)
 advanced ip scanner
 angry ip scanner
+
+these tings use .txt and .xml for coolness
 
 NOTE:
 also setup files
