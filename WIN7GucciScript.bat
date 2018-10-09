@@ -114,28 +114,29 @@ else (
 :: Menu
 :menu
 cls
-echo 1) README                          g) Event Viewer
-echo 2) Inf files                       h) Sysinternals
-echo 3) SCM OS baselines                i) Install programs
-echo 4) DISA Stig                       j) Update programs
-echo 5) Audit Policy                    k) Services
-echo 6) Windows Update + Service Pack   l) Media files
-echo 7) Forensics                       m) Remove programs + features
-echo 8) Add/Delete users                n) SCM IE baselines
-echo 9) Activate/Disable users          o) Backup
-echo a) Add/Delete admins               p) Application Settings
-echo b) Change passwords                q) Hosts file
-echo c) Enable Firewall                 r) Operating system settings
-echo d) Nessus                          s) Defensive Countermeasures
-echo e) MMC Stuff                       t) Prohibited files
-echo f) Readme Requirements             u) Random list of things at the end
+echo 1) README                          h) Event Viewer
+echo 2) Inf files                       i) Sysinternals
+echo 3) CIS-CAT Registry Gucci          j) Install programs
+echo 4) SCM OS baselines                k) Update programs
+echo 5) DISA Stig                       l) Services
+echo 6) Audit Policy                    m) Media files
+echo 7) Windows Update + Service Pack   n) Remove programs + features
+echo 8) Forensics                       o) SCM IE baselines
+echo 9) Add/Delete users                p) Backup
+echo a) Activate/Disable users          q) Application Settings
+echo b) Add/Delete admins               r) Hosts file
+echo c) Change passwords                s) Operating system settings
+echo d) Enable Firewall                 t) Defensive Countermeasures
+echo e) Nessus                          u) Prohibited files
+echo f) MMC Stuff                       v) Random list of things at the end
+echo g) Readme Requirements
 echo.
-echo v) Open DankMMC
-echo w) Open official checklist
-echo x) Open master checklist
+echo w) Open DankMMC
+echo x) Open official checklist
+echo y) Open master checklist
 echo.
 
-choice /c 123456789abcdefghijklmnopqrstuvwx /n /m "Where would you like to start? "
+choice /c 123456789abcdefghijklmnopqrstuvwxy /n /m "Where would you like to start? "
 goto %errorlevel%
 
 :: README
@@ -192,8 +193,24 @@ pause
 
 goto 2
 
-:: SCM OS Baselines
+:: CISCAT Registry Gucci
 :3
+cls
+
+echo This script is gonna be so cool and good
+echo.
+echo Will break system tho lol.
+echo.
+
+runas /noprofile /user:BroShirt ciscatgucci.bat
+
+pause
+if %automode% == true goto 4
+
+goto menu
+
+:: SCM OS Baselines
+:4
 cls
 
 LGPO /g "%scm%\Win7\Computer_Sec"
@@ -208,12 +225,12 @@ echo.
 
 pause
 
-if %automode% == true goto 4
+if %automode% == true goto 5
 
 goto menu
 
 :: DISA Stig
-:4
+:5
 cls
 
 secedit /configure /db "%systemroot%\dankdatabase3.db" /cfg "%compfiles%\Win7DISAStig.inf"
@@ -226,12 +243,12 @@ echo.
 
 pause
 
-if %automode% == true goto 5
+if %automode% == true goto 6
 
 goto menu
 
 :: Audit Policy
-:5
+:6
 cls
 echo Import the two audit templates (AllAudit then NoAudit)
 echo.
@@ -267,7 +284,7 @@ pause
 exit
 
 :: Windows Update + Service Pack
-:6
+:7
 if %automode% == true (
 	cls
 	sc config wuauserv start= auto
@@ -288,7 +305,7 @@ if %automode% == true (
 	start wuapp.exe
 	pause
 
-	goto 7
+	goto 8
 )
 
 cls
@@ -305,19 +322,19 @@ pause
 goto menu
 
 :: Forensics
-:7
+:8
 cls
 echo Hey! Do thein forensic question. Eek.
 echo.
 
 pause
 
-if %automode% == true goto 8
+if %automode% == true goto 9
 
 goto menu
 
 :: Add/Delete Users
-:8
+:9
 cls
 if %automode% == true (
 	:getuserlist
@@ -351,7 +368,7 @@ set /p choice="Add or remove user? (a/r) "
 if %choice% == a goto addusers
 if %choice% == r goto delusers
 if %choice% == n (
-	if %automode% == true goto 9
+	if %automode% == true goto 10
 	goto menu
 )
 if %choice% == re goto menu
@@ -361,7 +378,7 @@ cls
 net user
 
 set /p user="Enter a username and their password to add... "
-if %user% == n goto 8
+if %user% == n goto 9
 if %user% == re goto menu
 net user "%user%" /add
 
@@ -372,18 +389,18 @@ cls
 net user
 
 set /p user="Enter a user to delete... "
-if %user% == n goto 8
+if %user% == n goto 9
 if %user% == re goto menu
 net user %user% /delete
 
 goto delusers
 
 :: Activate/Disable Users
-:9
+:10
 if %automode% == true (
 	if not exist C:\users.txt (
 		set return=true
-		set return_number=9
+		set return_number=10
 		goto getuserlist
 	)
 	cls
@@ -394,7 +411,7 @@ if %automode% == true (
 	echo Activate users done!
 	echo.
 	pause
-	goto 10
+	goto 11
 )
 
 net user BroPants /active:no
@@ -409,7 +426,7 @@ set /p choice="Activate or disable user? (a/d) "
 if %choice% == a goto activateusers
 if %choice% == d goto disableusers
 if %choice% == n (
-	if %automode% == true goto 10
+	if %automode% == true goto 11
 	goto menu
 )
 if %choice% == re goto menu
@@ -419,7 +436,7 @@ cls
 net user
 
 set /p user="Enter a user to activate... "
-if %user% == n goto 9
+if %user% == n goto 10
 if %user% == re goto menu
 net user %user% /active:yes
 
@@ -430,14 +447,14 @@ cls
 net user
 
 set /p user="Enter a user to disable... "
-if %user% == n goto 9
+if %user% == n goto 10
 if %user% == re goto menu
 net user %user% /active:no
 
 goto disableusers
 
 :: Deleting/adding admins
-:10
+:11
 cls
 net localgroup administrators
 
@@ -446,7 +463,7 @@ set /p choice="Add or remove admin? (a/r) "
 if %choice% == a goto addadmins
 if %choice% == r goto deladmins
 if %choice% == n (
-	if %automode% == true goto 11
+	if %automode% == true goto 12
 	goto menu
 )
 if %choice% == re goto menu
@@ -457,7 +474,7 @@ net user
 net localgroup administrators
 
 set /p user="Enter a user to add to admin group... "
-if %user% == n goto 10
+if %user% == n goto 11
 if %user% == re goto menu
 net localgroup administrators %user% /add
 
@@ -468,18 +485,18 @@ cls
 net localgroup administrators
 
 set /p user="Enter a user to remove from admin group... "
-if %user% == n goto 10
+if %user% == n goto 11
 if %user% == re goto menu
 net localgroup administrators %user% /delete
 
 goto deladmins
 
 :: Changing passwords
-:11
+:12
 if %automode% == true (
 	if not exist C:\users_admins.txt (
 		set return=true
-		set return_number=11
+		set return_number=12
 		goto getuserlist
 	)
 	cls
@@ -488,7 +505,7 @@ if %automode% == true (
 	echo Change all passwords done!
 	echo.
 	pause
-	goto 12
+	goto 13
 )
 
 cls
@@ -499,16 +516,16 @@ echo.
 
 set /p user="Enter user for password change... "
 if %user% == n (
-	if %automode% == true goto 12
+	if %automode% == true goto 13
 	goto menu
 )
 if %user% == re goto menu
 net user %user% abc123ABC123@@
 
-goto 11
+goto 12
 
 :: Enable firewall + template
-:12
+:13
 cls
 netsh advfirewall import "%compfiles%\Win7Firewall.wfw"
 if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
@@ -524,12 +541,12 @@ echo.
 firewall.cpl
 pause
 
-if %automode% == true goto 13
+if %automode% == true goto 14
 
 goto menu
 
 :: Nessus
-:13
+:14
 cls
 ipconfig
 echo.
@@ -539,12 +556,12 @@ echo.
 
 pause
 
-if %automode% == true goto 14
+if %automode% == true goto 15
 
 goto menu
 
 :: MMC Stuff
-:14
+:15
 :sharestart
 cls
 net share
@@ -578,12 +595,12 @@ echo Disable autoplay
 echo.
 pause
 
-if %automode% == true goto 15
+if %automode% == true goto 16
 
 goto menu
 
 :: README Requirements
-:15
+:16
 cls
 echo Open the readme and do the specific things it says to do.
 echo Could be enabling service, adding user/group, etc.
@@ -591,24 +608,24 @@ echo.
 
 pause
 
-if %automode% == true goto 16
+if %automode% == true goto 17
 
 goto menu
 
 :: Event Viewer
-:16
+:17
 cls
 echo Look at the Event Viewer for stuff that's BAD
 echo.
 start eventvwr.msc
 pause
 
-if %automode% == true goto 17
+if %automode% == true goto 18
 
 goto menu
 
 :: Sysinternals
-:17
+:18
 cls Installing Sysinternals...
 echo.
 choco install sysinternals
@@ -623,12 +640,12 @@ autoruns
 tcpview
 pause
 
-if %automode% == true goto 18
+if %automode% == true goto 19
 
 goto menu
 
 :: Install programs
-:18
+:19
 cls
 echo A script should've opened up that will
 echo install the programs ya need. Yeet.
@@ -638,12 +655,12 @@ runas /noprofile /user:BroShirt choco.bat
 
 pause
 
-if %automode% == true goto 19
+if %automode% == true goto 20
 
 goto menu
 
 :: Update programs
-:19
+:20
 if %automode% == true (
 	cls
 	choco upgrade all
@@ -675,12 +692,12 @@ echo.
 
 pause
 
-if %automode% == true goto 20
+if %automode% == true goto 21
 
 goto menu
 
 :: Services
-:20
+:21
 cls
 if %automode% == true (
 	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G)
@@ -759,7 +776,7 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to enable... "
-if %serv% == n goto 20
+if %serv% == n goto 21
 if %serv% == re goto menu
 
 sc config %serv% start= auto
@@ -792,7 +809,7 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to disable... "
-if %serv% == n goto 20
+if %serv% == n goto 21
 if %serv% == re goto menu
 
 sc stop %serv%
@@ -807,12 +824,12 @@ echo.
 start services.msc
 pause
 
-if %automode% == true goto 21
+if %automode% == true goto 22
 
 goto menu
 
 :: Media Files
-:21
+:22
 
 if %automode% == true goto deletemf
 
@@ -821,7 +838,7 @@ set /p choice="Search for or delete media files? (s/d) "
 if %choice% == s goto searchmf
 if %choice% == d goto deletemf
 if %choice% == n (
-	if %automode% == true goto 22
+	if %automode% == true goto 23
 	goto menu
 )
 if %choice% == re goto menu
@@ -856,9 +873,9 @@ start mediafiles.txt
 
 pause
 
-if %automode% == true goto 22
+if %automode% == true goto 23
 
-goto 21
+goto 22
 
 :searchmf
 cls
@@ -876,12 +893,12 @@ start mediafiles.txt
 
 pause
 
-if %automode% == true goto 22
+if %automode% == true goto 23
 
-goto 21
+goto 22
 
 :: Remove Programs + Features
-:22
+:23
 cls
 echo MAKE SURE YOU DO ALL OF THE TINGS. DO IT GOOD.
 echo.
@@ -901,33 +918,33 @@ start sketchyfiles.txt
 
 pause
 
-if %automode% == true goto 23
-
-goto menu
-
-:: SCM IE Baselines
-:23
-cls
-LGPO /g "%scm%\IE11_Com_Sec"
-LGPO /g "%scm%\IE11_User_Sec"
-
 if %automode% == true goto 24
 
 goto menu
 
-:: Backup
+:: SCM IE Baselines
 :24
 cls
-set /p location="Enter the drive letter for the backup location... "
-
-wbadmin enable backup -addtarget:%location%: -include:C: -schedule:03:00 -quiet
+LGPO /g "%scm%\IE11_Com_Sec"
+LGPO /g "%scm%\IE11_User_Sec"
 
 if %automode% == true goto 25
 
 goto menu
 
-:: Application Settings
+:: Backup
 :25
+cls
+set /p location="Enter the drive letter for the backup location... "
+
+wbadmin enable backup -addtarget:%location%: -include:C: -schedule:03:00 -quiet
+
+if %automode% == true goto 26
+
+goto menu
+
+:: Application Settings
+:26
 cls
 echo IF YOU'RE ON A SERVER OS, focus on this a little more.
 echo.
@@ -946,24 +963,24 @@ start firefox.exe
 
 pause
 
-if %automode% == true goto 26
+if %automode% == true goto 27
 
 goto menu
 
 :: Hosts file
-:26
+:27
 cls
 takeown /f "%systemroot%\system32\drivers\etc"
 
 del "%systemroot%\system32\drivers\etc\hosts"
 copy "%compfiles%\hosts" "%systemroot%\system32\drivers\etc\hosts"
 
-if %automode% == true goto 27
+if %automode% == true goto 28
 
 goto menu
 
 :: Operating System Settings
-:27
+:28
 cls
 echo IF YOU'RE ON A SERVER OS, focus on this a little more.
 echo.
@@ -994,12 +1011,12 @@ echo Enable UAC
 echo.
 pause
 
-if %automode% == true goto 28
+if %automode% == true goto 29
 
 goto menu
 
 :: Defensive Countermeasures
-:28
+:29
 cls
 echo Make sure windows defender is danko enabled
 echo.
@@ -1015,12 +1032,12 @@ echo Scan on all those programs
 echo.
 pause
 
-if %automode% == true goto 29
+if %automode% == true goto 30
 
 goto menu
 
 :: Prohibited files
-:29
+:30
 cls
 echo Yaboi prohibited files.
 echo.
@@ -1035,12 +1052,12 @@ start eek.txt
 
 pause
 
-if %automode% == true goto 30
+if %automode% == true goto 31
 
 goto menu
 
 :: Random Things At The End
-:30
+:31
 cls
 echo Check processes for sketchiness.
 echo.
@@ -1090,16 +1107,16 @@ pause
 goto menu
 
 :: Open DankMMC
-:31
+:32
 start /d "%compfiles%" DankMMC.msc
 goto menu
 
 :: Open official checklist
-:32
+:33
 start /d "%compfiles%" OfficialWin7Checklist.pdf
 goto menu
 
 :: Open master checklist
-:33
+:34
 start /d "%desktop%" OurGloriousChecklist2018_Windows.txt
 goto menu
