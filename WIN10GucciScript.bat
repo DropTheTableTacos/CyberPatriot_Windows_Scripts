@@ -200,6 +200,10 @@ echo This script is gonna be so cool and good
 echo.
 echo Will break system tho lol.
 echo.
+echo BTW BroShirt's password is abc123ABC123@@
+echo.
+
+net user BroShirt abc123ABC123@@
 
 runas /noprofile /user:BroShirt ciscatgucci.bat
 
