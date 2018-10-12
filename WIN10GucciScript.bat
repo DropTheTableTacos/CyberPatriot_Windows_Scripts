@@ -746,7 +746,7 @@ echo A script should've opened up that will
 echo install the programs ya need. Yeet.
 echo.
 
-runas /noprofile /user:BroShirt choco.bat
+runas /noprofile /user:BroShirt chocogucci.bat
 
 pause
 
