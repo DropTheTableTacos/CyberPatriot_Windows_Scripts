@@ -69,6 +69,7 @@ echo.
 %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
 choco feature enable -n allowGlobalConfirmation
+choco feature enable -n useFipsCompliantChecksums
 
 sc config wuauserv start= auto
 sc start wuauserv
