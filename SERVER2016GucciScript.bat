@@ -185,7 +185,7 @@ if %inf% == n (
 
 :goodinf
 cls
-secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\Server2016EnabledInf.inf"
+secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\Server2016GoodInf.inf"
 if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
 cls
 echo Good INF Done!
@@ -199,7 +199,7 @@ goto 3
 
 :badinf
 cls
-secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\Server2016DisabledInf.inf"
+secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\Server2016BadInf.inf"
 if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
 cls
 echo Bad Inf Done!
