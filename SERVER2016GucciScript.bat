@@ -73,18 +73,18 @@ choco feature enable -n useFipsCompliantChecksums
 
 sc config wuauserv start= auto
 sc start wuauserv
-choco install git nodejs powershell --ignorechecksum
+choco install nodejs powershell --ignorechecksum
 call npm install -g diffchecker
 
 :: Pull from github
-cls
-echo Downloading files from github...
-echo.
-cd %desktop%
-git init
-git remote add origin https://github.com/Marduk28/CyberPatriot_Windows_Scripts.git
-git fetch origin master
-git checkout origin/master Server2016CompFiles OurGloriousChecklist2018_Windows.txt
+::cls
+::echo Downloading files from github...
+::echo.
+::cd %desktop%
+::git init
+::git remote add origin https://github.com/Marduk28/CyberPatriot_Windows_Scripts.git
+::git fetch origin master
+::git checkout origin/master Server2016CompFiles OurGloriousChecklist2018_Windows.txt
 
 :: Ask if menu or automode
 :autochoice
@@ -324,9 +324,7 @@ goto menu
 cls
 if %automode% == true (
 	:getuserlist
-	%pshellrun% "Get-LocalUser > C:\usertemp_ps.txt"
-
-	for /f "skip=3" %%G in (C:\usertemp_ps.txt) do (echo %%G >> C:\users_admins.txt)
+	for /f "skip=3 tokens=1" %%G in ('%pshellrun% "Get-LocalUser"') do (echo %%G >> C:\users_admins.txt)
 	findstr /v "BroPants BroShirt DefaultAccount defaultuser0 Administrator Guest" C:\users_admins.txt > C:\users.txt
 	call jrepl " +$" "" /f C:\users.txt /o -
 	call jrepl " +$" "" /f C:\users_admins.txt /o -
