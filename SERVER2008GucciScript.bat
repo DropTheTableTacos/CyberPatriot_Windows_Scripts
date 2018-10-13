@@ -22,6 +22,7 @@ set desktop=%userprofile%\Desktop
 set compfiles=%desktop%\Server2008CompFiles
 set scm=%compfiles%\SCMBaselines
 set pshellrun=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
+set autousers=false
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%programfiles%\nodejs;%appdata%\npm
 del /f /q C:\users.txt C:\approved_users.txt C:\approved_users_gucci.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt
 
@@ -345,6 +346,9 @@ if %automode% == true goto 9
 :: Add/Delete Users
 :9
 cls
+
+if %autousers% == true goto userchoice
+
 if %automode% == true (
 	:getuserlist
 	for /f "skip=3 tokens=1" %%G in ('%pshellrun% "Get-LocalUser"') do (echo %%G >> C:\users_admins.txt)
@@ -361,8 +365,8 @@ if %automode% == true (
 
 	if %return% == true goto %return_number%
 
-	diffchecker C:\approved_users_gucci.txt C:\users.txt
-
+	call diffchecker C:\approved_users_gucci.txt C:\users.txt
+	set autousers=true
 	goto userchoice
 )
 :userchoice
@@ -403,7 +407,7 @@ goto delusers
 :: Activate/Disable Users
 :10
 if %automode% == true (
-	if not exist C:\users_admins.txt (
+	if %autousers% == false (
 		set return=true
 		set return_number=10
 		goto getuserlist
@@ -499,7 +503,7 @@ goto deladmins
 :: Changing passwords
 :12
 if %automode% == true (
-	if not exist C:\users_admins.txt (
+	if %autousers% == false (
 		set return=true
 		set return_number=12
 		goto getuserlist
