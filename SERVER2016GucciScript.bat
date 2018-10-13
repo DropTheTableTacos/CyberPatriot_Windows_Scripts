@@ -329,8 +329,6 @@ if %automode% == true (
 	call jrepl " +$" "" /f C:\users.txt /o -
 	call jrepl " +$" "" /f C:\users_admins.txt /o -
 
-	del /f /q C:\usertemp_ps.txt C:\usertemp_1.txt
-
 	echo Please put all the users from README, including admins here and save then close > C:\approved_users.txt
 	echo Replace these 2 lines btw smh >> C:\approved_users.txt
 	start C:\approved_users.txt
