@@ -126,19 +126,19 @@ reg add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v "Fil
 
 reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\DomainProfile" /v "AllowLocalPolicyMerge" /t reg_dword /d "1" /f
 
-reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\DomainProfile" /v "AllowLocallPsecPolicyMerge" /t reg_dword /d "1" /f
+reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\DomainProfile" /v "AllowLocalIPsecPolicyMerge" /t reg_dword /d "1" /f
 
-reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging" /v "LogFilePath" /t reg_sz /d "%systemroot\System32\logfiles\firewall\domainfw.log" /f
+reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging" /v "LogFilePath" /t reg_sz /d "%systemroot^%\System32\logfiles\firewall\domainfw.log" /f
 
 reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\PrivateProfile" /v "AllowLocalPolicyMerge" /t reg_dword /d "1" /f
 
-reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\PrivateProfile" /v "AllowLocallPsecPolicyMerge" /t reg_dword /d "1" /f
+reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\PrivateProfile" /v "AllowLocalIPsecPolicyMerge" /t reg_dword /d "1" /f
 
-reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging" /v "LogFilePath" /t reg_sz /d "%systemroot\System32\logfiles\firewall\privatefw.log" /f
+reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging" /v "LogFilePath" /t reg_sz /d "%systemroot^%\System32\logfiles\firewall\privatefw.log" /f
 
 reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\PublicProfile" /v "DisableNotifications" /t reg_dword /d "0" /f
 
-reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging" /v "LogFilePath" /t reg_sz /d "%systemroot\System32\logfiles\firewall\publicfw.log" /f
+reg add "HKLM\Software\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging" /v "LogFilePath" /t reg_sz /d "%systemroot^%\System32\logfiles\firewall\publicfw.log" /f
 
 reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\GPExtensions\{D76B9641-3288-4f75-942D-087DE603E3EA}" /v "DllName" /t reg_sz /d "C:\Program Files\LAPS\CSE\AdmPwd.dll" /f
 
@@ -564,7 +564,7 @@ reg add "HKLM\Software\Policies\Microsoft\Internet Explorer\Feeds" /v "DeleteEnc
 
 reg add "HKLM\Software\Policies\Microsoft\Windows\Windows Search" /v "AllowIndexingEncryptedStoresOrItems" /t reg_dword /d "0" /f
 
-reg add "HKLM\Software\Microsoft\Windows Defender\Spynet" /v "SpynetReporting" /t reg_dword /d "0" /f
+reg delete "HKLM\Software\Microsoft\Windows Defender\Spynet" /v "SpynetReporting" /f
 
 reg add "HKLM\Software\Policies\Microsoft\Windows\Windows Error Reporting\Consent" /v "DefaultConsent" /t reg_dword /d "1" /f
 
@@ -610,21 +610,31 @@ reg add "HKU\&amp;lt;SID&amp;gt;\Software\Policies\Microsoft\Windows\Control Pan
 
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "SCRNSAVE.EXE" /t reg_sz /d "scrnsave.scr" /f
 
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "SCRNSAVE.EXE" /t reg_sz /d "scrnsave.scr" /f
+
 reg add "HKU\&amp;lt;SID&amp;gt;\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaverIsSecure" /t reg_dword /d "1" /f
 
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t reg_sz /d "900" /f
 
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Policies\Microsoft\Windows\Control Panel\Desktop" /v "ScreenSaveTimeOut" /t reg_sz /d "900" /f
+
 reg add "HKU\&amp;lt;SID&amp;gt;\Software\Policies\Microsoft\Assistance\Client\1.0" /v "NoImplicitFeedback" /t reg_dword /d "1" /f
+
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Policies\Microsoft\Assistance\Client\1.0" /v "NoImplicitFeedback" /t reg_dword /d "1" /f
 
 reg add "HKU\&amp;lt;SID&amp;gt;\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "SaveZoneInformation" /t reg_dword /d "2" /f
 
-reg add "HKU\&amp;lt;SID&amp;gt;\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "ScanWithAntiVirus" /t reg_dword /d "3" /f
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "ScanWithAntiVirus" /t reg_dword /d "3" /f
 
-reg add "HKU\&amp;lt;SID&amp;gt;\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoInplaceSharing" /t reg_dword /d "1" /f
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoInplaceSharing" /t reg_dword /d "1" /f
 
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Policies\Microsoft\Windows\Installer" /v "AlwaysInstallElevated" /t reg_dword /d "0" /f
 
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Policies\Microsoft\Windows\Installer" /v "AlwaysInstallElevated" /t reg_dword /d "0" /f
+
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Policies\Microsoft\WindowsMediaPlayer" /v "PreventCodecDownload" /t reg_dword /d "1" /f
+
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Policies\Microsoft\WindowsMediaPlayer" /v "PreventCodecDownload" /t reg_dword /d "1" /f
 
 reg add "HKLM\Software\Policies\Microsoft\InputPersonalization" /v "AllowInputPersonalization" /t reg_dword /d "0" /f
 
@@ -792,11 +802,17 @@ reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Policies\Mi
 
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "SaveZoneInformation" /t reg_dword /d "2" /f
 
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "SaveZoneInformation" /t reg_dword /d "2" /f
+
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "ScanWithAntiVirus" /t reg_dword /d "3" /f
 
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Policies\Microsoft\Windows\CloudContent" /v "ConfigureWindowsSpotlight" /t reg_dword /d "2" /f
 
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Policies\Microsoft\Windows\CloudContent" /v "ConfigureWindowsSpotlight" /t reg_dword /d "2" /f
+
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableThirdPartySuggestions" /t reg_dword /d "1" /f
+
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableThirdPartySuggestions" /t reg_dword /d "1" /f
 
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v "NoInplaceSharing" /t reg_dword /d "1" /f
 
@@ -804,6 +820,9 @@ reg add "HKLM\Software\Policies\Microsoft\FVE" /v "OSPassphrase" /t reg_dword /d
 
 reg add "HKU\S-1-5-21-3985297738-3525474143-4145663172-1000\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsSpotlightFeatures" /t reg_dword /d "1" /f
 
+reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsSpotlightFeatures" /t reg_dword /d "1" /f
+
+reg add "HKLM\System\CurrentControlSet\Control\Terminal Server" /v "fDenyTSConnections" /t reg_dword /d "0" /f
 
 cls
 echo It's done now!
