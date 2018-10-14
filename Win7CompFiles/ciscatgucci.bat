@@ -564,7 +564,7 @@ reg add "HKLM\Software\Policies\Microsoft\Internet Explorer\Feeds" /v "DeleteEnc
 
 reg add "HKLM\Software\Policies\Microsoft\Windows\Windows Search" /v "AllowIndexingEncryptedStoresOrItems" /t reg_dword /d "0" /f
 
-reg delete "HKLM\Software\Microsoft\Windows Defender\Spynet" /v "SpynetReporting" /f
+reg add "HKLM\Software\Microsoft\Windows Defender\Spynet" /v "SpynetReporting" /t reg_dword /d "2" /f
 
 reg add "HKLM\Software\Policies\Microsoft\Windows\Windows Error Reporting\Consent" /v "DefaultConsent" /t reg_dword /d "1" /f
 
