@@ -656,13 +656,15 @@ goto menu
 :: Install programs
 :19
 cls
-echo A script should've opened up that will
-echo install the programs ya need. Yeet.
+echo What up my big cheezits
+echo.
+echo This is gonna install the programs with chocolatey.
 echo.
 
-runas /noprofile /user:BroShirt chocogucci.bat
+choco install firefox malwarebytes mbsa ie9 --ignorechecksum --force
 
-pause
+start /d "%programfiles%\Malwarebytes\Anti-Malware" mbam.exe
+start /d "%programfiles%\Microsoft Baseline Security Analyzer 2" mbsa.exe
 
 if %automode% == true goto 20
 
