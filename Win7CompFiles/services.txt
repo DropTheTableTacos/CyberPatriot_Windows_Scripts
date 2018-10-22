@@ -72,7 +72,6 @@ wecsvc
 wercplsupport
 wersvc
 winhttpautoproxysvc
-winrm
 wmpnetworksvc
 wmsvc
 wscsvc
