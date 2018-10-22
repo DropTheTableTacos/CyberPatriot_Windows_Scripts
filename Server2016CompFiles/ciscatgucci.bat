@@ -590,7 +590,7 @@ reg add "HKLM\Software\Policies\Microsoft\Windows\WinRM\Service" /v "AllowUnencr
 
 reg add "HKLM\Software\Policies\Microsoft\Windows\WinRM\Service" /v "DisableRunAs" /t reg_dword /d "1" /f
 
-reg add "HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\WinRS" /v "AllowRemoteShellAccess" /t reg_dword /d "0" /f
+reg add "HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\WinRS" /v "AllowRemoteShellAccess" /t reg_dword /d "1" /f
 
 reg add "HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU" /v "NoAutoUpdate" /t reg_dword /d "0" /f
 
