@@ -123,7 +123,7 @@ echo.
 echo w) Generate User List
 echo x) Open DankMMC
 echo y) Open official checklist
-echo z) Open master checklist
+echo z) Open master checklist + view vuln categories
 echo.
 
 choice /c 123456789abcdefghijklmnopqrstuvwxyz /n /m "Where would you like to start? "
@@ -1359,4 +1359,21 @@ goto menu
 :: Open master checklist
 :35
 start /d "%desktop%" OurGloriousChecklist2018_Windows.txt
+cls
+echo Here are the vulnerability categories:
+echo.
+echo User Auditing
+echo Account Policies
+echo Local Policies
+echo Defensive Countermeasures
+echo Operating System Settings
+echo Service Auditing
+echo Operating System Updates
+echo Application Updates
+echo Policy Violation: Prohibited Files
+echo Policy Violation: Unwanted Software
+echo Policy Violation: Malware
+echo Application Security Settings
+echo.
+pause
 goto menu
