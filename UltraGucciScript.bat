@@ -46,6 +46,7 @@ set scm=%compfiles%\SCMBaselines
 set pshellrun=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
 set autousers=false
 set diffopen=false
+set usersbroken=false
 set listuser=%pshellrun% "Get-LocalUser | select name, enabled"
 set listadmin=%pshellrun% "Get-LocalGroupMember -group Administrators | select name"
 set getgucciservice=%pshellrun% "Get-WmiObject -class win32_service | select name, displayname, startmode, state, installdate, processid, pathname | ? state -match 'Running'"
@@ -131,6 +132,12 @@ goto %errorlevel%
 
 :: README
 :1
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo Read the README, ya bigot higot!
 echo.
@@ -144,6 +151,12 @@ goto menu
 
 :: Windows Update
 :2
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 if %automode% == true (
 	cls
 	sc config wuauserv start= auto
@@ -181,6 +194,12 @@ goto menu
 
 :: Inf files
 :3
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 if %automode% == true (
     secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
@@ -237,6 +256,12 @@ goto 3
 
 :: CISCAT Registry Gucci
 :4
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo Alrighty, run the ciscatgucci.bat script
 echo.
@@ -254,6 +279,12 @@ goto menu
 
 :: SCM Baselines
 :5
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 if %os% == Win7 (
 	LGPO /g "%scm%"
@@ -352,6 +383,12 @@ goto menu
 
 :: Enable firewall + template
 :6
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 netsh advfirewall import "%compfiles%\%os%Firewall.wfw"
 if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
@@ -373,6 +410,12 @@ goto menu
 
 :: Services
 :7
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 if %automode% == true (
 	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G)
@@ -516,6 +559,12 @@ goto menu
 
 :: Activate/Disable Users
 :8
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 if %automode% == true (
 	if %autousers% == false (
 		set return=true
@@ -556,7 +605,6 @@ set /p user="Enter a user to activate... "
 if %user% == n goto 8
 if %user% == re goto menu
 net user %user% /active:yes
-
 goto activateusers
 
 :disableusers
@@ -572,6 +620,12 @@ goto disableusers
 
 :: Changing passwords
 :9
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 if %automode% == true (
 	if %autousers% == false (
 		set return=true
@@ -604,6 +658,12 @@ goto 9
 
 :: Forensics
 :10
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo Do the forensics questions. Eek.
 echo.
@@ -615,6 +675,12 @@ goto menu
 
 :: DISA Stig
 :11
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 if %os% == Win10 (
 	if %automode% == true goto 12
 	cls
@@ -655,6 +721,11 @@ goto menu
 
 :: Media Files
 :12
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
 
 if %automode% == true goto deletemf
 
@@ -722,6 +793,12 @@ goto 12
 
 :: Prohibited users' files
 :13
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 del /f /q C:\*files.txt
 
 if %automode% == true (
@@ -768,6 +845,12 @@ goto badfiles
 
 :: Add/Delete Users
 :14
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 if %automode% == true (
 	if %autousers% == false (
 		set return=true
@@ -789,6 +872,7 @@ set /p choice="Add or remove user? (a/r) "
 if %choice% == a goto addusers
 if %choice% == r goto delusers
 if %choice% == n (
+	if %autochoice% == a set automode=true
 	if %automode% == true goto 15
 	goto menu
 )
@@ -818,6 +902,12 @@ goto delusers
 
 :: Deleting/adding admins
 :15
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 %listadmin%
 
@@ -856,6 +946,12 @@ goto deladmins
 
 :: Server Manager
 :16
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 if %os% == Server2008 goto servmgr
 if %os% == Server2016 goto servmgr
 if %os% == Win7 goto noserv
@@ -890,6 +986,12 @@ goto menu
 
 :: Remove Programs + Features
 :17
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo MAKE SURE YOU DO ALL OF THE TINGS. DO IT GOOD.
 echo.
@@ -931,6 +1033,12 @@ goto menu
 
 :: Update programs
 :18
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo PUT LOTS OF EFFORT INTO THIS AND DONT FORGET IT.
 echo.
@@ -960,6 +1068,12 @@ goto menu
 
 :: MMC Stuff
 :19
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 :sharestart
 cls
 net share
@@ -999,6 +1113,12 @@ goto menu
 
 :: Audit Policy
 :20
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 if %automode% == true (
     LGPO /a "%compfiles%\%os%NoAudit.csv"
@@ -1055,6 +1175,12 @@ goto 20
 
 :: Install programs
 :21
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo What up my big cheezits
 echo.
@@ -1070,6 +1196,12 @@ goto menu
 
 :: Nessus
 :22
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 ipconfig
 echo.
@@ -1085,6 +1217,12 @@ goto menu
 
 :: README Requirements
 :23
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo Open the readme and do the specific things it says to do.
 echo Could be enabling service, adding user/group, etc.
@@ -1098,6 +1236,12 @@ goto menu
 
 :: Sysinternals
 :24
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls Installing Sysinternals...
 echo.
 choco install sysinternals
@@ -1118,6 +1262,12 @@ goto menu
 
 :: Event Viewer
 :25
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo Look at the Event Viewer for stuff that's BAD
 echo.
@@ -1130,6 +1280,12 @@ goto menu
 
 :: Backup
 :26
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo Real quick connect the drive to the VM (make sure it USB 2.0)
 echo.
@@ -1146,6 +1302,12 @@ goto menu
 
 :: Application Settings
 :27
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo IF YOU'RE ON A SERVER OS, focus on this a little more.
 echo.
@@ -1170,6 +1332,12 @@ goto menu
 
 :: Operating System Settings
 :28
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo IF YOU'RE ON A SERVER OS, focus on this a little more.
 echo.
@@ -1222,6 +1390,12 @@ goto menu
 
 :: Defensive Countermeasures
 :29
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo Make sure windows defender is danko enabled
 echo.
@@ -1243,6 +1417,12 @@ goto menu
 
 :: Prohibited files
 :30
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo Yaboi prohibited files.
 echo.
@@ -1263,6 +1443,12 @@ goto menu
 
 :: Random Things At The End
 :31
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
 cls
 echo Check processes for sketchiness.
 echo.
@@ -1339,8 +1525,18 @@ pause
 
 sort < C:\approved_users.txt > C:\approved_users_gucci.txt
 
+cls
+start C:\users.txt
+set /p usersbroken="Did the user list break? (y/n) "
+if %usersbroken% == y (
+	set usersbroken=true
+	if %return% == true goto %return_number%
+	goto menu
+)
+
 set autousers=true
 if %return% == true goto %return_number%
+goto menu
 
 :: Open DankMMC
 :33
@@ -1356,7 +1552,7 @@ if %os% == Server2008 start /d "%compfiles%" Official%os%Checklist.docx
 if %os% == Server2016 start /d "%compfiles%" Official%os%Checklist.docx
 goto menu
 
-:: Open master checklist
+:: Open master checklist + vuln categories
 :35
 start /d "%desktop%" OurGloriousChecklist2018_Windows.txt
 cls
