@@ -72,8 +72,40 @@ choco feature enable -n useFipsCompliantChecksums
 
 sc config wuauserv start= auto
 sc start wuauserv
-choco install nodejs powershell --ignorechecksum
+choco install nodejs --ignorechecksum
 call npm install -g diffchecker
+if %os% == Win7 (
+	choco install powershell --ignorechecksum
+	cls
+	echo Yeah, so you HAVE to restart the VM here for things to work.
+	echo.
+	echo Thanks, powershell.
+	echo.
+	pause
+	exit
+)
+
+if %os% == Win8 (
+	choco install powershell --ignorechecksum
+	cls
+	echo Yeah, so you HAVE to restart the VM here for things to work.
+	echo.
+	echo Thanks, powershell.
+	echo.
+	pause
+	exit
+)
+
+if %os% == Server2008 (
+	choco install powershell --ignorechecksum
+	cls
+	echo Yeah, so you HAVE to restart the VM here for things to work.
+	echo.
+	echo Thanks, powershell.
+	echo.
+	pause
+	exit
+)
 
 :: Ask if menu or automode
 :autochoice
