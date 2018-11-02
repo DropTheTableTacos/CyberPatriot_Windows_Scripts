@@ -75,7 +75,7 @@ sc start wuauserv
 choco install nodejs --ignorechecksum
 call npm install -g diffchecker
 if %os% == Win7 (
-	choco install powershell --ignorechecksum
+	choco install powershell dotnet4.5 --ignorechecksum
 	cls
 	echo Yeah, so you HAVE to restart the VM here for things to work.
 	echo.
@@ -97,7 +97,7 @@ if %os% == Win8 (
 )
 
 if %os% == Server2008 (
-	choco install powershell --ignorechecksum
+	choco install powershell dotnet4.5 --ignorechecksum
 	cls
 	echo Yeah, so you HAVE to restart the VM here for things to work.
 	echo.
