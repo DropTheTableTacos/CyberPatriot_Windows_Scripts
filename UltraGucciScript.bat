@@ -50,7 +50,7 @@ set usersbroken=false
 set listuser=%pshellrun% "Get-LocalUser | select name, enabled"
 set listadmin=%pshellrun% "Get-LocalGroupMember -group Administrators | select name"
 set getgucciservice=%pshellrun% "Get-WmiObject -class win32_service | select name, displayname, startmode, state, installdate, processid, pathname | ? state -match 'Running'"
-set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%programfiles%\nodejs;%appdata%\npm
+set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%programfiles%\nodejs;%appdata%\npm;%desktop%
 del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt
 
 :: Startup Task
