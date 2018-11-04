@@ -606,7 +606,7 @@ if %automode% == true (
 	cls
 	net user BroShirt /active:no
 	net user BroPants /active:no
-	for /f %%G in (C:\users.txt) do %listuser% %%G /active:yes
+	for /f %%G in (C:\users.txt) do net user %%G /active:yes
 	cls
 	echo Activate users done!
 	echo.
