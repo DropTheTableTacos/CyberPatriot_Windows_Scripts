@@ -17,3 +17,4 @@ cd bin
 ren UltraGucciScript.bat script.bat
 script
 alias editscript=notepad "%userprofile%\Desktop\cmder\bin\script.bat"
+alias
