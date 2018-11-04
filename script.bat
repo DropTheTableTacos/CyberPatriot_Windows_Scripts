@@ -126,7 +126,6 @@ if %autochoice% == a (
 )
 if %autochoice% == m (
 	set automode=false
-	start /d "%compfiles%" DankMMC.msc
 	goto menugood
 )
 else (
