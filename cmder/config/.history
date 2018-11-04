@@ -1,0 +1,19 @@
+cleanup
+alias
+echo path
+echo %path%
+echo %path%
+echo %path%
+calc 1+1
+calc 4**2
+calc /?
+calc
+calc squareroot(4)
+calc sqrt(4)
+calc sqrt(16)
+calc 4 * 2
+copy "%scripts%\UltraGucciScript.bat" "%userprofile%\Downloads\cmder\bin\UltraGucciScript.bat"
+cd bin
+ren UltraGucciScript.bat script.bat
+script
+alias editscript=notepad "%userprofile%\Desktop\cmder\bin\script.bat"
