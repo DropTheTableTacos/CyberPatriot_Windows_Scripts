@@ -17,7 +17,6 @@ icssvc
 iisadmin
 iphlpsvc
 irmon
-lanmanserver
 lfsvc
 lltdsvc
 lmhosts
