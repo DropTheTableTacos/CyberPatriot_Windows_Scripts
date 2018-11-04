@@ -75,7 +75,7 @@ sc start wuauserv
 choco install nodejs --ignorechecksum
 call npm install -g diffchecker
 if %os% == Win7 (
-	choco install powershell dotnet4.5 --ignorechecksum
+	choco install dotnet4.5 powershell --ignorechecksum
 	cls
 	echo Yeah, so you HAVE to restart the VM here for things to work.
 	echo.
@@ -97,7 +97,7 @@ if %os% == Win8 (
 )
 
 if %os% == Server2008 (
-	choco install powershell dotnet4.5 --ignorechecksum
+	choco install dotnet4.5 powershell --ignorechecksum
 	cls
 	echo Yeah, so you HAVE to restart the VM here for things to work.
 	echo.
@@ -109,6 +109,10 @@ if %os% == Server2008 (
 
 :: Ask if menu or automode
 :autochoice
+
+
+:: Menu
+:menu
 cls
 echo Menu is for quick stuff ya need to do, Auto mode is main option
 echo.
@@ -118,23 +122,22 @@ set /p autochoice="Menu or auto mode? (m/a) "
 
 if %autochoice% == a (
 	set automode=true
-	goto menu
+	goto menugood
 )
 if %autochoice% == m (
 	set automode=false
 	start /d "%compfiles%" DankMMC.msc
-	goto menu
+	goto menugood
 )
 else (
 	cls
 	echo That's not an option, ya gaylord!
 	echo.
 	pause
-	goto autochoice
+	goto menu
 )
 
-:: Menu
-:menu
+:menugood
 cls
 echo 1) README                    h) Remove programs + features
 echo 2) Windows Update            i) Update programs
