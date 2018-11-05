@@ -824,6 +824,8 @@ reg add "HKU\S-1-5-21-358118824-3846515562-1363085019-1003\Software\Policies\Mic
 
 reg add "HKLM\System\CurrentControlSet\Control\Terminal Server" /v "fDenyTSConnections" /t reg_dword /d "0" /f
 
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v "ValidateAdminCodeSignatures" /t reg_dword /d "0" /f
+
 cls
 echo It's done now!
 echo.
