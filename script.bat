@@ -916,10 +916,10 @@ if %choice% == re goto menu
 cls
 %listuser%
 
-set /p user="Enter a username and their password to add... "
+set /p user="Enter a username... "
 if %user% == n goto 14
 if %user% == re goto menu
-net user "%user%" /add
+net user %user% /add
 
 goto addusers
 
