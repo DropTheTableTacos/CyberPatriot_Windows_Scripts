@@ -30,3 +30,37 @@ NOTES:
 network access: restrict clients allowed to make remote calls to SAM
 event log: view non-system default logs i guess?
 sysinternals choco install broke
+
+Post Qual1 Notes:
+
+fix close after add/remove users
+
+archive check before remove programs
+
+Lanman server ENABLED
+
+add user broke
+
+system administrator blocked yeet
+    - Applocker
+    - HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\ValidateAdminCodeSignatures:0
+
+cat-lite right after ciscatgucci
+
+Browser service
+
+remove choco for updating cause it gay
+
+WMPNetworkSvc check it out
+
+Note: Unblock foreign, non-hetero programs
+
+referral returned from the server
+
+packet tracer shortened commands BAD
+
+plain text files cringe finding
+
+WinAudio error 1297
+
+sysinternals in choco bin instead gayboi
