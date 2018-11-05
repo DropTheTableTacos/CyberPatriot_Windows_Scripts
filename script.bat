@@ -1027,8 +1027,17 @@ if %usersbroken% == false (
 )
 
 cls
-echo MAKE SURE YOU DO ALL OF THE TINGS. DO IT GOOD.
+echo Attempt to remove archives (plain text n stuff too)
 echo.
+echo .zip, .exe, .msi, .txt, .bad, .bru
+echo.
+echo Wait for a thing here...
+cd %homedrive%\
+dir /s /a /b /o-d *.zip *.exe *.msi *.txt *.bad *.bru >> sketchyfiles.txt
+start sketchyfiles.txt
+pause
+
+cls
 echo Uninstall programs
 echo.
 start appwiz.cpl
@@ -1046,15 +1055,6 @@ echo Make sure to check hidden folders
 echo.
 cd "%programfiles%"
 explorer .
-pause
-
-cls
-echo Remove .zip, .exe, .msi
-echo.
-echo Wait for this thing...
-cd %homedrive%\
-dir /s /a /b /o-d *.zip *.exe *.msi >> sketchyfiles.txt
-start sketchyfiles.txt
 pause
 
 cls
