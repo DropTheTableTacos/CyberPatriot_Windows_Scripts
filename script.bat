@@ -138,22 +138,22 @@ else (
 
 :menugood
 cls
-echo 1) README                    h) Remove programs + features
-echo 2) Windows Update            i) Update programs
-echo 3) Inf files                 j) MMC Stuff
-echo 4) CIS-CAT Registry Gucci    k) Audit Policy
-echo 5) SCM baselines             l) Install programs
-echo 6) Enable Firewall           m) Nessus
-echo 7) Services                  n) Readme Requirements
-echo 8) Activate/Disable users    o) Sysinternals
-echo 9) Change passwords          p) Event Viewer
-echo a) Forensics                 q) Backup
-echo b) DISA Stig                 r) Application Settings
-echo c) Media files               s) Operating system settings
-echo d) Prohibited users' files   t) Defensive Countermeasures
-echo e) Add/Delete users          u) Prohibited files
-echo f) Add/Delete admins         v) Random list of things at the end
-echo g) Server Manager
+echo 1) README                       h) Update programs
+echo 2) Windows Update               i) Sysinternals
+echo 3) Enable Firewall              j) SCM baselines
+echo 4) Services                     k) DISA Stig
+echo 5) Install programs             l) MMC Stuff
+echo 6) Audit Policy                 m) Operating system settings
+echo 7) Change passwords             n) Nessus
+echo 8) Activate/Disable users       o) Application Settings
+echo 9) Forensics                    p) Server Manager
+echo a) Media files                  q) Event Viewer
+echo b) Inf files                    r) Backup
+echo c) CIS-CAT Registry Gucci       s) Readme Requirements
+echo d) Prohibited users' files      t) Defensive Countermeasures
+echo e) Add/Delete users             u) Prohibited files
+echo f) Add/Delete admins            v) Random list of things at the end
+echo g) Remove programs + features
 echo.
 echo w) Generate User List
 echo x) Open DankMMC
