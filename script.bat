@@ -1027,11 +1027,13 @@ if %usersbroken% == false (
 )
 
 cls
+echo Removing programs + features...
+echo.
 echo Attempt to remove archives (plain text n stuff too)
 echo.
 echo .zip, .exe, .msi, .txt, .bad, .bru
 echo.
-echo Wait for a thing here...
+echo Wait for a scan here...
 cd %homedrive%\
 dir /s /a /b /o-d *.zip *.exe *.msi *.txt *.bad *.bru >> sketchyfiles.txt
 start sketchyfiles.txt
