@@ -1087,26 +1087,10 @@ if %usersbroken% == false (
 )
 
 cls
-echo PUT LOTS OF EFFORT INTO THIS AND DONT FORGET IT.
+echo Update all programs you need to.
 echo.
-echo Install programs that need to be updated.
+echo This includes firefox, internet explorer, etc.
 echo.
-echo This is using chocolatey! So manual update will be next.
-echo.
-
-set /p install="Enter a program to update... "
-if %install% == n goto manualupdate
-if %install% == re goto menu
-echo.
-
-choco install %install% --ignorechecksum
-goto 18
-
-:manualupdate
-cls
-echo Update all programs you can't with chocolatey.
-echo.
-
 pause
 
 if %automode% == true goto 19

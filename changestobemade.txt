@@ -36,8 +36,6 @@ Post Qual1 Notes:
 system administrator blocked yeet
     - Applocker
 
-remove choco for updating cause it gay
-
 Note: Unblock foreign, non-hetero programs
 
 referral returned from the server
