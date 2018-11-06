@@ -307,9 +307,20 @@ cd "%compfiles%"
 explorer .
 pause
 
-if %automode% == true goto 5
+if %automode% == true goto catlite
 
 goto menu
+
+:: CAT-Lite
+cls
+echo Running CAT-Lite scanner...
+echo.
+echo Give report to Timon when done.
+echo.
+start /d "%compfiles%\cis-cat-lite" CISCAT.jar
+pause
+
+goto 5
 
 :: SCM Baselines
 :5
