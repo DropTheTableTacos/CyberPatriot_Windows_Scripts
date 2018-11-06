@@ -33,10 +33,6 @@ sysinternals choco install broke
 
 Post Qual1 Notes:
 
-Lanman server ENABLED
-
-add user broke
-
 system administrator blocked yeet
     - Applocker
 
