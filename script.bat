@@ -49,7 +49,7 @@ set diffopen=false
 set usersbroken=false
 set listuser=%pshellrun% "Get-LocalUser | select name, enabled"
 set listadmin=%pshellrun% "Get-LocalGroupMember -group Administrators | select name"
-set getgucciservice=%pshellrun% "Get-WmiObject -class win32_service | select name, displayname, startmode, state, installdate, processid, pathname | ? state -match 'Running'"
+set getservice=Get-WmiObject -class win32_service | select name, displayname, state, startmode, processid, installdate, pathname
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%programfiles%\nodejs;%appdata%\npm;%desktop%;%desktop%\cmder\bin
 del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt
 
@@ -387,14 +387,190 @@ sc config %serv% start= disabled
 
 goto disablegud
 
-:manualserv
-cls
-echo Now look for sketchy services to disable and stuff
-echo.
-start services.msc
-pause
 
-goto menu
+:: Manual serv gucci
+:manualserv
+set default=powershell "%getservice%"
+set running=powershell "%getservice% | ? state -match 'Running'"
+set automatic=powershell "%getservice% | ? startmode -match 'Auto'"
+set disabled=powershell "%getservice% | ? startmode -match 'Disabled'"
+set stopped=powershell "%getservice% | ? state -match 'Stopped'"
+set manual=powershell "%getservice% | ? startmode -match 'Manual'"
+set nonsystem=powershell "%getservice% | findstr /v svchost.exe"
+
+del /q /f "%userprofile%\Desktop\services.txt"
+set output=false
+
+cls
+echo Here is a script to display services.
+echo.
+echo Select a filter...
+echo.
+echo 1) Default
+echo 2) Running
+echo 3) Automatic
+echo 4) Disabled
+echo 5) Stopped
+echo 6) Manual
+echo 7) Non-system (not svchost.exe)
+echo.
+
+choice /c 1234567 /n /m "> "
+goto %errorlevel%a
+
+:: Ask if display in cmd window or text file
+:outputask
+cls
+set /p output="Display output in cmd window or output to text file? (c/t) "
+
+goto %return%a
+
+:: Default
+:1a
+if %output% == c (
+	%default% | more
+	goto manualserv
+)
+
+if %output% == t (
+	%default% >> %userprofile%\Desktop\services.txt
+	cls
+	echo Outputted to %userprofile%\Desktop\services.txt
+	echo.
+	pause
+	goto manualserv
+)
+
+else (
+	set return=1
+	goto outputask
+)
+
+:: Running
+:2a
+if %output% == c (
+	%running% | more
+	goto manualserv
+)
+
+if %output% == t (
+	%running% >> %userprofile%\Desktop\services.txt
+	cls
+	echo Outputted to %userprofile%\Desktop\services.txt
+	echo.
+	pause
+	goto manualserv
+)
+
+else (
+	set return=2
+	goto outputask
+)
+
+:: Automatic
+:3a
+if %output% == c (
+	%automatic% | more
+	goto manualserv
+)
+
+if %output% == t (
+	%automatic% >> %userprofile%\Desktop\services.txt
+	cls
+	echo Outputted to %userprofile%\Desktop\services.txt
+	echo.
+	pause
+	goto manualserv
+)
+
+else (
+	set return=3
+	goto outputask
+)
+
+:: Disabled
+:4a
+if %output% == c (
+	%disabled% | more
+	goto manualserv
+)
+
+if %output% == t (
+	%disabled% >> %userprofile%\Desktop\services.txt
+	cls
+	echo Outputted to %userprofile%\Desktop\services.txt
+	echo.
+	pause
+	goto manualserv
+)
+
+else (
+	set return=4
+	goto outputask
+)
+
+:: Stopped
+:5a
+if %output% == c (
+	%stopped% | more
+	goto manualserv
+)
+
+if %output% == t (
+	%stopped% >> %userprofile%\Desktop\services.txt
+	cls
+	echo Outputted to %userprofile%\Desktop\services.txt
+	echo.
+	pause
+	goto manualserv
+)
+
+else (
+	set return=5
+	goto outputask
+)
+
+:: Manual
+:6a
+if %output% == c (
+	%manual% | more
+	goto manualserv
+)
+
+if %output% == t (
+	%manual% >> %userprofile%\Desktop\services.txt
+	cls
+	echo Outputted to %userprofile%\Desktop\services.txt
+	echo.
+	pause
+	goto manualserv
+)
+
+else (
+	set return=6
+	goto outputask
+)
+
+:: Non-system
+:7a
+if %output% == c (
+	%nonsystem% | more
+	goto manualserv
+)
+
+if %output% == t (
+	%nonsystem% >> %userprofile%\Desktop\services.txt
+	cls
+	echo Outputted to %userprofile%\Desktop\services.txt
+	echo.
+	pause
+	goto manualserv
+)
+
+else (
+	set return=7
+	goto outputask
+)
 
 :: Install programs
 :5
