@@ -226,208 +226,8 @@ pause
 
 goto menu
 
-:: Inf files
-:3
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-if %automode% == true (
-    secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
-    cls
-    echo Bad INF done!
-    echo.
-    echo Wait and see if you got any points...
-    echo.
-    pause
-
-    secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\%os%GoodInf.inf"
-
-    goto 4
-)
-
-set /p inf="Good or Bad Inf? (g/b) "
-if %inf% == g goto goodinf
-if %inf% == b goto badinf
-if %inf% == re goto menu
-if %inf% == n goto menu
-else (
-    cls
-    echo Oof try again.
-    echo.
-    pause
-    goto 3
-)
-
-:goodinf
-cls
-secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\%os%GoodInf.inf"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
-echo Good INF Done!
-echo.
-echo Check the scoring report and copy/paste the vulnerabilities into notepad.
-echo.
-pause
-
-goto 3
-
-:badinf
-cls
-secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
-echo Bad Inf Done!
-echo.
-echo Check the scoring report and copy/paste the vulnerabilities into notepad.
-echo.
-pause
-
-goto 3
-
-:: CISCAT Registry Gucci
-:4
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-echo Alrighty, run the ciscatgucci.bat script
-echo.
-echo that's inside the compfiles folder plz thanks.
-echo.
-echo WAIT for points before continuing!
-echo.
-cd "%compfiles%"
-explorer .
-pause
-
-if %automode% == true goto catlite
-
-goto menu
-
-:: CAT-Lite
-cls
-echo Running CAT-Lite scanner...
-echo.
-echo Give report to Timon when done.
-echo.
-start /d "%compfiles%\cis-cat-lite" CISCAT.jar
-pause
-
-goto 5
-
-:: SCM Baselines
-:5
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-if %os% == Win7 (
-	LGPO /g "%scm%"
-	goto finishscm
-)
-
-if %os% == Win8 (
-	LGPO /g "%scm%"
-	goto finishscm
-)
-
-if %os% == Server2008 (
-	LGPO /g "%scm%"
-	goto finishscm
-)
-
-if %os% == Server2016 (
-	set ver=1607
-	goto server2016scm
-)
-
-if %os% == Win10 goto newscm
-
-:newscm
-cls
-winver
-set /p ver="Enter the version of windows 10 this is... "
-if %ver% == n (
-	if %automode% == true goto 6
-	goto menu
-)
-if %ver% == re goto menu
-
-if %ver% == 1507 (
-	LGPO /g "%scm%\Win10_1507"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-if %ver% == 1511 (
-	LGPO /g "%scm%\Win10_1511"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-:server2016scm
-if %ver% == 1607 (
-	LGPO /g "%scm%\Win10_1607_Server2016"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-if %ver% == 1703 (
-	LGPO /g "%scm%\Win10_1703"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-if %ver% == 1709 (
-	LGPO /g "%scm%\Win10_1709"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-if %ver% == 1803 (
-	LGPO /g "%scm%\Win10_1803"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-else (
-	cls
-	echo Oof try again.
-	echo.
-	pause
-	goto newscm
-)
-
-:finishscm
-cls
-echo SCM Baselines done!
-echo.
-echo Now wait for possible points.
-echo.
-pause
-
-if %automode% == true goto 6
-
-goto menu
-
 :: Enable firewall + template
-:6
+:3
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -449,12 +249,12 @@ echo.
 firewall.cpl
 pause
 
-if %automode% == true goto 7
+if %automode% == true goto 4
 
 goto menu
 
 :: Services
-:7
+:4
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -479,7 +279,7 @@ if %automode% == true (
 		sc config sessionenv start= auto
 		sc start sessionenv
 	)
-	goto manualserv
+	goto 5
 )
 
 echo tlntsvr (Telnet)
@@ -520,7 +320,7 @@ if %choice% == def (
 	sc start eventlog
 	sc config windefend start= auto
 	sc start windefend
-	goto 7
+	goto 4
 )
 
 :enableserv
@@ -549,7 +349,7 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to enable... "
-if %serv% == n goto 7
+if %serv% == n goto 4
 if %serv% == re goto menu
 
 sc config %serv% start= auto
@@ -583,7 +383,7 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to disable... "
-if %serv% == n goto 7
+if %serv% == n goto 4
 if %serv% == re goto menu
 
 sc stop %serv%
@@ -598,9 +398,119 @@ echo.
 start services.msc
 pause
 
-if %automode% == true goto 8
+goto menu
+
+:: Install programs
+:5
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+echo What up my big cheezits
+echo.
+echo Run the chocogucci.bat script to install good programs.
+echo.
+cd "%compfiles%"
+explorer .
+pause
+
+if %automode% == true goto 6
 
 goto menu
+
+:: Audit Policy
+:6
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+if %automode% == true (
+    LGPO /a "%compfiles%\%os%AllAudit.csv"
+    goto 7
+)
+
+set /p inf="No or All Auditing? (no/a) "
+if %inf% == a goto allaudit
+if %inf% == no goto noaudit
+if %inf% == re goto menu
+if %inf% == n goto menu
+else (
+    cls
+    echo Oof try again.
+    echo.
+    pause
+    goto 6
+)
+
+:allaudit
+cls
+LGPO /a "%compfiles%\%os%AllAudit.csv"
+if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
+cls
+echo All Auditing template done!
+echo.
+echo Wait and see if you got points...
+echo.
+pause
+
+goto 6
+
+:noaudit
+cls
+LGPO /a "%compfiles%\%os%NoAudit.csv"
+if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
+cls
+echo No Auditing template done!
+echo.
+echo Wait and see if you got points...
+echo.
+pause
+
+goto 6
+
+:: Change passwords
+:7
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+if %automode% == true (
+	if %autousers% == false (
+		set return=true
+		set return_number=9
+		goto getuserlist
+	)
+	cls
+	for /f %%G in (C:\users_admins.txt) do net user	%%G abc123ABC123@@
+	cls
+	echo Changing all passwords done!
+	echo.
+	echo Note: All passwords are abc123ABC123@@
+	echo.
+	pause
+	goto 8
+)
+
+cls
+%listuser%
+
+echo All users' passwords will be abc123ABC123@@
+echo.
+
+set /p user="Enter user for password change... "
+if %user% == n goto menu
+if %user% == re goto menu
+net user %user% abc123ABC123@@
+
+goto 7
 
 :: Activate/Disable Users
 :8
@@ -663,46 +573,8 @@ net user %user% /active:no
 
 goto disableusers
 
-:: Changing passwords
-:9
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-if %automode% == true (
-	if %autousers% == false (
-		set return=true
-		set return_number=9
-		goto getuserlist
-	)
-	cls
-	for /f %%G in (C:\users_admins.txt) do net user	%%G abc123ABC123@@
-	cls
-	echo Changing all passwords done!
-	echo.
-	echo Note: All passwords are abc123ABC123@@
-	echo.
-	pause
-	goto 10
-)
-
-cls
-%listuser%
-
-echo All users' passwords will be abc123ABC123@@
-echo.
-
-set /p user="Enter user for password change... "
-if %user% == n goto menu
-if %user% == re goto menu
-net user %user% abc123ABC123@@
-
-goto 9
-
 :: Forensics
-:10
+:9
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -714,58 +586,12 @@ echo Do the forensics questions. Eek.
 echo.
 pause
 
-if %automode% == true goto 11
-
-goto menu
-
-:: DISA Stig
-:11
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-if %os% == Win10 (
-	if %automode% == true goto 12
-	cls
-	echo Windows 10 doesn't have a DISA Stig.
-	echo.
-	echo This is so sad, Alexa play Alan Walker - Faded
-	echo.
-	pause
-	goto menu
-)
-
-if %os% == Server2016 (
-	if %automode% == true goto 12
-	cls
-	echo Server 2016 doesn't have a DISA Stig.
-	echo.
-	echo This is so sad, Alexa play Alan Walker - Faded
-	echo.
-	pause
-	if %automode% == true goto 12
-	goto menu
-)
-
-cls
-secedit /configure /db "%systemroot%\dankdatabase3.db" /cfg "%compfiles%\%os%DISAStig.inf"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
-echo DISA Stig Done!
-echo.
-echo Check the scoring report and copy/paste the vulnerabilities into notepad.
-echo.
-
-pause
-
-if %automode% == true goto 12
+if %automode% == true goto 10
 
 goto menu
 
 :: Media Files
-:12
+:10
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -786,8 +612,6 @@ cls
 echo THIS IS ABOUT TO "DELETE" MEDIA FILES.
 echo.
 echo (it just renames them weirdly with an underscore)
-echo.
-echo DONT BE TIMON AND DO THE FORENSICS QUESTIONS.
 echo.
 pause
 cls
@@ -812,9 +636,9 @@ start mediafiles.txt
 
 pause
 
-if %automode% == true goto 13
+if %automode% == true goto 11
 
-goto 12
+goto 10
 
 :searchmf
 cls
@@ -832,9 +656,105 @@ start mediafiles.txt
 
 pause
 
-if %automode% == true goto 13
+if %automode% == true goto 11
 
-goto 12
+goto 10
+
+:: Inf files
+:11
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+if %automode% == true (
+    secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
+    cls
+    echo Bad INF done!
+    echo.
+    echo Wait and see if you got any points...
+    echo.
+    pause
+
+    secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\%os%GoodInf.inf"
+
+    goto 12
+)
+
+set /p inf="Good or Bad Inf? (g/b) "
+if %inf% == g goto goodinf
+if %inf% == b goto badinf
+if %inf% == re goto menu
+if %inf% == n goto menu
+else (
+    cls
+    echo Oof try again.
+    echo.
+    pause
+    goto 11
+)
+
+:goodinf
+cls
+secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\%os%GoodInf.inf"
+if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
+cls
+echo Good INF Done!
+echo.
+echo Check the scoring report and copy/paste the vulnerabilities into notepad.
+echo.
+pause
+
+goto 11
+
+:badinf
+cls
+secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
+if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
+cls
+echo Bad Inf Done!
+echo.
+echo Check the scoring report and copy/paste the vulnerabilities into notepad.
+echo.
+pause
+
+goto 11
+
+:: CISCAT Registry Gucci
+:12
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+echo Alrighty, run the ciscatgucci.bat script
+echo.
+echo that's inside the compfiles folder plz thanks.
+echo.
+echo WAIT for points before continuing!
+echo.
+cd "%compfiles%"
+explorer .
+pause
+
+if %automode% == true goto catlite
+
+goto menu
+
+:: CAT-Lite
+cls
+echo Running CAT-Lite scanner...
+echo.
+echo Give report to Timon when done.
+echo.
+start /d "%compfiles%\cis-cat-lite" CISCAT.jar
+pause
+
+goto 13
 
 :: Prohibited users' files
 :13
@@ -989,48 +909,8 @@ net localgroup administrators %user% /delete
 
 goto deladmins
 
-:: Server Manager
-:16
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-if %os% == Server2008 goto servmgr
-if %os% == Server2016 goto servmgr
-if %os% == Win7 goto noserv
-if %os% == Win8 goto noserv
-if %os% == Win10 goto noserv
-
-:servmgr
-reg add "HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\WinRS" /v "AllowRemoteShellAccess" /t reg_dword /d "1" /f
-
-cls
-echo Do all the things for Server Manager:
-echo.
-echo - Enable Powershell and Backup
-echo - Enable Firewall
-echo - Remove Roles + Features
-echo - IE Enhanced Security Configuration
-echo.
-
-start /d "%SystemRoot%\system32" CompMgmtLauncher.exe
-pause
-
-if %automode% == true goto 17
-goto menu
-
-:noserv
-if %automode% == true goto 17
-cls
-echo Oof no server manager here. Y'all bad.
-echo.
-pause
-goto menu
-
 :: Remove Programs + Features
-:17
+:16 
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1075,11 +955,11 @@ echo Generally just find all the malware, yo
 echo.
 pause
 
-if %automode% == true goto 18
+if %automode% == true goto 17
 goto menu
 
 :: Update programs
-:18
+:17
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1093,12 +973,187 @@ echo This includes firefox, internet explorer, etc.
 echo.
 pause
 
+if %automode% == true goto 18
+
+goto menu
+
+:: Sysinternals
+:18
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls Installing Sysinternals...
+echo.
+choco install sysinternals
+
+cls
+echo Opening TCPView, Process Explorer, and Autoruns...
+echo.
+echo Make sure to delete the file itself, not just the process
+echo.
+procexp
+autoruns
+tcpview
+pause
+
 if %automode% == true goto 19
 
 goto menu
 
-:: MMC Stuff
+:: SCM Baselines
 :19
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+if %os% == Win7 (
+	LGPO /g "%scm%"
+	goto finishscm
+)
+
+if %os% == Win8 (
+	LGPO /g "%scm%"
+	goto finishscm
+)
+
+if %os% == Server2008 (
+	LGPO /g "%scm%"
+	goto finishscm
+)
+
+if %os% == Server2016 (
+	set ver=1607
+	goto server2016scm
+)
+
+if %os% == Win10 goto newscm
+
+:newscm
+cls
+winver
+set /p ver="Enter the version of windows 10 this is... "
+if %ver% == n (
+	if %automode% == true goto 20
+	goto menu
+)
+if %ver% == re goto menu
+
+if %ver% == 1507 (
+	LGPO /g "%scm%\Win10_1507"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+if %ver% == 1511 (
+	LGPO /g "%scm%\Win10_1511"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+:server2016scm
+if %ver% == 1607 (
+	LGPO /g "%scm%\Win10_1607_Server2016"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+if %ver% == 1703 (
+	LGPO /g "%scm%\Win10_1703"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+if %ver% == 1709 (
+	LGPO /g "%scm%\Win10_1709"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+if %ver% == 1803 (
+	LGPO /g "%scm%\Win10_1803"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+else (
+	cls
+	echo Oof try again.
+	echo.
+	pause
+	goto newscm
+)
+
+:finishscm
+cls
+echo SCM Baselines done!
+echo.
+echo Now wait for possible points.
+echo.
+pause
+
+if %automode% == true goto 20
+
+goto menu
+
+:: DISA Stig
+:20
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+if %os% == Win10 (
+	if %automode% == true goto 21
+	cls
+	echo Windows 10 doesn't have a DISA Stig.
+	echo.
+	echo This is so sad, Alexa play Alan Walker - Faded
+	echo.
+	pause
+	goto menu
+)
+
+if %os% == Server2016 (
+	if %automode% == true goto 21
+	cls
+	echo Server 2016 doesn't have a DISA Stig.
+	echo.
+	echo This is so sad, Alexa play Alan Walker - Faded
+	echo.
+	pause
+	goto menu
+)
+
+cls
+secedit /configure /db "%systemroot%\dankdatabase3.db" /cfg "%compfiles%\%os%DISAStig.inf"
+if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
+cls
+echo DISA Stig Done!
+echo.
+echo Check the scoring report and copy/paste the vulnerabilities into notepad.
+echo.
+
+pause
+
+if %automode% == true goto 21
+
+goto menu
+
+:: MMC Stuff
+:21
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1138,231 +1193,12 @@ echo Disable autoplay
 echo.
 pause
 
-if %automode% == true goto 20
-
-goto menu
-
-:: Audit Policy
-:20
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-if %automode% == true (
-    LGPO /a "%compfiles%\%os%NoAudit.csv"
-    cls
-    echo No Auditing template done!
-    echo.
-    echo Wait and see if you got any points...
-    echo.
-    pause
-
-    LGPO /a "%compfiles%\%os%AllAudit.csv"
-
-    goto 21
-)
-
-set /p inf="No or All Auditing? (no/a) "
-if %inf% == a goto allaudit
-if %inf% == no goto noaudit
-if %inf% == re goto menu
-if %inf% == n goto menu
-else (
-    cls
-    echo Oof try again.
-    echo.
-    pause
-    goto 20
-)
-
-:allaudit
-cls
-LGPO /a "%compfiles%\%os%AllAudit.csv"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
-echo All Auditing template done!
-echo.
-echo Wait and see if you got points...
-echo.
-pause
-
-goto 20
-
-:noaudit
-cls
-LGPO /a "%compfiles%\%os%NoAudit.csv"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
-echo No Auditing template done!
-echo.
-echo Wait and see if you got points...
-echo.
-pause
-
-goto 20
-
-:: Install programs
-:21
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-echo What up my big cheezits
-echo.
-echo Run the chocogucci.bat script to install good programs.
-echo.
-cd "%compfiles%"
-explorer .
-pause
-
 if %automode% == true goto 22
 
 goto menu
 
-:: Nessus
-:22
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-ipconfig
-echo.
-
-echo Run the Nessus immediately cause it might help and stuff yooo!
-echo.
-
-pause
-
-if %automode% == true goto 23
-
-goto menu
-
-:: README Requirements
-:23
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-echo Open the readme and do the specific things it says to do.
-echo Could be enabling service, adding user/group, etc.
-echo.
-
-pause
-
-if %automode% == true goto 24
-
-goto menu
-
-:: Sysinternals
-:24
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls Installing Sysinternals...
-echo.
-choco install sysinternals
-
-cls
-echo Opening TCPView, Process Explorer, and Autoruns...
-echo.
-echo Make sure to delete the file itself, not just the process
-echo.
-procexp
-autoruns
-tcpview
-pause
-
-if %automode% == true goto 25
-
-goto menu
-
-:: Event Viewer
-:25
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-echo Look at the Event Viewer for stuff that's BAD
-echo.
-start eventvwr.msc
-pause
-
-if %automode% == true goto 26
-
-goto menu
-
-:: Backup
-:26
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-echo Real quick connect the drive to the VM (make sure it USB 2.0)
-echo.
-pause
-
-cls
-set /p location="Enter the drive letter for the backup location... "
-
-wbadmin enable backup -addtarget:%location%: -include:C: -schedule:03:00 -quiet
-
-if %automode% == true goto 27
-
-goto menu
-
-:: Application Settings
-:27
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-echo IF YOU'RE ON A SERVER OS, focus on this a little more.
-echo.
-echo Set all dem application security settings.
-echo.
-echo Firefox:
-echo	- Warn when try to install addons
-echo	- Popup blocker
-echo	- other crap
-echo.
-echo See if there are security settings for other programs.
-echo Use the interwebs to your advantage.
-echo.
-
-start firefox.exe
-
-pause
-
-if %automode% == true goto 28
-
-goto menu
-
 :: Operating System Settings
-:28
+:22
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1414,6 +1250,156 @@ if %os% == Win10 (
 	start /d "%compfiles%\cis-cat-lite" CISCAT.jar
 	pause
 )
+
+if %automode% == true goto 23
+
+goto menu
+
+:: Nessus
+:23
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+ipconfig
+echo.
+
+echo Run the Nessus immediately cause it might help and stuff yooo!
+echo.
+
+pause
+
+if %automode% == true goto 24
+
+goto menu
+
+:: Application Settings
+:24
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+echo IF YOU'RE ON A SERVER OS, focus on this a little more.
+echo.
+echo Set all dem application security settings.
+echo.
+echo Firefox:
+echo	- Warn when try to install addons
+echo	- Popup blocker
+echo	- other crap
+echo.
+echo See if there are security settings for other programs.
+echo Use the interwebs to your advantage.
+echo.
+
+start firefox.exe
+
+pause
+
+if %automode% == true goto 25
+
+goto menu
+
+:: Server Manager
+:25
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+if %os% == Server2008 goto servmgr
+if %os% == Server2016 goto servmgr
+if %os% == Win7 goto noserv
+if %os% == Win8 goto noserv
+if %os% == Win10 goto noserv
+
+:servmgr
+reg add "HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\WinRS" /v "AllowRemoteShellAccess" /t reg_dword /d "1" /f
+
+cls
+echo Do all the things for Server Manager:
+echo.
+echo - Enable Powershell and Backup
+echo - Enable Firewall
+echo - Remove Roles + Features
+echo - IE Enhanced Security Configuration
+echo.
+
+start /d "%SystemRoot%\system32" CompMgmtLauncher.exe
+pause
+
+if %automode% == true goto 26
+goto menu
+
+:noserv
+if %automode% == true goto 26
+cls
+echo Oof no server manager here. Y'all bad.
+echo.
+pause
+goto menu
+
+:: Event Viewer
+:26
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+echo Look at the Event Viewer for stuff that's BAD
+echo.
+start eventvwr.msc
+pause
+
+if %automode% == true goto 27
+
+goto menu
+
+:: Backup
+:27
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+echo Real quick connect the drive to the VM (make sure it USB 2.0)
+echo.
+pause
+
+cls
+set /p location="Enter the drive letter for the backup location... "
+
+wbadmin enable backup -addtarget:%location%: -include:C: -schedule:03:00 -quiet
+
+if %automode% == true goto 28
+
+goto menu
+
+:: README Requirements
+:28
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+echo Open the readme and do the specific things it says to do.
+echo Could be enabling service, adding user/group, etc.
+echo.
+
+pause
 
 if %automode% == true goto 29
 
