@@ -1524,7 +1524,7 @@ goto menu
 :: Generate User List
 :32
 :getuserlist
-if exist C:\approved_users_gucci.txt (
+if %usersbroken% == n (
 	set autousers=true
 	goto %return_number%
 )
