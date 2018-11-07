@@ -107,10 +107,6 @@ if %os% == Server2008 (
 	exit
 )
 
-:: Ask if menu or automode
-:autochoice
-
-
 :: Menu
 :menu
 cls
