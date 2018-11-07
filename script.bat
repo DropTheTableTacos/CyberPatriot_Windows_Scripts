@@ -609,9 +609,11 @@ if %choice% == re goto menu
 
 :deletemf
 cls
-echo THIS IS ABOUT TO "DELETE" MEDIA FILES.
+echo THIS IS ABOUT TO DELETE MEDIA FILES.
 echo.
-echo (it just renames them weirdly with an underscore)
+echo Make sure you did the forensics questions
+echo.
+echo *cough* timon *cough*
 echo.
 pause
 cls
@@ -621,7 +623,7 @@ echo.
 del "%homedrive%\mediafiles.txt" /f /q
 
 cd C:\
-for /f %%G in ('dir /s /b /a-d /a /o-d *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma') do (ren %%G _*)
+del /s /f /q *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma
 
 cls
 echo Media files deleted.
@@ -910,7 +912,7 @@ net localgroup administrators %user% /delete
 goto deladmins
 
 :: Remove Programs + Features
-:16 
+:16
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
