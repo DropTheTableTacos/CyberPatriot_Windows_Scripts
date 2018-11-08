@@ -49,7 +49,7 @@ set diffopen=false
 set usersbroken=false
 set listuser=%pshellrun% "Get-LocalUser | select name, enabled"
 set listadmin=%pshellrun% "Get-LocalGroupMember -group Administrators | select name"
-set getservice="Get-WmiObject -class win32_service | select name, displayname, state, startmode, processid, installdate, pathname"
+set getservice=Get-WmiObject -class win32_service ^| select name, displayname, state, startmode, processid, installdate, pathname
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%programfiles%\nodejs;%appdata%\npm;%desktop%;%desktop%\cmder\bin
 del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt
 
@@ -413,9 +413,10 @@ echo 4) Disabled
 echo 5) Stopped
 echo 6) Manual
 echo 7) Non-system (not svchost.exe)
+echo 8) Exit
 echo.
 
-choice /c 1234567 /n /m "> "
+choice /c 12345678 /n /m "> "
 goto %errorlevel%a
 
 :: Ask if display in cmd window or text file
@@ -571,6 +572,10 @@ else (
 	set return=7
 	goto outputask
 )
+
+:: Exit
+:8a
+goto menu
 
 :: Install programs
 :5
