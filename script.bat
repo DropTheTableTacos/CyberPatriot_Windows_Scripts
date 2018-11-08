@@ -1422,6 +1422,14 @@ echo Enable UAC
 echo.
 pause
 
+cls
+echo Check AppLocker policies
+echo.
+echo Security Settings > Application Control Policies
+echo.
+start gpedit.msc
+pause
+
 if %os% == Win10 (
 	cls
 	echo What up it's ya boi cat-lite scanner here. imma scan and be cool.

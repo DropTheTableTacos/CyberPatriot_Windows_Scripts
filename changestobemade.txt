@@ -33,9 +33,6 @@ sysinternals choco install broke
 
 Post Qual1 Notes:
 
-system administrator blocked yeet
-    - Applocker
-
 Note: Unblock foreign, non-hetero programs
 
 referral returned from the server
