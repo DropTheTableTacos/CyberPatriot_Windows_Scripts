@@ -2,7 +2,7 @@
 
 :: Start Message
 title ThanosScript
-echo ==========================================
+echo ========================================
 echo      The Ultra Gucci Windows Script
 echo      Version like 35.2 or something
 echo            by Jackson Kauflin
@@ -1425,7 +1425,7 @@ pause
 cls
 echo Check AppLocker policies
 echo.
-echo Security Settings > Application Control Policies
+echo Security Settings, Application Control Policies
 echo.
 start gpedit.msc
 pause
