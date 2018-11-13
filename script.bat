@@ -31,7 +31,7 @@ cls
 set /p os="What OS is this? (7,8,10,2008,2016) "
 if %os% == 7 set os=Win7
 if %os% == 8 set os=Win8
-if %os% == 10 set os=Win10
+if %os% == 10 set os=Win10 
 if %os% == 2008 set os=Server2008
 if %os% == 2016 set os=Server2016
 
@@ -1215,22 +1215,16 @@ if %os% == Win10 goto newscm
 
 :newscm
 cls
-winver
-set /p ver="Enter the version of windows 10 this is... "
-if %ver% == n (
-	if %automode% == true goto 20
-	goto menu
-)
-if %ver% == re goto menu
+set ver=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
 
-if %ver% == 1507 (
+if %ver% == 10.0.10240 (
 	LGPO /g "%scm%\Win10_1507"
 	LGPO /g "%scm%\IE11_Com_Sec"
 	LGPO /g "%scm%\IE11_User_Sec"
 	goto finishscm
 )
 
-if %ver% == 1511 (
+if %ver% == 10.0.10586 (
 	LGPO /g "%scm%\Win10_1511"
 	LGPO /g "%scm%\IE11_Com_Sec"
 	LGPO /g "%scm%\IE11_User_Sec"
@@ -1238,28 +1232,28 @@ if %ver% == 1511 (
 )
 
 :server2016scm
-if %ver% == 1607 (
+if %ver% == 10.0.14393 (
 	LGPO /g "%scm%\Win10_1607_Server2016"
 	LGPO /g "%scm%\IE11_Com_Sec"
 	LGPO /g "%scm%\IE11_User_Sec"
 	goto finishscm
 )
 
-if %ver% == 1703 (
+if %ver% == 10.0.15063 (
 	LGPO /g "%scm%\Win10_1703"
 	LGPO /g "%scm%\IE11_Com_Sec"
 	LGPO /g "%scm%\IE11_User_Sec"
 	goto finishscm
 )
 
-if %ver% == 1709 (
+if %ver% == 10.0.16299 (
 	LGPO /g "%scm%\Win10_1709"
 	LGPO /g "%scm%\IE11_Com_Sec"
 	LGPO /g "%scm%\IE11_User_Sec"
 	goto finishscm
 )
 
-if %ver% == 1803 (
+if %ver% == 10.0.17134 (
 	LGPO /g "%scm%\Win10_1803"
 	LGPO /g "%scm%\IE11_Com_Sec"
 	LGPO /g "%scm%\IE11_User_Sec"
