@@ -1,3 +1,6 @@
+EEK imma put this at the top cause im cool:
+	timon suggested screenshot ez hotkey for comp score, so yeet
+
 Changes that need to be made:
 
 	- Implement icacls somehow
