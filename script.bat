@@ -27,15 +27,22 @@ echo.
 pause
 
 :: OS Check
+:oscheck
 cls
-set /p os="What OS is this? (7,8,10,2008,2016) "
-if %os% == 7 set os=Win7
-if %os% == 8 set os=Win8
-if %os% == 10 set os=Win10 
-if %os% == 2008 set os=Server2008
-if %os% == 2016 set os=Server2016
+set os=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
+echo %os% | findstr /b /i "6.1" >nul && set os=Win7 && goto setup
+echo %os% | findstr /b /i "6.3" >nul && set os=Win8 && goto setup
+echo %os% | findstr /i "10.0.14393" >nul && set os=Server2016 && goto setup
+echo %os% | findstr /b /i "6.0" >nul && set os=Server2008 && goto setup
+echo %os% | findstr /b /i "10.0" >nul && set os=Win10 && goto setup
+cls
+echo Cringe. It likely didn't work.
+echo.
+pause
+goto oscheck
 
 :: Setup
+:setup
 set automode=false
 set return=false
 set return_number=0
