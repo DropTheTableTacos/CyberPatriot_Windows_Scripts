@@ -26,20 +26,18 @@ echo - OurGloriousChecklist2018_Windows.txt
 echo.
 pause
 
+:: Set pshellrun
+set pshellrun=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
+
 :: OS Check
 :oscheck
 cls
 set os=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
-echo %os% | findstr /b /i "6.1" >nul && set os=Win7 && goto setup
-echo %os% | findstr /b /i "6.3" >nul && set os=Win8 && goto setup
-echo %os% | findstr /i "10.0.14393" >nul && set os=Server2016 && goto setup
-echo %os% | findstr /b /i "6.0" >nul && set os=Server2008 && goto setup
-echo %os% | findstr /b /i "10.0" >nul && set os=Win10 && goto setup
-cls
-echo Cringe. It likely didn't work.
-echo.
-pause
-goto oscheck
+%os% | findstr /b /i "6.1" >nul && set os=Win7 && goto setup
+%os% | findstr /b /i "6.3" >nul && set os=Win8 && goto setup
+%os% | findstr /i "10.0.14393" >nul && set os=Server2016 && goto setup
+%os% | findstr /b /i "6.0" >nul && set os=Server2008 && goto setup
+%os% | findstr /b /i "10.0" >nul && set os=Win10 && goto setup
 
 :: Setup
 :setup
@@ -50,7 +48,6 @@ mode con: cols=100 lines=23
 set desktop=%userprofile%\Desktop
 set compfiles=%desktop%\%os%CompFiles
 set scm=%compfiles%\SCMBaselines
-set pshellrun=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
 set autousers=false
 set diffopen=false
 set usersbroken=false
