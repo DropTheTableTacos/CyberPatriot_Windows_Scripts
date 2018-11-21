@@ -138,22 +138,22 @@ else (
 
 :menugood
 cls
-echo 1) README                       h) Update programs
-echo 2) Windows Update               i) Sysinternals
-echo 3) Enable Firewall              j) SCM baselines
-echo 4) Services                     k) DISA Stig
-echo 5) Install programs             l) MMC Stuff
-echo 6) Audit Policy                 m) Operating system settings
-echo 7) Change passwords             n) Nessus
-echo 8) Activate/Disable users       o) Application Settings
-echo 9) Forensics                    p) Server Manager
-echo a) Media files                  q) Event Viewer
-echo b) Inf files                    r) Backup
-echo c) CIS-CAT Registry Gucci       s) Readme Requirements
-echo d) Prohibited users' files      t) Defensive Countermeasures
-echo e) Add/Delete users             u) Prohibited files
+echo 1) README                       h) Remove programs + features
+echo 2) Windows Update               i) Update programs
+echo 3) Enable Firewall              j) Sysinternals
+echo 4) Services                     k) SCM baselines
+echo 5) Install programs             l) DISA Stig
+echo 6) Audit Policy                 m) MMC Stuff
+echo 7) Change passwords             n) Operating system settings
+echo 8) Activate/Disable users       o) Nessus
+echo 9) Forensics                    p) Application Settings
+echo a) Media files                  q) Server Manager
+echo b) Inf files                    r) Event Viewer
+echo c) CIS-CAT Registry Gucci       s) Backup
+echo d) Prohibited users' files      t) Readme Requirements
+echo e) Add/Delete users             u) Defensive Countermeasures
 echo f) Add/Delete admins            v) Random list of things at the end
-echo g) Remove programs + features
+echo g) Prohibited files
 echo.
 echo w) Generate User List
 echo x) Open DankMMC
@@ -1092,8 +1092,34 @@ net localgroup administrators %user% /delete
 
 goto deladmins
 
-:: Remove Programs + Features
+:: Prohibited files
 :16
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+cls
+echo Yaboi prohibited files.
+echo.
+echo - Look for xml, txt, etc. in notepad that will open in a second.
+echo.
+echo - Look in folders for files (sort by date modified)
+echo.
+
+cd %homedrive%\
+dir /s /a /b /o-d >> eek.txt
+start eek.txt
+
+pause
+
+if %automode% == true goto 17
+
+goto menu
+
+:: Remove Programs + Features
+:17
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1138,11 +1164,11 @@ echo Generally just find all the malware, yo
 echo.
 pause
 
-if %automode% == true goto 17
+if %automode% == true goto 18
 goto menu
 
 :: Update programs
-:17
+:18
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1156,12 +1182,12 @@ echo This includes firefox, internet explorer, etc.
 echo.
 pause
 
-if %automode% == true goto 18
+if %automode% == true goto 19
 
 goto menu
 
 :: Sysinternals
-:18
+:19
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1182,12 +1208,12 @@ autoruns
 tcpview
 pause
 
-if %automode% == true goto 19
+if %automode% == true goto 20
 
 goto menu
 
 :: SCM Baselines
-:19
+:20
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1280,12 +1306,12 @@ echo Now wait for possible points.
 echo.
 pause
 
-if %automode% == true goto 20
+if %automode% == true goto 21
 
 goto menu
 
 :: DISA Stig
-:20
+:21
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1293,7 +1319,7 @@ if %usersbroken% == false (
 )
 
 if %os% == Win10 (
-	if %automode% == true goto 21
+	if %automode% == true goto 22
 	cls
 	echo Windows 10 doesn't have a DISA Stig.
 	echo.
@@ -1304,7 +1330,7 @@ if %os% == Win10 (
 )
 
 if %os% == Server2016 (
-	if %automode% == true goto 21
+	if %automode% == true goto 22
 	cls
 	echo Server 2016 doesn't have a DISA Stig.
 	echo.
@@ -1325,12 +1351,12 @@ echo.
 
 pause
 
-if %automode% == true goto 21
+if %automode% == true goto 22
 
 goto menu
 
 :: MMC Stuff
-:21
+:22
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1370,12 +1396,12 @@ echo Disable autoplay
 echo.
 pause
 
-if %automode% == true goto 22
+if %automode% == true goto 23
 
 goto menu
 
 :: Operating System Settings
-:22
+:23
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1436,12 +1462,12 @@ if %os% == Win10 (
 	pause
 )
 
-if %automode% == true goto 23
+if %automode% == true goto 24
 
 goto menu
 
 :: Nessus
-:23
+:24
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1457,12 +1483,12 @@ echo.
 
 pause
 
-if %automode% == true goto 24
+if %automode% == true goto 25
 
 goto menu
 
 :: Application Settings
-:24
+:25
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1487,12 +1513,12 @@ start firefox.exe
 
 pause
 
-if %automode% == true goto 25
+if %automode% == true goto 26
 
 goto menu
 
 :: Server Manager
-:25
+:26
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1520,11 +1546,11 @@ echo.
 start /d "%SystemRoot%\system32" CompMgmtLauncher.exe
 pause
 
-if %automode% == true goto 26
+if %automode% == true goto 27
 goto menu
 
 :noserv
-if %automode% == true goto 26
+if %automode% == true goto 27
 cls
 echo Oof no server manager here. Y'all bad.
 echo.
@@ -1532,7 +1558,7 @@ pause
 goto menu
 
 :: Event Viewer
-:26
+:27
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1545,12 +1571,12 @@ echo.
 start eventvwr.msc
 pause
 
-if %automode% == true goto 27
+if %automode% == true goto 28
 
 goto menu
 
 :: Backup
-:27
+:28
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1567,12 +1593,12 @@ set /p location="Enter the drive letter for the backup location... "
 
 wbadmin enable backup -addtarget:%location%: -include:C: -schedule:03:00 -quiet
 
-if %automode% == true goto 28
+if %automode% == true goto 29
 
 goto menu
 
 :: README Requirements
-:28
+:29
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1586,12 +1612,12 @@ echo.
 
 pause
 
-if %automode% == true goto 29
+if %automode% == true goto 30
 
 goto menu
 
 :: Defensive Countermeasures
-:29
+:30
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1611,32 +1637,6 @@ pause
 cls
 echo Scan on all those programs
 echo.
-pause
-
-if %automode% == true goto 30
-
-goto menu
-
-:: Prohibited files
-:30
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls
-echo Yaboi prohibited files.
-echo.
-echo - Look for xml, txt, etc. in notepad that will open in a second.
-echo.
-echo - Look in folders for files (sort by date modified)
-echo.
-
-cd %homedrive%\
-dir /s /a /b /o-d >> eek.txt
-start eek.txt
-
 pause
 
 if %automode% == true goto 31
