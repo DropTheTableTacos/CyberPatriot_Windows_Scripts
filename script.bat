@@ -33,11 +33,12 @@ set pshellrun=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -No
 :oscheck
 cls
 set os=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
+set osname=%pshellrun% "(get-ciminstance -classname cim_operatingsystem).name"
 %os% | findstr /b /i "6.1" >nul && set os=Win7 && goto setup
 %os% | findstr /b /i "6.3" >nul && set os=Win8 && goto setup
-%os% | findstr /i "10.0.14393" >nul && set os=Server2016 && goto setup
 %os% | findstr /b /i "6.0" >nul && set os=Server2008 && goto setup
-%os% | findstr /b /i "10.0" >nul && set os=Win10 && goto setup
+%osname% | findstr /c:"Server 2016" >nul && set os=Server2016 && goto setup
+%osname% | findstr /c:"Windows 10" >nul && set os=Win10 && goto setup
 
 :: Setup
 :setup
