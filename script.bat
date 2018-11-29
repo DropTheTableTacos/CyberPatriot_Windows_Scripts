@@ -1109,6 +1109,24 @@ echo.
 echo - Look in folders for files (sort by date modified)
 echo.
 
+:: Search for sketchy strings
+echo Hashcat logs...
+echo.
+for /f %%G in (dir /s /b /a /o-d /a-d C:\*) do (type %%G | findstr "Initializing hashcat" >nul && echo %%G)
+pause
+
+cls
+echo Ophcrack logs...
+echo.
+for /f %%G in (dir /s /b /a /o-d /a-d C:\*) do (type %%G | findstr "Starting ophcrack" >nul && echo %%G)
+pause
+
+cls
+echo Aircrack-ng logs...
+for /f %%G in (dir /s /b /a /o-d /a-d C:\*) do (type %%G | findstr "Aircrack-ng" >nul && echo %%G)
+pause
+
+cls
 cd %homedrive%\
 dir /s /a /b /o-d >> eek.txt
 start eek.txt
