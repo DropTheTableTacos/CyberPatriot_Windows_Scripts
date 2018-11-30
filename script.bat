@@ -56,7 +56,7 @@ set listuser=%pshellrun% "Get-LocalUser | select name, enabled"
 set listadmin=%pshellrun% "Get-LocalGroupMember -group Administrators | select name"
 set getservice=Get-WmiObject -class win32_service ^| select name, displayname, state, startmode, processid, installdate, pathname
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%programfiles%\nodejs;%appdata%\npm;%desktop%;%desktop%\cmder\bin
-del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt
+del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt C:\sketchymemes.txt
 
 :: Startup Task
 schtasks /create /tn RunScriptOnLogin /tr %desktop%\UltraGucciScript.bat /sc onlogon /rl highest /f
@@ -1110,20 +1110,26 @@ echo - Look in folders for files (sort by date modified)
 echo.
 
 :: Search for sketchy strings
-echo Hashcat logs...
+echo Looking for Hashcat logs...
 echo.
 for /f %%G in (dir /s /b /a /o-d /a-d C:\*) do (type %%G | findstr "Initializing hashcat" >nul && echo %%G)
 pause
 
 cls
-echo Ophcrack logs...
+echo Looking for Ophcrack logs...
 echo.
 for /f %%G in (dir /s /b /a /o-d /a-d C:\*) do (type %%G | findstr "Starting ophcrack" >nul && echo %%G)
 pause
 
 cls
-echo Aircrack-ng logs...
+echo Looking for Aircrack-ng logs...
 for /f %%G in (dir /s /b /a /o-d /a-d C:\*) do (type %%G | findstr "Aircrack-ng" >nul && echo %%G)
+pause
+
+cls
+echo Looking for software archive-ish things...
+dir /s /a /b /o-d /a-d C:\*.bin C:\*.index C:\*.start C:\*.bad C:\*.bru >> C:\sketchymemes.txt
+start C:\sketchymemes.txt
 pause
 
 cls
