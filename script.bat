@@ -56,7 +56,7 @@ set listuser=%pshellrun% "Get-LocalUser | select name, enabled"
 set listadmin=%pshellrun% "Get-LocalGroupMember -group Administrators | select name"
 set getservice=Get-WmiObject -class win32_service ^| select name, displayname, state, startmode, processid, installdate, pathname
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%programfiles%\nodejs;%appdata%\npm;%desktop%;%desktop%\cmder\bin
-del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt C:\sketchymemes.txt
+del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt C:\sketchymemes.txt C:\userdiff.txt
 
 :: Startup Task
 schtasks /create /tn RunScriptOnLogin /tr %desktop%\UltraGucciScript.bat /sc onlogon /rl highest /f
@@ -66,9 +66,9 @@ cls
 set /p cont="Is this first time setup? (y/n) "
 if %cont% == n goto menu
 
-:: Install initial things
+:: Install chocolatey
 cls
-echo Installing initial things...
+echo Installing chocolatey...
 echo.
 %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
 
@@ -77,40 +77,6 @@ choco feature enable -n useFipsCompliantChecksums
 
 sc config wuauserv start= auto
 sc start wuauserv
-choco install nodejs --ignorechecksum
-call npm install -g diffchecker
-if %os% == Win7 (
-	choco install dotnet4.5 powershell --ignorechecksum
-	cls
-	echo Yeah, so you HAVE to restart the VM here for things to work.
-	echo.
-	echo Thanks, powershell.
-	echo.
-	pause
-	exit
-)
-
-if %os% == Win8 (
-	choco install powershell --ignorechecksum
-	cls
-	echo Yeah, so you HAVE to restart the VM here for things to work.
-	echo.
-	echo Thanks, powershell.
-	echo.
-	pause
-	exit
-)
-
-if %os% == Server2008 (
-	choco install dotnet4.5 powershell --ignorechecksum
-	cls
-	echo Yeah, so you HAVE to restart the VM here for things to work.
-	echo.
-	echo Thanks, powershell.
-	echo.
-	pause
-	exit
-)
 
 :: Menu
 :menu
@@ -959,7 +925,8 @@ if %automode% == true (
 
 	if %diffopen% == false (
 		cls
-		call diffchecker C:\approved_users_gucci.txt C:\users.txt
+		call icdiff C:\approved_users_gucci.txt C:\users.txt >> C:\userdiff.txt
+		start C:\userdiff.txt
 		set diffopen=true
 	)
 )
@@ -1009,7 +976,8 @@ if %automode% == true (
 
 	if %diffopen% == false (
 		cls
-		call diffchecker C:\approved_users_gucci.txt C:\users.txt
+		call icdiff C:\approved_users_gucci.txt C:\users.txt >> C:\userdiff.txt
+		start C:\userdiff.txt
 		set diffopen=true
 	)
 )
@@ -1753,7 +1721,8 @@ pause
 sort < C:\approved_users.txt > C:\approved_users_gucci.txt
 
 cls
-start C:\users.txt
+type C:\users.txt
+echo.
 set /p usersbroken="Did the user list break? (y/n) "
 if %usersbroken% == y (
 	set usersbroken=true
