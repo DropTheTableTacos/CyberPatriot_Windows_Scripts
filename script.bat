@@ -133,12 +133,6 @@ goto %errorlevel%
 
 :: README
 :1
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Read the README, ya bigot higot!
 echo.
@@ -152,12 +146,6 @@ goto menu
 
 :: Windows Update
 :2
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 if %automode% == true (
 	cls
 	sc config wuauserv start= auto
@@ -195,12 +183,6 @@ goto menu
 
 :: Enable firewall + template
 :3
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 netsh advfirewall import "%compfiles%\%os%Firewall.wfw"
 if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
@@ -222,12 +204,6 @@ goto menu
 
 :: Services
 :4
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 if %automode% == true (
 	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G)
@@ -357,7 +333,6 @@ sc stop %serv%
 sc config %serv% start= disabled
 
 goto disablegud
-
 
 :: Manual serv gucci
 :manualserv
@@ -550,12 +525,6 @@ goto menu
 
 :: Install programs
 :5
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo What up my big cheezits
 echo.
@@ -571,12 +540,6 @@ goto menu
 
 :: Audit Policy
 :6
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 if %automode% == true (
     LGPO /a "%compfiles%\%os%AllAudit.csv"
@@ -723,12 +686,6 @@ goto disableusers
 
 :: Forensics
 :9
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Do the forensics questions. Eek.
 echo.
@@ -740,12 +697,6 @@ goto menu
 
 :: Media Files
 :10
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 if %automode% == true goto deletemf
 
 cls
@@ -812,12 +763,6 @@ goto 10
 
 :: Inf files
 :11
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 if %automode% == true (
     secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
@@ -874,12 +819,6 @@ goto 11
 
 :: CISCAT Registry Gucci
 :12
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Alrighty, run the ciscatgucci.bat script
 echo.
@@ -1019,12 +958,6 @@ goto delusers
 
 :: Deleting/adding admins
 :15
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 %listadmin%
 
@@ -1063,12 +996,6 @@ goto deladmins
 
 :: Prohibited files
 :16
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Yaboi prohibited files.
 echo.
@@ -1113,12 +1040,6 @@ goto menu
 
 :: Remove Programs + Features
 :17
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Removing programs + features...
 echo.
@@ -1162,12 +1083,6 @@ goto menu
 
 :: Update programs
 :18
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Update all programs you need to.
 echo.
@@ -1181,16 +1096,6 @@ goto menu
 
 :: Sysinternals
 :19
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-cls Installing Sysinternals...
-echo.
-choco install sysinternals
-
 cls
 echo Opening TCPView, Process Explorer, and Autoruns...
 echo.
@@ -1207,12 +1112,6 @@ goto menu
 
 :: SCM Baselines
 :20
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 if %os% == Win7 (
 	LGPO /g "%scm%"
@@ -1305,12 +1204,6 @@ goto menu
 
 :: DISA Stig
 :21
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 if %os% == Win10 (
 	if %automode% == true goto 22
 	cls
@@ -1350,12 +1243,6 @@ goto menu
 
 :: MMC Stuff
 :22
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 :sharestart
 cls
 net share
@@ -1395,12 +1282,6 @@ goto menu
 
 :: Operating System Settings
 :23
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo IF YOU'RE ON A SERVER OS, focus on this a little more.
 echo.
@@ -1461,12 +1342,6 @@ goto menu
 
 :: Nessus
 :24
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 ipconfig
 echo.
@@ -1512,12 +1387,6 @@ goto menu
 
 :: Server Manager
 :26
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 if %os% == Server2008 goto servmgr
 if %os% == Server2016 goto servmgr
 if %os% == Win7 goto noserv
@@ -1552,12 +1421,6 @@ goto menu
 
 :: Event Viewer
 :27
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Look at the Event Viewer for stuff that's BAD
 echo.
@@ -1570,12 +1433,6 @@ goto menu
 
 :: Backup
 :28
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Real quick connect the drive to the VM (make sure it USB 2.0)
 echo.
@@ -1592,12 +1449,6 @@ goto menu
 
 :: README Requirements
 :29
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Open the readme and do the specific things it says to do.
 echo Could be enabling service, adding user/group, etc.
@@ -1611,12 +1462,6 @@ goto menu
 
 :: Defensive Countermeasures
 :30
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Make sure windows defender is danko enabled
 echo.
@@ -1638,12 +1483,6 @@ goto menu
 
 :: Random Things At The End
 :31
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
 cls
 echo Check processes for sketchiness.
 echo.
