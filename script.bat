@@ -48,6 +48,8 @@ set return_number=0
 mode con: cols=100 lines=23
 set desktop=%userprofile%\Desktop
 set compfiles=%desktop%\%os%CompFiles
+if %os% == Win10 set compfiles=%desktop%\Win10CompFiles
+if %os% == Server2016 set compfiles=%desktop%\Server2016CompFiles
 set scm=%compfiles%\SCMBaselines
 set autousers=false
 set diffopen=false
