@@ -1009,18 +1009,28 @@ echo.
 :: Search for sketchy strings
 echo Looking for Hashcat logs...
 echo.
-for /f %%G in (dir /s /b /a /o-d /a-d C:\*) do (type %%G | findstr "Initializing hashcat" >nul && echo %%G)
+for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Initializing hashcat" >nul && echo %%G)
 pause
 
 cls
 echo Looking for Ophcrack logs...
 echo.
-for /f %%G in (dir /s /b /a /o-d /a-d C:\*) do (type %%G | findstr "Starting ophcrack" >nul && echo %%G)
+for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Starting ophcrack" >nul && echo %%G)
 pause
 
 cls
 echo Looking for Aircrack-ng logs...
-for /f %%G in (dir /s /b /a /o-d /a-d C:\*) do (type %%G | findstr "Aircrack-ng" >nul && echo %%G)
+for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Aircrack-ng" >nul && echo %%G)
+pause
+
+cls
+echo Looking for Nmap logs...
+for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "nmap" >nul && echo %%G)
+pause
+
+cls
+echo Looking for Angry ip logs...
+for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Angry IP" >nul && echo %%G)
 pause
 
 cls
