@@ -113,7 +113,8 @@ if %os% == Server2008 (
 :: Menu
 :menu
 cls
-echo Menu is for quick stuff ya need to do, Auto mode is main option
+echo Auto mode is normal mode; it runs through each section one after another.
+echo Menu mode is manual and returns to menu after every section.
 echo.
 echo Note: Auto mode will still take you to menu, you just choose where to start.
 echo.
@@ -188,8 +189,7 @@ if %automode% == true (
 	reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 4 /f
 
 	cls
-	echo Set automatic updates!
-	echo Still gotta start it manually oof
+	echo Start Windows Update...
 	echo.
     if %os% == Win7 start wuapp.exe
     if %os% == Win8 start wuapp.exe
@@ -202,7 +202,7 @@ if %automode% == true (
 )
 
 cls
-echo Set automatic updates.
+echo Start Windows Update...
 echo.
 if %os% == Win7 start wuapp.exe
 if %os% == Win8 start wuapp.exe
@@ -217,15 +217,15 @@ goto menu
 :3
 cls
 netsh advfirewall import "%compfiles%\%os%Firewall.wfw"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
 netsh advfirewall set allprofiles state on
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
 cls
 echo Firewall enabled!
 echo.
 pause
 cls
 echo Check firewall exceptions for sketchiness...
+echo
+echo Click 'Allow an app or feature through firewall' on left.
 echo.
 firewall.cpl
 pause
@@ -247,6 +247,8 @@ if %automode% == true (
 	sc config windefend start= auto
 	sc start windefend
 	cls
+	echo Services disabled!
+	echo.
 	set /p remotegay="Does Remote Desktop need to be enabled? (y/n) "
  	if remotegay == y (
 		sc config termservice start= auto
@@ -416,6 +418,7 @@ if %output% == t (
 	cls
 	echo Outputted to %userprofile%\Desktop\services.txt
 	echo.
+	start %userprofile%\Desktop\services.txt
 	pause
 	goto manualserv
 )
@@ -437,6 +440,7 @@ if %output% == t (
 	cls
 	echo Outputted to %userprofile%\Desktop\services.txt
 	echo.
+	start %userprofile%\Desktop\services.txt
 	pause
 	goto manualserv
 )
@@ -458,6 +462,7 @@ if %output% == t (
 	cls
 	echo Outputted to %userprofile%\Desktop\services.txt
 	echo.
+	start %userprofile%\Desktop\services.txt
 	pause
 	goto manualserv
 )
@@ -479,6 +484,7 @@ if %output% == t (
 	cls
 	echo Outputted to %userprofile%\Desktop\services.txt
 	echo.
+	start %userprofile%\Desktop\services.txt
 	pause
 	goto manualserv
 )
@@ -500,6 +506,7 @@ if %output% == t (
 	cls
 	echo Outputted to %userprofile%\Desktop\services.txt
 	echo.
+	start %userprofile%\Desktop\services.txt
 	pause
 	goto manualserv
 )
@@ -521,6 +528,7 @@ if %output% == t (
 	cls
 	echo Outputted to %userprofile%\Desktop\services.txt
 	echo.
+	start %userprofile%\Desktop\services.txt
 	pause
 	goto manualserv
 )
@@ -542,6 +550,7 @@ if %output% == t (
 	cls
 	echo Outputted to %userprofile%\Desktop\services.txt
 	echo.
+	start %userprofile%\Desktop\services.txt
 	pause
 	goto manualserv
 )
@@ -561,6 +570,8 @@ cls
 echo What up my big cheezits
 echo.
 echo Run the chocogucci.bat script to install good programs.
+echo
+echo (As administrator)
 echo.
 cd "%compfiles%"
 explorer .
@@ -575,6 +586,10 @@ goto menu
 cls
 if %automode% == true (
     LGPO /a "%compfiles%\%os%AllAudit.csv"
+	cls
+	echo Audit Policy gucci settings applied!
+	echo.
+	pause
     goto 7
 )
 
@@ -628,7 +643,7 @@ if %usersbroken% == false (
 if %automode% == true (
 	if %autousers% == false (
 		set return=true
-		set return_number=9
+		set return_number=7
 		goto getuserlist
 	)
 	cls
@@ -674,7 +689,9 @@ if %automode% == true (
 	net user BroPants /active:no
 	for /f %%G in (C:\users.txt) do net user %%G /active:yes
 	cls
-	echo Activate users done!
+	echo Activated users done!
+	echo.
+	echo Guest and Admin accounts have been disabled, so yeet.
 	echo.
 	pause
 	goto 9
@@ -740,7 +757,7 @@ if %choice% == re goto menu
 
 :deletemf
 cls
-echo THIS IS ABOUT TO DELETE MEDIA FILES.
+echo THIS IS ABOUT TO "DELETE" MEDIA FILES. (not really)
 echo.
 echo Make sure you did the forensics questions
 echo.
@@ -748,22 +765,21 @@ echo *cough* timon *cough*
 echo.
 pause
 cls
-echo Note: "Couldn't find mediafiles.txt" is expected here.
+echo Note: "Could not find mediafiles.txt" is expected here.
 echo.
 
 del "%homedrive%\mediafiles.txt" /f /q
 
-cd C:\
-del /s /f /q *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma
+for /f %%G in ('cd C:\ & dir /s /a /b /o-d *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma') do (ren %%G ???_yeet.*)
 
 cls
 echo Media files deleted.
 echo.
-echo Now check for ones missed. Wait for dis.
+echo Now check for any .wav files possibly missed. Wait a moment...
 echo.
 
 cd %homedrive%\
-dir /s /a /b /o-d *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma *.wav >> mediafiles.txt
+dir /s /a /b /o-d *.wav >> mediafiles.txt
 
 start mediafiles.txt
 
@@ -775,7 +791,7 @@ goto 10
 
 :searchmf
 cls
-echo Note: "Couldn't find mediafiles.txt" is expected here.
+echo Note: "Could not find mediafiles.txt" is expected here.
 echo.
 echo Searching for media files...
 echo.
@@ -799,9 +815,9 @@ cls
 if %automode% == true (
     secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
     cls
-    echo Bad INF done!
+    echo Bad INF template applied!
     echo.
-    echo Wait and see if you got any points...
+    echo Wait and see if you got any points before continuing...
     echo.
     pause
 
@@ -856,8 +872,6 @@ echo Alrighty, run the ciscatgucci.bat script
 echo.
 echo that's inside the compfiles folder plz thanks.
 echo.
-echo WAIT for points before continuing!
-echo.
 cd "%compfiles%"
 explorer .
 pause
@@ -870,7 +884,9 @@ goto menu
 cls
 echo Running CAT-Lite scanner...
 echo.
-echo Give report to Timon when done.
+echo After it's done, copy the report to a flash drive.
+echo
+echo By default, it saves it in Documents or something.
 echo.
 start /d "%compfiles%\cis-cat-lite" CISCAT.jar
 pause
@@ -909,7 +925,7 @@ if %baduser% == n goto 14
 cls
 echo Ok. Wait for ting to happen.
 echo.
-dir /s /q /ar /ah /a-d /o-d /tc C:\ | findstr /i "%computername%\%baduser%" >> C:\%baduser%files.txt
+dir /s /q /a /a-d /o-d /tc C:\ | findstr /i "%computername%\%baduser%" >> C:\%baduser%files.txt
 
 start C:\%baduser%files.txt
 :badfiles
@@ -920,7 +936,7 @@ set /p eekfile="Enter the filename of any suspicious files you see... "
 if %eekfile% == n goto 13
 
 cd C:\
-dir /s /q /ar /ah "%eekfile%" >> C:\whomst.txt
+dir /s /q /a "%eekfile%" >> C:\whomst.txt
 
 start C:\whomst.txt
 cls
@@ -1029,11 +1045,9 @@ goto deladmins
 :: Prohibited files
 :16
 cls
-echo Yaboi prohibited files.
+echo Yaboi prohibited files is a thing now.
 echo.
-echo - Look for xml, txt, etc. in notepad that will open in a second.
-echo.
-echo - Look in folders for files (sort by date modified)
+echo Warning: Things WILL take a while so that's hella gay :\
 echo.
 
 :: Search for sketchy strings
@@ -1065,11 +1079,17 @@ pause
 
 cls
 echo Looking for software archive-ish things...
-dir /s /a /b /o-d /a-d C:\*.bin C:\*.index C:\*.start C:\*.bad C:\*.bru >> C:\sketchymemes.txt
+dir /s /a /b /o-d /a-d C:\*.bin C:\*.index C:\*.start C:\*.bad C:\*.bru C:\*.zip C:\*.txt >> C:\sketchymemes.txt
 start C:\sketchymemes.txt
 pause
 
 cls
+echo Find files or something idk.
+echo.
+echo Probably just return to this later after more important
+echo.
+echo things are done. smh.
+echo.
 cd %homedrive%\
 dir /s /a /b /o-d >> eek.txt
 start eek.txt
@@ -1289,6 +1309,10 @@ goto menu
 cls
 net share
 echo.
+echo The default, acceptable shares are:
+echo.
+echo C$, ADMIN$, IPC$
+echo.
 set /p share="Choose a share to delete cause it sketchy... "
 if %share% == n goto mmccont
 if %share% == re goto menu
@@ -1389,6 +1413,8 @@ ipconfig
 echo.
 
 echo Run the Nessus immediately cause it might help and stuff yooo!
+echo.
+echo If you're not Jackson, don't worry 'bout it. ooof.
 echo.
 
 pause
@@ -1543,7 +1569,9 @@ echo.
 pause
 
 cls
-echo Past comp vulns (Make Peter or someone read them)
+echo Past competition vulnerabilities packet
+echo.
+echo NOTE: QUITE IMPORTANT MY DUDES!
 echo.
 pause
 
