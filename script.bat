@@ -65,13 +65,50 @@ schtasks /create /tn RunScriptOnLogin /tr %desktop%\UltraGucciScript.bat /sc onl
 
 :: Install chocolatey if needed
 cls
-choco /? & if %errorlevel% NEQ 0 echo Installing chocolatey... & %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+choco /? >nul & if %errorlevel% NEQ 0 echo Installing chocolatey... & %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
 
 choco feature enable -n allowGlobalConfirmation
 choco feature enable -n useFipsCompliantChecksums
 
 sc config wuauserv start= auto
 sc start wuauserv
+
+:: Installing powershell 5 if not win10 or server2016
+cls
+choco list -l >nul | findstr /i "powershell" && goto menu
+
+if %os% == Win7 (
+	choco install powershell dotnet4.5
+	cls
+	echo You HAVE to restart the VM here, unfortunately.
+	echo.
+	echo It's necessary for user list generation to work.
+	echo.
+	pause
+	exit
+)
+
+if %os% == Win8 (
+	choco install powershell dotnet4.5
+	cls
+	echo You HAVE to restart the VM here, unfortunately.
+	echo.
+	echo It's necessary for user list generation to work.
+	echo.
+	pause
+	exit
+)
+
+if %os% == Server2008 (
+	choco install powershell dotnet4.5
+	cls
+	echo You HAVE to restart the VM here, unfortunately.
+	echo.
+	echo It's necessary for user list generation to work.
+	echo.
+	pause
+	exit
+)
 
 :: Menu
 :menu
