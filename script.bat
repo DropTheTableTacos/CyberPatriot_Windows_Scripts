@@ -75,7 +75,7 @@ sc start wuauserv
 
 :: Installing powershell 5 if not win10 or server2016
 cls
-choco list -l >nul | findstr /i "powershell" && goto menu
+choco list -l | findstr /i "powershell" >nul && goto menu
 
 if %os% == Win7 (
 	choco install powershell dotnet4.5
