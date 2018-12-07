@@ -63,16 +63,9 @@ del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchy
 :: Startup Task
 schtasks /create /tn RunScriptOnLogin /tr %desktop%\UltraGucciScript.bat /sc onlogon /rl highest /f
 
-:: Ask if first time setup
+:: Install chocolatey if needed
 cls
-set /p cont="Is this first time setup? (y/n) "
-if %cont% == n goto menu
-
-:: Install chocolatey
-cls
-echo Installing chocolatey...
-echo.
-%pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+choco /? & if %errorlevel% NEQ 0 echo Installing chocolatey... & %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
 
 choco feature enable -n allowGlobalConfirmation
 choco feature enable -n useFipsCompliantChecksums
