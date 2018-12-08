@@ -223,7 +223,7 @@ echo.
 pause
 cls
 echo Check firewall exceptions for sketchiness...
-echo
+echo.
 echo Click 'Allow an app or feature through firewall' on left.
 echo.
 firewall.cpl
@@ -569,7 +569,7 @@ cls
 echo What up my big cheezits
 echo.
 echo Run the chocogucci.bat script to install good programs.
-echo
+echo.
 echo (As administrator)
 echo.
 cd "%compfiles%"
@@ -884,7 +884,7 @@ cls
 echo Running CAT-Lite scanner...
 echo.
 echo After it's done, copy the report to a flash drive.
-echo
+echo.
 echo By default, it saves it in Documents or something.
 echo.
 start /d "%compfiles%\cis-cat-lite" CISCAT.jar
