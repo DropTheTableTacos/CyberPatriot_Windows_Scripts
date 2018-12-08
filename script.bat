@@ -52,7 +52,6 @@ if %os% == Win10 set compfiles=%desktop%\Win10CompFiles
 if %os% == Server2016 set compfiles=%desktop%\Server2016CompFiles
 set scm=%compfiles%\SCMBaselines
 set autousers=false
-set diffopen=false
 set usersbroken=false
 set listuser=%pshellrun% "Get-LocalUser | select name, enabled"
 set listadmin=%pshellrun% "Get-LocalGroupMember -group Administrators | select name"
@@ -910,15 +909,14 @@ if %automode% == true (
 		goto getuserlist
 	)
 
-	if %diffopen% == false (
-		cls
-		call icdiff C:\approved_users_gucci.txt C:\users.txt >> C:\userdiff.txt
-		start C:\userdiff.txt
-		set diffopen=true
-	)
+	call icdiff C:\approved_users_gucci.txt C:\users.txt
+	echo.
 )
 
-cls
+if %automode% == false (
+	cls
+)
+
 set /p baduser="Enter an unauthorized user's name to find their files... "
 if %baduser% == n goto 14
 
@@ -961,16 +959,14 @@ if %automode% == true (
 		goto getuserlist
 	)
 
-	if %diffopen% == false (
-		cls
-		call icdiff C:\approved_users_gucci.txt C:\users.txt >> C:\userdiff.txt
-		start C:\userdiff.txt
-		set diffopen=true
-	)
+	call icdiff C:\approved_users_gucci.txt C:\users.txt
+	echo.
 )
 
-cls
-%listuser%
+if %automode% == false (
+	cls
+	%listuser%
+)
 
 set /p choice="Add or remove user? (a/r) "
 if %choice% == a goto addusers
