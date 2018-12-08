@@ -1046,35 +1046,34 @@ goto deladmins
 cls
 echo Yaboi prohibited files is a thing now.
 echo.
-echo Warning: Things WILL take a while so that's hella gay :\
-echo.
+pause
 
 :: Search for sketchy strings
-echo Looking for Hashcat logs...
-echo.
-for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Initializing hashcat" >nul && echo %%G)
-pause
+::echo Looking for Hashcat logs...
+::echo.
+::for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Initializing hashcat" >nul && echo %%G)
+::pause
 
-cls
-echo Looking for Ophcrack logs...
-echo.
-for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Starting ophcrack" >nul && echo %%G)
-pause
+::cls
+::echo Looking for Ophcrack logs...
+::echo.
+::for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Starting ophcrack" >nul && echo %%G)
+::pause
 
-cls
-echo Looking for Aircrack-ng logs...
-for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Aircrack-ng" >nul && echo %%G)
-pause
+::cls
+::echo Looking for Aircrack-ng logs...
+::for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Aircrack-ng" >nul && echo %%G)
+::pause
 
-cls
-echo Looking for Nmap logs...
-for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "nmap" >nul && echo %%G)
-pause
+::cls
+::echo Looking for Nmap logs...
+::for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "nmap" >nul && echo %%G)
+::pause
 
-cls
-echo Looking for Angry ip logs...
-for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Angry IP" >nul && echo %%G)
-pause
+::cls
+::echo Looking for Angry ip logs...
+::for /f %%G in ('dir /s /b /a /o-d /a-d C:\*') do (type %%G | findstr /i "Angry IP" >nul && echo %%G)
+::pause
 
 cls
 echo Looking for software archive-ish things...

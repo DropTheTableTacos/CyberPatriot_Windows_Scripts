@@ -4,3 +4,7 @@ New Change List XD:
     - don't re-get approved_users
 
 - make media files list a txt file
+
+- Add cls's in places like for user stuff gayyyy
+
+- Fix string searcher cause its being weird
