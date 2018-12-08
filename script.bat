@@ -769,7 +769,8 @@ echo.
 
 del "%homedrive%\mediafiles.txt" /f /q
 
-for /f %%G in ('cd C:\ & dir /s /a /b /o-d *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma') do (ren %%G ???_yeet.*)
+cd C:\
+for /f %%G in ('dir /s /a /b /o-d *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma') do (ren %%G ???_yeet.*)
 
 cls
 echo Media files deleted.
@@ -880,6 +881,7 @@ if %automode% == true goto catlite
 goto menu
 
 :: CAT-Lite
+:catlite
 cls
 echo Running CAT-Lite scanner...
 echo.
