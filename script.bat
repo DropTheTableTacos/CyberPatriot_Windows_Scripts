@@ -991,7 +991,8 @@ goto addusers
 
 :delusers
 cls
-%listuser%
+call icdiff C:\approved_users_gucci.txt C:\users.txt
+echo.
 
 set /p user="Enter a user to delete... "
 if %user% == n goto 14
@@ -1629,6 +1630,7 @@ cls
 type C:\users.txt
 echo.
 set /p usersbroken="Did the user list break? (y/n) "
+cls
 if %usersbroken% == y (
 	set usersbroken=true
 	if %return% == true goto %return_number%

@@ -1,0 +1,4 @@
+New Change List XD:
+
+1. make something with %updatediff% to update diff when you are doing user stuff
+    - don't re-get approved_users
