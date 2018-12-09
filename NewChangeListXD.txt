@@ -8,3 +8,34 @@ New Change List XD:
 - Add cls's in places like for user stuff gayyyy
 
 - Fix string searcher cause its being weird
+
+POST COMP TINGS:
+
+- initial install chocolatey fix
+
+- Opening compfiles broken
+
+- FIX PATH AND GUCCIness
+
+- No catlite on non-win 10
+
+- Remove icdiff from cmder/bin
+
+- failed to create process (icdiff)
+
+- renaming media files gay broke
+
+- sysinternals path
+
+- .wpl file extension
+
+- Audit policy lgpo broke
+
+- wscsvc service enabled!
+    - it was a vuln for "antivirus protection"
+
+- services dont disable and stop like they should
+
+- investigate "Require secure RPC connection"
+
+- *** INF FILES BROKE ***
