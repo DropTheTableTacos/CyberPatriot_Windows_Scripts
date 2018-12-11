@@ -1594,7 +1594,9 @@ goto menu
 
 :: End
 :end
-echo If you reached this screen, you did a good. Maybe. Idk man.
+echo If you reached this screen, you did a good.
+echo.
+echo You got that bread! That's legit epic.
 echo.
 echo Sending you back to the menu now...
 echo.
