@@ -876,7 +876,10 @@ cd "%compfiles%"
 explorer .
 pause
 
-if %automode% == true goto catlite
+if %automode% == true (
+	if %os% == Win10 goto catlite
+	goto 13
+)
 
 goto menu
 
