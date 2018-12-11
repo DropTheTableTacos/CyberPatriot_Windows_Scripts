@@ -11,15 +11,9 @@ New Change List XD:
 
 POST COMP TINGS:
 
-- initial install chocolatey fix
-
 - Opening compfiles broken
 
 - FIX PATH AND GUCCIness
-
-- No catlite on non-win 10
-
-- Remove icdiff from cmder/bin
 
 - failed to create process (icdiff)
 
