@@ -17,8 +17,6 @@ POST COMP TINGS:
 
 - failed to create process (icdiff)
 
-- renaming media files gay broke
-
 - sysinternals path
 
 - .wpl file extension

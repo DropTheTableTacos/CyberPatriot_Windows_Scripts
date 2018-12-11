@@ -756,7 +756,7 @@ if %choice% == re goto menu
 
 :deletemf
 cls
-echo THIS IS ABOUT TO "DELETE" MEDIA FILES. (not really)
+echo THIS IS ABOUT TO DELETE MEDIA FILES.
 echo.
 echo Make sure you did the forensics questions
 echo.
@@ -770,7 +770,7 @@ echo.
 del "%homedrive%\mediafiles.txt" /f /q
 
 cd C:\
-for /f %%G in ('dir /s /a /b /o-d *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma') do (ren %%G ???_yeet.*)
+del /s /f /q *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma
 
 cls
 echo Media files deleted.
