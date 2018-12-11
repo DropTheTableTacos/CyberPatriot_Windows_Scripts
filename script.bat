@@ -51,12 +51,14 @@ set compfiles=%desktop%\%os%CompFiles
 if %os% == Win10 set compfiles=%desktop%\Win10CompFiles
 if %os% == Server2016 set compfiles=%desktop%\Server2016CompFiles
 set scm=%compfiles%\SCMBaselines
+set cmderbin=%desktop%\cmder\bin
 set autousers=false
 set usersbroken=false
 set listuser=%pshellrun% "Get-LocalUser | select name, enabled"
 set listadmin=%pshellrun% "Get-LocalGroupMember -group Administrators | select name"
 set getservice=Get-WmiObject -class win32_service ^| select name, displayname, state, startmode, processid, installdate, pathname
-set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%desktop%\cmder\bin
+set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%
+
 del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt C:\sketchymemes.txt C:\userdiff.txt
 
 :: Startup Task
@@ -74,7 +76,7 @@ sc start wuauserv
 
 :: Installing powershell 5 if not win10 or server2016
 cls
-choco list -l | findstr /i "powershell" >nul && goto menu
+choco list -l | findstr /i "powershell" >nul && goto dankmmc
 
 if %os% == Win7 (
 	choco install powershell dotnet4.5
@@ -108,6 +110,10 @@ if %os% == Server2008 (
 	pause
 	exit
 )
+
+:: Open DankMMC cause dank
+:dankmmc
+start /d "%cmderbin%" DankMMC.msc
 
 :: Menu
 :menu
@@ -892,7 +898,7 @@ echo After it's done, copy the report to a flash drive.
 echo.
 echo By default, it saves it in Documents or something.
 echo.
-start /d "%compfiles%\cis-cat-lite" CISCAT.jar
+start /d "%cmderbin%\cis-cat-lite" CISCAT.jar
 pause
 
 goto 13
@@ -1399,7 +1405,7 @@ if %os% == Win10 (
 	cls
 	echo What up it's ya boi cat-lite scanner here. imma scan and be cool.
 	echo.
-	start /d "%compfiles%\cis-cat-lite" CISCAT.jar
+	start /d "%cmderbin%\cis-cat-lite" CISCAT.jar
 	pause
 )
 
@@ -1649,7 +1655,7 @@ goto menu
 
 :: Open DankMMC
 :33
-start /d "%compfiles%" DankMMC.msc
+start /d "%cmderbin%" DankMMC.msc
 goto menu
 
 :: Open official checklist
