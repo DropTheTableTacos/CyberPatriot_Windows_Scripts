@@ -11,10 +11,8 @@ echo    This script is dedicated to Drake
 echo because he make sure that north-side eat
 echo ========================================
 echo.
-pause
 
 :: Copy Reminder
-cls
 echo Make sure you've copied all of the following
 echo items to the desktop as well:
 echo.
