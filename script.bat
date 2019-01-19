@@ -59,12 +59,9 @@ set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programf
 
 del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt C:\sketchymemes.txt C:\userdiff.txt
 
-:: Startup Task
-schtasks /create /tn RunScriptOnLogin /tr %desktop%\UltraGucciScript.bat /sc onlogon /rl highest /f
-
 :: Install chocolatey if needed
 cls
-choco /? >nul & if %errorlevel% NEQ 0 echo Installing chocolatey... & %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+choco >nul && %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
 
 choco feature enable -n allowGlobalConfirmation
 choco feature enable -n useFipsCompliantChecksums
