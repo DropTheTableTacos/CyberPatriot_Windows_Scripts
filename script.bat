@@ -11,17 +11,6 @@ echo    This script is dedicated to Drake
 echo because he make sure that north-side eat
 echo ========================================
 echo.
-
-:: Copy Reminder
-echo Make sure you've copied all of the following
-echo items to the desktop as well:
-echo.
-echo - CompFiles folder
-echo.
-echo - Service Pack (if on 7 or Server 2008)
-echo.
-echo - OurGloriousChecklist2018_Windows.txt
-echo.
 pause
 
 :: Set pshellrun
@@ -40,7 +29,7 @@ set osname=%pshellrun% "(get-ciminstance -classname cim_operatingsystem).name"
 
 :: Setup
 :setup
-set automode=false
+set automode=true
 set return=false
 set return_number=0
 mode con: cols=100 lines=23
@@ -69,91 +58,25 @@ choco feature enable -n useFipsCompliantChecksums
 sc config wuauserv start= auto
 sc start wuauserv
 
-:: Installing powershell 5 if not win10 or server2016
-cls
-choco list -l | findstr /i "powershell" >nul && goto dankmmc
-
-if %os% == Win7 (
-	choco install powershell dotnet4.5
-	cls
-	echo You HAVE to restart the VM here, unfortunately.
-	echo.
-	echo It's necessary for user list generation to work.
-	echo.
-	pause
-	exit
-)
-
-if %os% == Win8 (
-	choco install powershell dotnet4.5
-	cls
-	echo You HAVE to restart the VM here, unfortunately.
-	echo.
-	echo It's necessary for user list generation to work.
-	echo.
-	pause
-	exit
-)
-
-if %os% == Server2008 (
-	choco install powershell dotnet4.5
-	cls
-	echo You HAVE to restart the VM here, unfortunately.
-	echo.
-	echo It's necessary for user list generation to work.
-	echo.
-	pause
-	exit
-)
-
-:: Open DankMMC cause dank
-:dankmmc
-start /d "%cmderbin%" DankMMC.msc
-
 :: Menu
-:menu
-cls
-echo Auto mode is normal mode; it runs through each section one after another.
-echo Menu mode is manual and returns to menu after every section.
-echo.
-echo Note: Auto mode will still take you to menu, you just choose where to start.
-echo.
-set /p autochoice="Menu or auto mode? (m/a) "
-
-if %autochoice% == a (
-	set automode=true
-	goto menugood
-)
-if %autochoice% == m (
-	set automode=false
-	goto menugood
-)
-else (
-	cls
-	echo That's not an option, ya gaylord!
-	echo.
-	pause
-	goto menu
-)
-
 :menugood
 cls
-echo 1) README                       h) Remove programs + features
-echo 2) Windows Update               i) Update programs
-echo 3) Enable Firewall              j) Sysinternals
-echo 4) Services                     k) SCM baselines
-echo 5) Install programs             l) DISA Stig
-echo 6) Audit Policy                 m) MMC Stuff
-echo 7) Change passwords             n) Operating system settings
-echo 8) Activate/Disable users       o) Nessus
-echo 9) Forensics                    p) Application Settings
-echo a) Media files                  q) Server Manager
-echo b) Inf files                    r) Event Viewer
-echo c) CIS-CAT Registry Gucci       s) Backup
-echo d) Prohibited users' files      t) Readme Requirements
-echo e) Add/Delete users             u) Defensive Countermeasures
-echo f) Add/Delete admins            v) Random list of things at the end
-echo g) Prohibited files
+echo 1) README                       h) Prohibited files
+echo 2) Windows Update               i) CIS-CAT Registry Gucci
+echo 3) Enable Firewall              j) Update programs
+echo 4) IE SCM baselines             k) Sysinternals
+echo 5) Services                     l) DISA Stig
+echo 6) Install Programs             m) MMC Stuff
+echo 7) Inf files                    n) Operating system settings
+echo 8) Audit Policy                 o) Nessus
+echo 9) Activate/Disable users       p) Application Settings
+echo a) Change passwords             q) Server Manager
+echo b) Prohibited users' files      r) Event Viewer
+echo c) Add/Delete users             s) Backup
+echo d) Add/Delete admins            t) Readme Requirements
+echo e) Remove programs + features   u) Defensive Countermeasures
+echo f) Forensics                    v) Random list of things at the end
+echo g) Media files
 echo.
 echo w) Generate User List
 echo x) Open DankMMC
@@ -221,21 +144,45 @@ netsh advfirewall set allprofiles state on
 cls
 echo Firewall enabled!
 echo.
-pause
-cls
-echo Check firewall exceptions for sketchiness...
+echo Don't worry if the template broke, it aint that important.
 echo.
-echo Click 'Allow an app or feature through firewall' on left.
-echo.
-firewall.cpl
-pause
 
-if %automode% == true goto 4
+if %automode% == true goto :hosts
+
+goto menu
+
+:: Hosts file
+:hosts
+echo Resetting hosts file...
+echo.
+
+takeown /f "%systemroot%\system32\drivers\etc"
+del "%systemroot%\system32\drivers\etc\hosts"
+copy "%compfiles%\hosts" "%systemroot%\system32\drivers\etc\hosts"
+
+echo.
+echo Done!
+echo.
+
+:: IE SCM Baselines
+:4
+cls
+echo Applying IE SCM Baselines...
+echo.
+
+LGPO /g "%scm%\IE11_Com_Sec"
+LGPO /g "%scm%\IE11_User_Sec"
+
+echo.
+echo Done!
+echo.
+
+if %automode% == true goto 5
 
 goto menu
 
 :: Services
-:4
+:5
 cls
 if %automode% == true (
 	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G)
@@ -256,7 +203,7 @@ if %automode% == true (
 		sc config sessionenv start= auto
 		sc start sessionenv
 	)
-	goto 5
+	goto 6
 )
 
 echo tlntsvr (Telnet)
@@ -297,7 +244,7 @@ if %choice% == def (
 	sc start eventlog
 	sc config windefend start= auto
 	sc start windefend
-	goto 4
+	goto 5
 )
 
 :enableserv
@@ -326,7 +273,7 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to enable... "
-if %serv% == n goto 4
+if %serv% == n goto 5
 if %serv% == re goto menu
 
 sc config %serv% start= auto
@@ -360,7 +307,7 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to disable... "
-if %serv% == n goto 4
+if %serv% == n goto 5
 if %serv% == re goto menu
 
 sc stop %serv%
@@ -1612,6 +1559,43 @@ goto menu
 
 :: Generate User List
 :32
+choco list -l | findstr /i "powershell" && goto getuserlist
+if %os% == Win7 (
+	choco install powershell dotnet4.5
+	cls
+	echo Yeah, so you HAVE to restart the VM here
+	echo so that automatic users work. :shrug:
+	echo.
+	echo Feelsbadman.
+	echo.
+	pause
+	exit
+)
+
+if %os% == Win8 (
+	choco install powershell dotnet4.5
+	cls
+	echo Yeah, so you HAVE to restart the VM here
+	echo so that automatic users work. :shrug:
+	echo.
+	echo Feelsbadman.
+	echo.
+	pause
+	exit
+)
+
+if %os% == Server2008 (
+	choco install powershell dotnet4.5
+	cls
+	echo Yeah, so you HAVE to restart the VM here
+	echo so that automatic users work. :shrug:
+	echo.
+	echo Feelsbadman.
+	echo.
+	pause
+	exit
+)
+
 :getuserlist
 if %usersbroken% == n (
 	set autousers=true
