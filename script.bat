@@ -29,7 +29,7 @@ set osname=%pshellrun% "(get-ciminstance -classname cim_operatingsystem).name"
 
 :: Setup
 :setup
-set automode=true
+set automode=false
 set return=false
 set return_number=0
 mode con: cols=100 lines=23
@@ -58,33 +58,36 @@ choco feature enable -n useFipsCompliantChecksums
 sc config wuauserv start= auto
 sc start wuauserv
 
+:: Automode Check
+cls
+set /p autochoice="Auto mode or manual mode? (a/m) "
+if %autochoice% == a set automode=true
+
 :: Menu
 :menugood
 cls
-echo 1) README                       h) Prohibited files
-echo 2) Windows Update               i) CIS-CAT Registry Gucci
-echo 3) Enable Firewall              j) Update programs
-echo 4) IE SCM baselines             k) Sysinternals
-echo 5) Services                     l) DISA Stig
-echo 6) Install Programs             m) MMC Stuff
-echo 7) Inf files                    n) Operating system settings
-echo 8) Audit Policy                 o) Nessus
-echo 9) Activate/Disable users       p) Application Settings
-echo a) Change passwords             q) Server Manager
-echo b) Prohibited users' files      r) Event Viewer
-echo c) Add/Delete users             s) Backup
-echo d) Add/Delete admins            t) Readme Requirements
-echo e) Remove programs + features   u) Defensive Countermeasures
-echo f) Forensics                    v) Random list of things at the end
-echo g) Media files
+echo 1) README                       h) Forensics
+echo 2) Windows Update               i) Media files
+echo 3) Enable Firewall              j) Prohibited files
+echo 4) Hosts file                   k) Update programs
+echo 5) SCM baselines                l) Sysinternals
+echo 6) CIS-CAT Registry Gucci       m) DISA Stig
+echo 7) Services                     n) MMC Stuff
+echo 8) Install Programs             o) Operating system settings
+echo 9) Inf files                    p) Nessus
+echo a) Audit Policy                 q) Application Settings
+echo b) Activate/Disable users       r) Server Manager
+echo c) Change passwords             s) Event Viewer
+echo d) Prohibited users' files      t) Backup
+echo e) Add/Delete users             u) Readme Requirements
+echo f) Add/Delete admins            v) Defensive Countermeasures
+echo g) Remove programs + features   w) Random list of things at the end
 echo.
-echo w) Generate User List
-echo x) Open DankMMC
-echo y) Open official checklist
-echo z) Open master checklist + view vuln categories
+echo x) Generate User List
+echo y) Open DankMMC
 echo.
 
-choice /c 123456789abcdefghijklmnopqrstuvwxyz /n /m "Where would you like to start? "
+choice /c 123456789abcdefghijklmnopqrstuvwxy /n /m "Where would you like to start? "
 goto %errorlevel%
 
 :: README
@@ -164,18 +167,85 @@ echo.
 echo Done!
 echo.
 
-:: IE SCM Baselines
+:: SCM Baselines
 :4
 cls
-echo Applying IE SCM Baselines...
-echo.
+if %os% == Win7 (
+	LGPO /g "%scm%"
+	goto finishscm
+)
 
-LGPO /g "%scm%\IE11_Com_Sec"
-LGPO /g "%scm%\IE11_User_Sec"
+if %os% == Win8 (
+	LGPO /g "%scm%"
+	goto finishscm
+)
 
+if %os% == Server2008 (
+	LGPO /g "%scm%"
+	goto finishscm
+)
+
+if %os% == Server2016 (
+	set ver=1607
+	goto server2016scm
+)
+
+if %os% == Win10 goto newscm
+
+:newscm
+cls
+set ver=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
+
+if %ver% == 10.0.10240 (
+	LGPO /g "%scm%\Win10_1507"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+if %ver% == 10.0.10586 (
+	LGPO /g "%scm%\Win10_1511"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+:server2016scm
+if %ver% == 10.0.14393 (
+	LGPO /g "%scm%\Win10_1607_Server2016"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+if %ver% == 10.0.15063 (
+	LGPO /g "%scm%\Win10_1703"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+if %ver% == 10.0.16299 (
+	LGPO /g "%scm%\Win10_1709"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+if %ver% == 10.0.17134 (
+	LGPO /g "%scm%\Win10_1803"
+	LGPO /g "%scm%\IE11_Com_Sec"
+	LGPO /g "%scm%\IE11_User_Sec"
+	goto finishscm
+)
+
+:finishscm
+cls
+echo SCM Baselines done!
 echo.
-echo Done!
+echo Now wait for possible points.
 echo.
+pause
 
 if %automode% == true goto 5
 
@@ -1121,98 +1191,6 @@ if %automode% == true goto 20
 
 goto menu
 
-:: SCM Baselines
-:20
-cls
-if %os% == Win7 (
-	LGPO /g "%scm%"
-	goto finishscm
-)
-
-if %os% == Win8 (
-	LGPO /g "%scm%"
-	goto finishscm
-)
-
-if %os% == Server2008 (
-	LGPO /g "%scm%"
-	goto finishscm
-)
-
-if %os% == Server2016 (
-	set ver=1607
-	goto server2016scm
-)
-
-if %os% == Win10 goto newscm
-
-:newscm
-cls
-set ver=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
-
-if %ver% == 10.0.10240 (
-	LGPO /g "%scm%\Win10_1507"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-if %ver% == 10.0.10586 (
-	LGPO /g "%scm%\Win10_1511"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-:server2016scm
-if %ver% == 10.0.14393 (
-	LGPO /g "%scm%\Win10_1607_Server2016"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-if %ver% == 10.0.15063 (
-	LGPO /g "%scm%\Win10_1703"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-if %ver% == 10.0.16299 (
-	LGPO /g "%scm%\Win10_1709"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-if %ver% == 10.0.17134 (
-	LGPO /g "%scm%\Win10_1803"
-	LGPO /g "%scm%\IE11_Com_Sec"
-	LGPO /g "%scm%\IE11_User_Sec"
-	goto finishscm
-)
-
-else (
-	cls
-	echo Oof try again.
-	echo.
-	pause
-	goto newscm
-)
-
-:finishscm
-cls
-echo SCM Baselines done!
-echo.
-echo Now wait for possible points.
-echo.
-pause
-
-if %automode% == true goto 21
-
-goto menu
-
 :: DISA Stig
 :21
 if %os% == Win10 (
@@ -1635,35 +1613,4 @@ goto menu
 :: Open DankMMC
 :33
 start /d "%cmderbin%" DankMMC.msc
-goto menu
-
-:: Open official checklist
-:34
-if %os% == Win7 start /d "%compfiles%" Official%os%Checklist.pdf
-if %os% == Win8 start /d "%compfiles%" Official%os%Checklist.docx
-if %os% == Win10 start /d "%compfiles%" Official%os%Checklist.docx
-if %os% == Server2008 start /d "%compfiles%" Official%os%Checklist.docx
-if %os% == Server2016 start /d "%compfiles%" Official%os%Checklist.docx
-goto menu
-
-:: Open master checklist + vuln categories
-:35
-start /d "%desktop%" OurGloriousChecklist2018_Windows.txt
-cls
-echo Here are the vulnerability categories:
-echo.
-echo User Auditing
-echo Account Policies
-echo Local Policies
-echo Defensive Countermeasures
-echo Operating System Settings
-echo Service Auditing
-echo Operating System Updates
-echo Application Updates
-echo Policy Violation: Prohibited Files
-echo Policy Violation: Unwanted Software
-echo Policy Violation: Malware
-echo Application Security Settings
-echo.
-pause
 goto menu
