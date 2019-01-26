@@ -11,7 +11,7 @@ set osname=%pshellrun% "(get-ciminstance -classname cim_operatingsystem).name"
 
 :: Setup
 :setup
-set automode=false
+set automode=true
 set return=false
 set return_number=0
 mode con: cols=100 lines=23
@@ -39,6 +39,30 @@ echo.
 sc config wuauserv start= auto
 sc start wuauserv
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 4 /f
+
+echo.
+echo Done!
+echo.
+
+:: Hosts file
+echo Resetting hosts file...
+echo.
+
+takeown /f "%systemroot%\system32\drivers\etc"
+del "%systemroot%\system32\drivers\etc\hosts"
+copy "%compfiles%\hosts" "%systemroot%\system32\drivers\etc\hosts"
+
+echo.
+echo Done!
+echo.
+
+:: IE SCM Baselines
+echo Applying IE SCM Baselines...
+echo.
+
+LGPO /g "%scm%\IE11_Com_Sec"
+LGPO /g "%scm%\IE11_User_Sec"
+
 echo.
 echo Done!
 echo.
@@ -68,6 +92,16 @@ sc config %serv_exclude% start= auto & sc start %serv_exclude%
 echo.
 goto serv_exclude_check
 
+:: Install programs
+echo Installing gucci security programs...
+echo.
+echo Run the "chocogucci.bat" script plz, thx.
+echo.
+
+explorer %compfiles%
+pause
+echo.
+
 :: Inf
 echo Applying BAD Inf...
 echo.
@@ -91,4 +125,104 @@ echo.
 pause
 echo.
 
-:: Something
+:: Audit Policy
+echo Applying Audit Policy template...
+echo.
+
+LGPO /a "%compfiles%\%os%AllAudit.csv"
+echo.
+echo Done!
+echo.
+
+:: Generate User List
+echo Generating user list...
+echo.
+
+for /f "skip=1 tokens=1" %%G in ('%pshellrun% "glu | select name | ft -hidetableheaders"') do (echo %%G >> C:\users_admins.txt)
+findstr /v "BroPants BroShirt DefaultAccount defaultuser0 Administrator Guest" C:\users_admins.txt > C:\users.txt
+call jrepl " +$" "" /f C:\users.txt /o -
+call jrepl " +$" "" /f C:\users_admins.txt /o -
+
+echo Please put all the users from README, including admins here and save then close > C:\approved_users.txt
+echo Replace these 2 lines btw smh >> C:\approved_users.txt
+start C:\approved_users.txt
+pause
+
+sort < C:\approved_users.txt > C:\approved_users_gucci.txt
+
+echo.
+type C:\users.txt
+echo.
+set /p usersbroken="Did the user list break? (y/n) "
+if %usersbroken% == y (
+	set usersbroken=true
+    set automode=false
+)
+echo.
+
+:: Enable Users/Disable Guest & Administrator
+:enable_users
+net user BroShirt /active:no
+net user BroPants /active:no
+echo.
+
+if %automode% == true (
+    echo Enabling all users...
+    echo.
+    echo Also, disabling guest and administrator accounts...
+    echo.
+
+    for /f %%G in (C:\users.txt) do net user %%G /active:yes
+
+    echo.
+    echo Done!
+    echo.
+
+    goto passwords
+)
+
+echo Enable all of the user accounts plz and thx.
+echo.
+echo Guest and Administrator have already been disabled.
+echo.
+
+set /p choice="Activate or disable user? (a/d) "
+if %choice% == a goto activateusers
+if %choice% == d goto disableusers
+if %choice% == n goto passwords
+
+:activateusers
+cls
+%listuser%
+
+set /p user="Enter a user to activate... "
+if %user% == n goto enable_users
+net user %user% /active:yes
+goto activateusers
+
+:disableusers
+cls
+%listuser%
+
+set /p user="Enter a user to disable... "
+if %user% == n goto enable_users
+net user %user% /active:no
+
+goto disableusers
+
+:: Change all passwords
+:passwords
+if %automode% == true (
+    echo Changing all user passwords...
+    echo.
+    echo All passwords will be abc123ABC123@@
+    echo.
+
+    for /f %%G in (C:\users_admins.txt) do net user	%%G abc123ABC123@@
+
+    echo.
+    echo Done!
+    echo.
+
+    goto
+)
