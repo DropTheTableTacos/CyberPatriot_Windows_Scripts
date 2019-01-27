@@ -48,18 +48,10 @@ set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programf
 
 del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt C:\sketchymemes.txt C:\userdiff.txt
 
-:: Install chocolatey if needed
-cls
-choco >nul && %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
-
-choco feature enable -n allowGlobalConfirmation
-choco feature enable -n useFipsCompliantChecksums
-
-sc config wuauserv start= auto
-sc start wuauserv
-
 :: Automode Check
 cls
+echo Hint: Auto is hetero and manual is not. nuff said.
+echo.
 set /p autochoice="Auto mode or manual mode? (a/m) "
 if %autochoice% == a set automode=true
 
@@ -68,12 +60,12 @@ if %autochoice% == a set automode=true
 cls
 echo 1) README                       h) Forensics
 echo 2) Windows Update               i) Media files
-echo 3) Enable Firewall              j) Prohibited files
+echo 3) Enable Firewall              j) Operating system settings
 echo 4) Hosts file                   k) Update programs
-echo 5) SCM baselines                l) Sysinternals
-echo 6) CIS-CAT Registry Gucci       m) DISA Stig
-echo 7) Services                     n) MMC Stuff
-echo 8) Install Programs             o) Operating system settings
+echo 5) SCM baselines                l) Prohibited files
+echo 6) CIS-CAT Registry Gucci       m) Sysinternals
+echo 7) Services                     n) (Only Win10) Cat-Lite
+echo 8) Install Programs             o) MMC Stuff
 echo 9) Inf files                    p) Nessus
 echo a) Audit Policy                 q) Application Settings
 echo b) Activate/Disable users       r) Server Manager
@@ -150,12 +142,12 @@ echo.
 echo Don't worry if the template broke, it aint that important.
 echo.
 
-if %automode% == true goto :hosts
+if %automode% == true goto 4
 
 goto menu
 
 :: Hosts file
-:hosts
+:4
 echo Resetting hosts file...
 echo.
 
@@ -168,7 +160,7 @@ echo Done!
 echo.
 
 :: SCM Baselines
-:4
+:5
 cls
 if %os% == Win7 (
 	LGPO /g "%scm%"
@@ -247,33 +239,51 @@ echo Now wait for possible points.
 echo.
 pause
 
-if %automode% == true goto 5
+if %automode% == true goto 6
+
+goto menu
+
+:: CISCAT Registry Gucci
+:6
+cls
+echo Alrighty, run the ciscatgucci.bat script
+echo.
+echo that's inside the compfiles folder plz thanks.
+echo.
+echo RIGHT CLICK, RUN AS ADMIN
+echo.
+cd "%compfiles%"
+explorer .
+pause
+
+if %automode% == true goto 7
 
 goto menu
 
 :: Services
-:5
+:7
 cls
 if %automode% == true (
-	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G)
-	for /f %%G in (%compfiles%\services.txt) do (sc config %%G start= disabled)
-	sc config wuauserv start= auto
-	sc start wuauserv
-	sc config eventlog start= auto
-	sc start eventlog
-	sc config windefend start= auto
-	sc start windefend
+	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G & sc config %%G start= disabled)
+	sc config wuauserv start= auto & sc start wuauserv
+	sc config eventlog start= auto & sc start eventlog
+	sc config windefend start= auto & sc start windefend
+
+	:excludeserv
 	cls
 	echo Services disabled!
 	echo.
-	set /p remotegay="Does Remote Desktop need to be enabled? (y/n) "
- 	if remotegay == y (
-		sc config termservice start= auto
-		sc start termservice
-		sc config sessionenv start= auto
-		sc start sessionenv
+	echo Note: Use "remote" for Remote Desktop below
+	echo.
+	set /p excludeserv="Type in any service that needs to stay enabled... "
+ 	if %excludeserv% == n goto 8
+	if %excludeserv% == remote (
+		sc config termservice start= auto & sc start termservice
+		sc config sessionenv start= auto & sc start sessionenv
+		goto excludeserv
 	)
-	goto 6
+	sc config %excludeserv% start= auto & sc start %excludeserv%
+	goto excludeserv
 )
 
 echo tlntsvr (Telnet)
@@ -343,7 +353,7 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to enable... "
-if %serv% == n goto 5
+if %serv% == n goto 6
 if %serv% == re goto menu
 
 sc config %serv% start= auto
@@ -377,7 +387,7 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to disable... "
-if %serv% == n goto 5
+if %serv% == n goto 6
 if %serv% == re goto menu
 
 sc stop %serv%
@@ -582,7 +592,13 @@ else (
 goto menu
 
 :: Install programs
-:5
+:8
+cls
+choco >nul && %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+
+choco feature enable -n allowGlobalConfirmation
+choco feature enable -n useFipsCompliantChecksums
+
 cls
 echo What up my big cheezits
 echo.
@@ -594,20 +610,85 @@ cd "%compfiles%"
 explorer .
 pause
 
-if %automode% == true goto 6
+if %automode% == true goto 9
 
 goto menu
 
-:: Audit Policy
-:6
+:: Inf files
+:9
 cls
 if %automode% == true (
-    LGPO /a "%compfiles%\%os%AllAudit.csv"
-	cls
-	echo Audit Policy gucci settings applied!
+    secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
+    cls
+    echo Bad INF template applied!
+    echo.
+    echo Wait and see if you got any vulnerabilities from it...
 	echo.
-	pause
-    goto 7
+	echo MEANWHILE, look at Forensics Questions.
+    echo.
+    pause
+
+    secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\%os%GoodInf.inf"
+
+    goto 10
+)
+
+set /p inf="Good or Bad Inf? (g/b) "
+if %inf% == g goto goodinf
+if %inf% == b goto badinf
+if %inf% == re goto menu
+if %inf% == n goto menu
+else (
+    cls
+    echo Oof try again.
+    echo.
+    pause
+    goto 9
+)
+
+:goodinf
+cls
+secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\%os%GoodInf.inf"
+if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
+cls
+echo Good INF Done!
+echo.
+echo Check the scoring report and copy/paste the vulnerabilities into notepad.
+echo.
+pause
+
+goto 9
+
+:badinf
+cls
+secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
+if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
+cls
+echo Bad Inf Done!
+echo.
+echo Check the scoring report and copy/paste the vulnerabilities into notepad.
+echo.
+pause
+
+goto 9
+
+:: Audit Policy
+:11
+cls
+if %automode% == true (
+    LGPO /a "%compfiles%\%os%NoAudit.csv"
+	cls
+    echo Bad audit template applied!
+    echo.
+    echo Wait and see if you got any vulnerabilities from it...
+	echo.
+	echo MEANWHILE, look at Forensics Questions.
+    echo.
+    pause
+
+    LGPO /a "%compfiles%\%os%AllAudit.csv"
+
+    goto 12
 )
 
 set /p inf="No or All Auditing? (no/a) "
@@ -620,7 +701,7 @@ else (
     echo Oof try again.
     echo.
     pause
-    goto 6
+    goto 11
 )
 
 :allaudit
@@ -634,7 +715,7 @@ echo Wait and see if you got points...
 echo.
 pause
 
-goto 6
+goto 11
 
 :noaudit
 cls
@@ -647,48 +728,10 @@ echo Wait and see if you got points...
 echo.
 pause
 
-goto 6
-
-:: Change passwords
-:7
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-if %automode% == true (
-	if %autousers% == false (
-		set return=true
-		set return_number=7
-		goto getuserlist
-	)
-	cls
-	for /f %%G in (C:\users_admins.txt) do net user	%%G abc123ABC123@@
-	cls
-	echo Changing all passwords done!
-	echo.
-	echo Note: All passwords are abc123ABC123@@
-	echo.
-	pause
-	goto 8
-)
-
-cls
-%listuser%
-
-echo All users' passwords will be abc123ABC123@@
-echo.
-
-set /p user="Enter user for password change... "
-if %user% == n goto menu
-if %user% == re goto menu
-net user %user% abc123ABC123@@
-
-goto 7
+goto 11
 
 :: Activate/Disable Users
-:8
+:12
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -698,7 +741,7 @@ if %usersbroken% == false (
 if %automode% == true (
 	if %autousers% == false (
 		set return=true
-		set return_number=8
+		set return_number=12
 		goto getuserlist
 	)
 	cls
@@ -710,8 +753,7 @@ if %automode% == true (
 	echo.
 	echo Guest and Admin accounts have been disabled, so yeet.
 	echo.
-	pause
-	goto 9
+	goto 13
 )
 
 net user BroShirt /active:no
@@ -734,7 +776,7 @@ cls
 %listuser%
 
 set /p user="Enter a user to activate... "
-if %user% == n goto 8
+if %user% == n goto 12
 if %user% == re goto menu
 net user %user% /active:yes
 goto activateusers
@@ -744,25 +786,253 @@ cls
 %listuser%
 
 set /p user="Enter a user to disable... "
-if %user% == n goto 8
+if %user% == n goto 12
 if %user% == re goto menu
 net user %user% /active:no
 
 goto disableusers
 
+:: Change passwords
+:13
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+if %automode% == true (
+	if %autousers% == false (
+		set return=true
+		set return_number=13
+		goto getuserlist
+	)
+	cls
+	for /f %%G in (C:\users_admins.txt) do net user	%%G abc123ABC123@@
+	cls
+	echo Changing all passwords done!
+	echo.
+	echo Note: All passwords are abc123ABC123@@
+	echo.
+	pause
+	goto 14
+)
+
+cls
+%listuser%
+
+echo All users' passwords will be abc123ABC123@@
+echo.
+
+set /p user="Enter user for password change... "
+if %user% == n goto menu
+if %user% == re goto menu
+net user %user% abc123ABC123@@
+
+goto 13
+
+:: Prohibited users' files
+:14
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+del /f /q C:\*files.txt
+
+if %automode% == true (
+	if %autousers% == false (
+		set return=true
+		set return_number=14
+		goto getuserlist
+	)
+
+	call icdiff C:\approved_users_gucci.txt C:\users.txt
+	echo.
+)
+
+if %automode% == false (
+	cls
+)
+
+set /p baduser="Enter an unauthorized user's name to find their files... "
+if %baduser% == n goto 15
+
+cls
+echo Ok. Wait for ting to happen.
+echo.
+dir /s /q /a /a-d /o-d /tc C:\ | findstr /i "%computername%\%baduser%" >> C:\%baduser%files.txt
+
+start C:\%baduser%files.txt
+:badfiles
+cls
+echo Look through the text file to find sketchiness.
+echo.
+set /p eekfile="Enter the filename of any suspicious files you see... "
+if %eekfile% == n goto 14
+
+cd C:\
+dir /s /q /a "%eekfile%" >> C:\whomst.txt
+
+start C:\whomst.txt
+cls
+echo It probably found something OOF
+echo.
+pause
+
+goto badfiles
+
+:: Add/Delete Users
+:15
+if %usersbroken% == true set automode=false
+if %usersbroken% == false (
+	if %autochoice% == a set automode=true
+	if %autochoice% == m set automode=false
+)
+
+if %automode% == true (
+	if %autousers% == false (
+		set return=true
+		set return_number=15
+		goto getuserlist
+	)
+
+	call icdiff C:\approved_users_gucci.txt C:\users.txt
+	echo.
+)
+
+if %automode% == false (
+	cls
+	%listuser%
+)
+
+set /p choice="Add or remove user? (a/r) "
+if %choice% == a goto addusers
+if %choice% == r goto delusers
+if %choice% == n (
+	if %autochoice% == a set automode=true
+	if %automode% == true goto 16
+	goto menu
+)
+if %choice% == re goto menu
+
+:addusers
+cls
+%listuser%
+
+set /p user="Enter a username... "
+if %user% == n goto 15
+if %user% == re goto menu
+net user %user% /add
+
+goto addusers
+
+:delusers
+cls
+call icdiff C:\approved_users_gucci.txt C:\users.txt
+echo.
+
+set /p user="Enter a user to delete... "
+if %user% == n goto 15
+if %user% == re goto menu
+net user %user% /delete
+
+goto delusers
+
+:: Deleting/adding admins
+:16
+cls
+%listadmin%
+
+set /p choice="Add or remove admin? (a/r) "
+
+if %choice% == a goto addadmins
+if %choice% == r goto deladmins
+if %choice% == n (
+	if %automode% == true goto 17
+	goto menu
+)
+if %choice% == re goto menu
+
+:addadmins
+cls
+%listuser%
+net localgroup administrators
+
+set /p user="Enter a user to add to admin group... "
+if %user% == n goto 16
+if %user% == re goto menu
+net localgroup administrators %user% /add
+
+goto addadmins
+
+:deladmins
+cls
+%listadmin%
+
+set /p user="Enter a user to remove from admin group... "
+if %user% == n goto 16
+if %user% == re goto menu
+net localgroup administrators %user% /delete
+
+goto deladmins
+
+:: Remove Programs + Features
+:17
+cls
+echo Removing programs + features...
+echo.
+echo Attempt to remove archives (plain text n stuff too)
+echo.
+echo .zip, .exe, .msi, .txt, .bad, .bru
+echo.
+echo Wait for a scan here...
+cd %homedrive%\
+dir /s /a /b /o-d *.zip *.exe *.msi *.txt *.bad *.bru >> sketchyfiles.txt
+start sketchyfiles.txt
+pause
+
+cls
+echo Uninstall programs
+echo.
+start appwiz.cpl
+pause
+
+cls
+echo Remove features
+echo.
+pause
+
+cls
+echo Remove folders in Program Files
+echo.
+echo Make sure to check hidden folders
+echo.
+cd "%programfiles%"
+explorer .
+pause
+
+cls
+echo Generally just find all the malware, yo
+echo.
+pause
+
+if %automode% == true goto 18
+goto menu
+
 :: Forensics
-:9
+:18
 cls
 echo Do the forensics questions. Eek.
 echo.
 pause
 
-if %automode% == true goto 10
+if %automode% == true goto 19
 
 goto menu
 
 :: Media Files
-:10
+:19
 if %automode% == true goto deletemf
 
 cls
@@ -780,8 +1050,6 @@ echo Make sure you did the forensics questions
 echo.
 echo *cough* timon *cough*
 echo.
-pause
-cls
 echo Note: "Could not find mediafiles.txt" is expected here.
 echo.
 
@@ -803,9 +1071,9 @@ start mediafiles.txt
 
 pause
 
-if %automode% == true goto 11
+if %automode% == true goto 20
 
-goto 10
+goto 19
 
 :searchmf
 cls
@@ -823,247 +1091,91 @@ start mediafiles.txt
 
 pause
 
-if %automode% == true goto 11
+if %automode% == true goto 20
 
-goto 10
+goto 19
 
-:: Inf files
-:11
+:: Operating System Settings
+:20
 cls
-if %automode% == true (
-    secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
-    cls
-    echo Bad INF template applied!
-    echo.
-    echo Wait and see if you got any points before continuing...
-    echo.
-    pause
-
-    secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\%os%GoodInf.inf"
-
-    goto 12
-)
-
-set /p inf="Good or Bad Inf? (g/b) "
-if %inf% == g goto goodinf
-if %inf% == b goto badinf
-if %inf% == re goto menu
-if %inf% == n goto menu
-else (
-    cls
-    echo Oof try again.
-    echo.
-    pause
-    goto 11
-)
-
-:goodinf
-cls
-secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\%os%GoodInf.inf"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
-echo Good INF Done!
+net share
 echo.
-echo Check the scoring report and copy/paste the vulnerabilities into notepad.
+echo The default, acceptable shares are:
+echo.
+echo C$, ADMIN$, IPC$
+echo.
+set /p share="Choose a share to delete cause it sketchy... "
+if %share% == n goto oscont
+if %share% == re goto menu
+net share %share% /del
+goto 20
+
+:oscont
+cls
+echo Enable screen saver + check "logon on resume"
+echo.
+control desktop
+pause
+
+cls
+echo Check file permissions for danko folders
 echo.
 pause
 
-goto 11
-
-:badinf
 cls
-secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\%os%BadInf.inf"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
-echo Bad Inf Done!
+echo Disable remote desktop
 echo.
-echo Check the scoring report and copy/paste the vulnerabilities into notepad.
+start sysdm.cpl
+pause
+
+cls
+echo Check action center (doesn't apply to Server 2008)
+start wscui.cpl
 echo.
 pause
 
-goto 11
-
-:: CISCAT Registry Gucci
-:12
 cls
-echo Alrighty, run the ciscatgucci.bat script
+echo Enable UAC
 echo.
-echo that's inside the compfiles folder plz thanks.
-echo.
-cd "%compfiles%"
-explorer .
 pause
 
-if %automode% == true (
-	if %os% == Win10 goto catlite
-	goto 13
+cls
+echo Check AppLocker policies
+echo.
+echo Security Settings, Application Control Policies
+echo.
+start gpedit.msc
+pause
+
+if %os% == Win10 (
+	cls
+	echo What up it's ya boi cat-lite scanner here. imma scan and be cool.
+	echo.
+	start /d "%cmderbin%\cis-cat-lite" CISCAT.jar
+	pause
 )
+
+if %automode% == true goto 21
 
 goto menu
 
-:: CAT-Lite
-:catlite
+:: Update programs
+:21
 cls
-echo Running CAT-Lite scanner...
+echo Update all programs you need to.
 echo.
-echo After it's done, copy the report to a flash drive.
+echo This includes firefox, internet explorer, etc.
 echo.
-echo By default, it saves it in Documents or something.
-echo.
-start /d "%cmderbin%\cis-cat-lite" CISCAT.jar
-pause
-
-goto 13
-
-:: Prohibited users' files
-:13
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-del /f /q C:\*files.txt
-
-if %automode% == true (
-	if %autousers% == false (
-		set return=true
-		set return_number=13
-		goto getuserlist
-	)
-
-	call icdiff C:\approved_users_gucci.txt C:\users.txt
-	echo.
-)
-
-if %automode% == false (
-	cls
-)
-
-set /p baduser="Enter an unauthorized user's name to find their files... "
-if %baduser% == n goto 14
-
-cls
-echo Ok. Wait for ting to happen.
-echo.
-dir /s /q /a /a-d /o-d /tc C:\ | findstr /i "%computername%\%baduser%" >> C:\%baduser%files.txt
-
-start C:\%baduser%files.txt
-:badfiles
-cls
-echo Look through the text file to find sketchiness.
-echo.
-set /p eekfile="Enter the filename of any suspicious files you see... "
-if %eekfile% == n goto 13
-
-cd C:\
-dir /s /q /a "%eekfile%" >> C:\whomst.txt
-
-start C:\whomst.txt
-cls
-echo It probably found something OOF
+echo Just download the installers from the websites n stuff.
 echo.
 pause
 
-goto badfiles
+if %automode% == true goto 22
 
-:: Add/Delete Users
-:14
-if %usersbroken% == true set automode=false
-if %usersbroken% == false (
-	if %autochoice% == a set automode=true
-	if %autochoice% == m set automode=false
-)
-
-if %automode% == true (
-	if %autousers% == false (
-		set return=true
-		set return_number=14
-		goto getuserlist
-	)
-
-	call icdiff C:\approved_users_gucci.txt C:\users.txt
-	echo.
-)
-
-if %automode% == false (
-	cls
-	%listuser%
-)
-
-set /p choice="Add or remove user? (a/r) "
-if %choice% == a goto addusers
-if %choice% == r goto delusers
-if %choice% == n (
-	if %autochoice% == a set automode=true
-	if %automode% == true goto 15
-	goto menu
-)
-if %choice% == re goto menu
-
-:addusers
-cls
-%listuser%
-
-set /p user="Enter a username... "
-if %user% == n goto 14
-if %user% == re goto menu
-net user %user% /add
-
-goto addusers
-
-:delusers
-cls
-call icdiff C:\approved_users_gucci.txt C:\users.txt
-echo.
-
-set /p user="Enter a user to delete... "
-if %user% == n goto 14
-if %user% == re goto menu
-net user %user% /delete
-
-goto delusers
-
-:: Deleting/adding admins
-:15
-cls
-%listadmin%
-
-set /p choice="Add or remove admin? (a/r) "
-
-if %choice% == a goto addadmins
-if %choice% == r goto deladmins
-if %choice% == n (
-	if %automode% == true goto 16
-	goto menu
-)
-if %choice% == re goto menu
-
-:addadmins
-cls
-%listuser%
-net localgroup administrators
-
-set /p user="Enter a user to add to admin group... "
-if %user% == n goto 15
-if %user% == re goto menu
-net localgroup administrators %user% /add
-
-goto addadmins
-
-:deladmins
-cls
-%listadmin%
-
-set /p user="Enter a user to remove from admin group... "
-if %user% == n goto 15
-if %user% == re goto menu
-net localgroup administrators %user% /delete
-
-goto deladmins
+goto menu
 
 :: Prohibited files
-:16
+:22
 cls
 echo Yaboi prohibited files is a thing now.
 echo.
@@ -1115,68 +1227,12 @@ start eek.txt
 
 pause
 
-if %automode% == true goto 17
-
-goto menu
-
-:: Remove Programs + Features
-:17
-cls
-echo Removing programs + features...
-echo.
-echo Attempt to remove archives (plain text n stuff too)
-echo.
-echo .zip, .exe, .msi, .txt, .bad, .bru
-echo.
-echo Wait for a scan here...
-cd %homedrive%\
-dir /s /a /b /o-d *.zip *.exe *.msi *.txt *.bad *.bru >> sketchyfiles.txt
-start sketchyfiles.txt
-pause
-
-cls
-echo Uninstall programs
-echo.
-start appwiz.cpl
-pause
-
-cls
-echo Remove features
-echo.
-pause
-
-cls
-echo Remove folders in Program Files
-echo.
-echo Make sure to check hidden folders
-echo.
-cd "%programfiles%"
-explorer .
-pause
-
-cls
-echo Generally just find all the malware, yo
-echo.
-pause
-
-if %automode% == true goto 18
-goto menu
-
-:: Update programs
-:18
-cls
-echo Update all programs you need to.
-echo.
-echo This includes firefox, internet explorer, etc.
-echo.
-pause
-
-if %automode% == true goto 19
+if %automode% == true goto 23
 
 goto menu
 
 :: Sysinternals
-:19
+:23
 cls
 echo Opening TCPView, Process Explorer, and Autoruns...
 echo.
@@ -1187,66 +1243,28 @@ autoruns
 tcpview
 pause
 
-if %automode% == true goto 20
+if %automode% == true goto 24
 
 goto menu
 
-:: DISA Stig
-:21
-if %os% == Win10 (
-	if %automode% == true goto 22
-	cls
-	echo Windows 10 doesn't have a DISA Stig.
-	echo.
-	echo This is so sad, Alexa play Alan Walker - Faded
-	echo.
-	pause
-	goto menu
-)
-
-if %os% == Server2016 (
-	if %automode% == true goto 22
-	cls
-	echo Server 2016 doesn't have a DISA Stig.
-	echo.
-	echo This is so sad, Alexa play Alan Walker - Faded
-	echo.
-	pause
-	goto menu
-)
-
+:: CAT-Lite
+:24
 cls
-secedit /configure /db "%systemroot%\dankdatabase3.db" /cfg "%compfiles%\%os%DISAStig.inf"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
-echo DISA Stig Done!
+echo Running CAT-Lite scanner...
 echo.
-echo Check the scoring report and copy/paste the vulnerabilities into notepad.
+echo After it's done, copy the report to a flash drive.
 echo.
-
+echo By default, it saves it in Documents or something.
+echo.
+start /d "%cmderbin%\cis-cat-lite" CISCAT.jar
 pause
 
-if %automode% == true goto 22
+if %automode% == true goto 25
 
 goto menu
 
 :: MMC Stuff
-:22
-:sharestart
-cls
-net share
-echo.
-echo The default, acceptable shares are:
-echo.
-echo C$, ADMIN$, IPC$
-echo.
-set /p share="Choose a share to delete cause it sketchy... "
-if %share% == n goto mmccont
-if %share% == re goto menu
-net share %share% /del
-goto sharestart
-
-:mmccont
+:25
 cls
 echo Check locked users/other user stuff
 echo.
@@ -1269,72 +1287,12 @@ echo Disable autoplay
 echo.
 pause
 
-if %automode% == true goto 23
-
-goto menu
-
-:: Operating System Settings
-:23
-cls
-echo IF YOU'RE ON A SERVER OS, focus on this a little more.
-echo.
-echo Enable screen saver + check "logon on resume"
-echo.
-control desktop
-pause
-
-takeown /f "%systemroot%\system32\drivers\etc"
-del "%systemroot%\system32\drivers\etc\hosts"
-copy "%compfiles%\hosts" "%systemroot%\system32\drivers\etc\hosts"
-cls
-echo Oof it just did the hosts file so cool.
-echo.
-pause
-
-cls
-echo Check file permissions for danko folders
-echo.
-pause
-
-cls
-echo Disable remote desktop
-echo.
-start sysdm.cpl
-pause
-
-cls
-echo Check action center (doesn't apply to Server 2008)
-start wscui.cpl
-echo.
-pause
-
-cls
-echo Enable UAC
-echo.
-pause
-
-cls
-echo Check AppLocker policies
-echo.
-echo Security Settings, Application Control Policies
-echo.
-start gpedit.msc
-pause
-
-if %os% == Win10 (
-	cls
-	echo What up it's ya boi cat-lite scanner here. imma scan and be cool.
-	echo.
-	start /d "%cmderbin%\cis-cat-lite" CISCAT.jar
-	pause
-)
-
-if %automode% == true goto 24
+if %automode% == true goto 26
 
 goto menu
 
 :: Nessus
-:24
+:26
 cls
 ipconfig
 echo.
@@ -1346,12 +1304,12 @@ echo.
 
 pause
 
-if %automode% == true goto 25
+if %automode% == true goto 27
 
 goto menu
 
 :: Application Settings
-:25
+:27
 if %usersbroken% == true set automode=false
 if %usersbroken% == false (
 	if %autochoice% == a set automode=true
@@ -1376,12 +1334,12 @@ start firefox.exe
 
 pause
 
-if %automode% == true goto 26
+if %automode% == true goto 28
 
 goto menu
 
 :: Server Manager
-:26
+:28
 if %os% == Server2008 goto servmgr
 if %os% == Server2016 goto servmgr
 if %os% == Win7 goto noserv
@@ -1403,11 +1361,11 @@ echo.
 start /d "%SystemRoot%\system32" CompMgmtLauncher.exe
 pause
 
-if %automode% == true goto 27
+if %automode% == true goto 29
 goto menu
 
 :noserv
-if %automode% == true goto 27
+if %automode% == true goto 29
 cls
 echo Oof no server manager here. Y'all bad.
 echo.
@@ -1415,19 +1373,19 @@ pause
 goto menu
 
 :: Event Viewer
-:27
+:29
 cls
 echo Look at the Event Viewer for stuff that's BAD
 echo.
 start eventvwr.msc
 pause
 
-if %automode% == true goto 28
+if %automode% == true goto 30
 
 goto menu
 
 :: Backup
-:28
+:30
 cls
 echo Real quick connect the drive to the VM (make sure it USB 2.0)
 echo.
@@ -1438,12 +1396,12 @@ set /p location="Enter the drive letter for the backup location... "
 
 wbadmin enable backup -addtarget:%location%: -include:C: -schedule:03:00 -quiet
 
-if %automode% == true goto 29
+if %automode% == true goto 31
 
 goto menu
 
 :: README Requirements
-:29
+:31
 cls
 echo Open the readme and do the specific things it says to do.
 echo Could be enabling service, adding user/group, etc.
@@ -1451,12 +1409,12 @@ echo.
 
 pause
 
-if %automode% == true goto 30
+if %automode% == true goto 32
 
 goto menu
 
 :: Defensive Countermeasures
-:30
+:32
 cls
 echo Make sure windows defender is danko enabled
 echo.
@@ -1472,12 +1430,12 @@ echo Scan on all those programs
 echo.
 pause
 
-if %automode% == true goto 31
+if %automode% == true goto 33
 
 goto menu
 
 :: Random Things At The End
-:31
+:33
 cls
 echo Check processes for sketchiness.
 echo.
@@ -1536,7 +1494,7 @@ set automode=false
 goto menu
 
 :: Generate User List
-:32
+:34
 choco list -l | findstr /i "powershell" && goto getuserlist
 if %os% == Win7 (
 	choco install powershell dotnet4.5
@@ -1611,6 +1569,6 @@ if %return% == true goto %return_number%
 goto menu
 
 :: Open DankMMC
-:33
+:35
 start /d "%cmderbin%" DankMMC.msc
 goto menu
