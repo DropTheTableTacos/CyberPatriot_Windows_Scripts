@@ -16,17 +16,6 @@ pause
 :: Set pshellrun
 set pshellrun=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
 
-:: OS Check
-:oscheck
-cls
-set os=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
-set osname=%pshellrun% "(get-ciminstance -classname cim_operatingsystem).name"
-%os% | findstr /b /i "6.1" >nul && set os=Win7&& goto setup
-%os% | findstr /b /i "6.3" >nul && set os=Win8&& goto setup
-%os% | findstr /b /i "6.0" >nul && set os=Server2008&& goto setup
-%osname% | findstr /c:"Server 2016" >nul && set os=Server2016&& goto setup
-%osname% | findstr /c:"Windows 10" >nul && set os=Win10&& goto setup
-
 :: Set up useful logon message initially
 cls
 net user %username% abc123ABC123@@
@@ -38,6 +27,17 @@ reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\S
 cls
 %pshellrun% "set-executionpolicy -executionpolicy RemoteSigned -scope LocalMachine"
 %pshellrun% "set-executionpolicy -executionpolicy Restricted -scope CurrentUser"
+
+:: OS Check
+:oscheck
+cls
+set os=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
+set osname=%pshellrun% "(get-ciminstance -classname cim_operatingsystem).name"
+%os% | findstr /b /i "6.1" >nul && set os=Win7&& goto setup
+%os% | findstr /b /i "6.3" >nul && set os=Win8&& goto setup
+%os% | findstr /b /i "6.0" >nul && set os=Server2008&& goto setup
+%osname% | findstr /c:"Server 2016" >nul && set os=Server2016&& goto setup
+%osname% | findstr /c:"Windows 10" >nul && set os=Win10&& goto setup
 
 :: Setup
 :setup
