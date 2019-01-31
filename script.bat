@@ -245,7 +245,7 @@ goto menu
 cls
 echo Alrighty, ciscat gucci script will run now...
 echo.
-ciscatgucci.bat
+call ciscatgucci.bat
 
 if %automode% == true goto 7
 
@@ -593,7 +593,7 @@ choco feature enable -n useFipsCompliantChecksums
 cls
 echo Choco gucci script is gonna install programs now...
 echo.
-chocogucci.bat
+call chocogucci.bat
 
 if %automode% == true goto 9
 
