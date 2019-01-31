@@ -1,8 +1,12 @@
 ajrouter
 alg
+AppMgmt
 browser
+BTAGService
+bthAvctpSvc
 bthhfsrv
 bthserv
+CaptureService
 certpropsvc
 cscservice
 diagnosticshub.standardcollector.service
@@ -29,9 +33,11 @@ msftpsvc
 msiscsi
 netlogon
 nettcpportsharing
+NfsClnt
 p2pimsvc
 p2psvc
 pcasvc
+PeerDistSvc
 pnrpautoreg
 pnrpsvc
 rasauto
@@ -63,6 +69,7 @@ tabletinputservice
 termservice
 tlntsvr
 trkwks
+tzautoupdate
 umrdpservice
 upnphost
 w3svc
@@ -76,7 +83,6 @@ winhttpautoproxysvc
 wmpnetworksvc
 wmsvc
 wpdbusenum
-wscsvc
 xbgm
 xblauthmanager
 xblgamesave
