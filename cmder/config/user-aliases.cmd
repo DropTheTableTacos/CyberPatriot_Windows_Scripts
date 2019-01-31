@@ -13,4 +13,4 @@ history=cat "%CMDER_ROOT%\config\.history"
 unalias=alias /d $1
 vi=vim $*
 cmderr=cd /d "%CMDER_ROOT%"
-editscript=notepad "%userprofile%\Desktop\script.bat"  
+editscript=notepad "%userprofile%\Desktop\Windows\script.bat"  
