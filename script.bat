@@ -66,7 +66,7 @@ set /p autochoice="Auto mode or manual mode? (a/m) "
 if %autochoice% == a set automode=true
 
 :: Menu
-:menugood
+:menu
 cls
 echo 1) README                    i) Disable features
 echo 2) Windows Update            j) Remove programs

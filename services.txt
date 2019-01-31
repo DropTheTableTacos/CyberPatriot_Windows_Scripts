@@ -4,6 +4,7 @@ browser
 bthhfsrv
 bthserv
 certpropsvc
+cscservice
 diagnosticshub.standardcollector.service
 diagtrack
 dmwappushservice
@@ -53,6 +54,7 @@ simptcp
 smsrouter
 snmp
 snmptrap
+spooler
 ssdpsrv
 stisvc
 storsvc
@@ -73,6 +75,7 @@ wersvc
 winhttpautoproxysvc
 wmpnetworksvc
 wmsvc
+wpdbusenum
 wscsvc
 xbgm
 xblauthmanager
