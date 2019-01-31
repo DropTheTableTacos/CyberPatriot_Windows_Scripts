@@ -86,11 +86,11 @@ echo f) Add/Delete users          w) Defensive Countermeasures
 echo g) Add/Delete admins         x) Random list of things at the end
 echo h) Readme Requirements
 echo.
-echo x) Generate User List
-echo y) Open DankMMC
+echo y) Generate User List
+echo z) Open DankMMC
 echo.
 
-choice /c 123456789abcdefghijklmnopqrstuvwxy /n /m "Where would you like to start? "
+choice /c 123456789abcdefghijklmnopqrstuvwxyz /n /m "Where would you like to start? "
 goto %errorlevel%
 
 :: README
