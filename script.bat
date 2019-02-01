@@ -1000,8 +1000,9 @@ goto menu
 
 :: Enable/disable features
 :18
+cls
 %pshellrun% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all"
-%pshellrun% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x64' -all"
+%pshellrun% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all"
 
 cls
 if %sickomode% == true (
