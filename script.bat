@@ -605,6 +605,13 @@ if %sickomode% == true (
 	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Username: %username%" /f
 	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
 
+	echo.
+	echo Good inf done!
+	echo.
+	echo Big yeet!
+	echo.
+	pause
+
     goto 10
 )
 
@@ -616,8 +623,8 @@ if %inf% == n (goto menu) else (goto menu)
 :goodinf
 cls
 secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\infs\%os%GoodInf.inf"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
+
+echo.
 echo Good INF Done!
 echo.
 echo Check the scoring report and copy/paste the vulnerabilities into notepad.
@@ -629,8 +636,8 @@ goto 9
 :badinf
 cls
 secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\infs\%os%BadInf.inf"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
+
+echo.
 echo Bad Inf Done!
 echo.
 echo Check the scoring report and copy/paste the vulnerabilities into notepad.
@@ -644,7 +651,8 @@ goto 9
 cls
 if %sickomode% == true (
     LGPO /a "%compfiles%\audit_templates\%os%NoAudit.csv"
-	cls
+
+	echo.
     echo Bad audit template applied!
     echo.
     echo Wait and see if you got any vulnerabilities from it...
@@ -655,27 +663,26 @@ if %sickomode% == true (
 
     LGPO /a "%compfiles%\audit_templates\%os%AllAudit.csv"
 
+	echo.
+	echo Good audit template done!
+	echo.
+	echo Big yeet!
+	echo.
+	pause
+
     goto 11
 )
 
 set /p inf="No or All Auditing? (no/a) "
-if %inf% == a goto allaudit
-if %inf% == no goto noaudit
-if %inf% == re goto menu
-if %inf% == n goto menu
-else (
-    cls
-    echo Oof try again.
-    echo.
-    pause
-    goto 10
-)
+if %inf% == a (goto allaudit)
+if %inf% == no (goto noaudit)
+if %inf% == n (goto menu) else (goto menu)
 
 :allaudit
 cls
 LGPO /a "%compfiles%\audit_templates\%os%AllAudit.csv"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
+
+echo.
 echo All Auditing template done!
 echo.
 echo Wait and see if you got points...
@@ -687,27 +694,26 @@ goto 10
 :noaudit
 cls
 LGPO /a "%compfiles%\audit_templates\%os%NoAudit.csv"
-if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-cls
+
+echo.
 echo No Auditing template done!
 echo.
 echo Wait and see if you got points...
 echo.
 pause
 
-goto 11
+goto 10
 
 :: Nessus
 :11
 cls
-ipconfig
-echo.
+ipconfig | findstr /i "IPv4 Address."
 
-echo Run the Nessus immediately cause it might help and stuff yooo!
 echo.
-echo If you're not Jackson, don't worry 'bout it. ooof.
+echo If Nessus is installed on your host PC, run it
 echo.
-
+echo If not, it's really not a big deal at all, tbh.
+echo.
 pause
 
 if %sickomode% == true goto 12
