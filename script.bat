@@ -1,19 +1,7 @@
 @echo off
 
-:: Start Message
-title ThanosScript
-echo ========================================
-echo      The Ultra Gucci Windows Script
-echo      Version like 35.2 or something
-echo            by Jackson Kauflin
-echo.
-echo    This script is dedicated to Drake
-echo because he make sure that north-side eat
-echo ========================================
-echo.
-pause
-
 :: Set pshellrun
+cls
 set pshellrun=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
 
 :: Set up useful logon message initially
@@ -25,45 +13,43 @@ reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\S
 
 :: Set execution policy for powershell
 cls
-%pshellrun% "set-executionpolicy -executionpolicy RemoteSigned -scope LocalMachine"
-%pshellrun% "set-executionpolicy -executionpolicy Restricted -scope CurrentUser"
+%pshellrun% "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine"
+%pshellrun% "Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser"
 
 :: OS Check
 :oscheck
 cls
-set os=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
-set osname=%pshellrun% "(get-ciminstance -classname cim_operatingsystem).name"
-%os% | findstr /b /i "6.1" >nul && set os=Win7&& goto setup
-%os% | findstr /b /i "6.3" >nul && set os=Win8&& goto setup
-%os% | findstr /b /i "6.0" >nul && set os=Server2008&& goto setup
-%osname% | findstr /c:"Server 2016" >nul && set os=Server2016&& goto setup
-%osname% | findstr /c:"Windows 10" >nul && set os=Win10&& goto setup
+set os=%pshellrun% "(Get-CimInstance -ClassName CIM_OperatingSystem).Name"
+
+%os% | findstr /c:"Windows 7" >nul && set os=Win7 && goto setup
+%os% | findstr /c:"Windows 8.1" >nul && set os=Win8 && goto setup
+%os% | findstr /c:"Server 2008" >nul && set os=Server2008 && goto setup
+%os% | findstr /c:"Server 2016" >nul && set os=Server2016 && goto setup
+%os% | findstr /c:"Windows 10" >nul && set os=Win10 && goto setup
 
 :: Setup
 :setup
-set sickomode=true
-set return=false
-set return_number=0
-mode con: cols=100 lines=23
+cls
+mode con: cols=98 lines=22
 set desktop=%userprofile%\Desktop
 set compfiles=%desktop%\Windows
 set scm=%compfiles%\scmbaselines
 set cmderbin=%compfiles%\cmder\bin
 set autousers=false
-set usersbroken=false
-set listuser=%pshellrun% "Get-LocalUser | select name, enabled"
-set listadmin=%pshellrun% "Get-LocalGroupMember -group Administrators | select name"
-set getservice=Get-WmiObject -class win32_service ^| select name, displayname, state, startmode, processid, installdate, pathname
+set getservice=Get-WmiObject -Class Win32_Service ^| select Name, DisplayName, State, StartMode, ProcessId, InstallDate, PathName
+set listadmin=%pshellrun% "Get-LocalGroupMember -Group Administrators | select Name"
+set listuser=%pshellrun% "Get-LocalUser | select Name, Enabled"
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%
 
-del /f /q C:\approved_users.txt C:\users_admins.txt C:\mediafiles.txt C:\sketchyfiles.txt C:\eek.txt C:\*files.txt C:\whomst.txt C:\sketchymemes.txt C:\userdiff.txt
+cd C:\
+del /f /q approved_users.txt users_admins.txt mediafiles.txt sketchyfiles.txt eek.txt *files.txt whomst.txt sketchymemes.txt userdiff.txt
 
 :: sickomode Check
 cls
 echo Hint: Auto is hetero and manual is not. nuff said.
 echo.
-set /p autochoice="Sicko mode or manual mode? (a/m) "
-if %autochoice% == a set sickomode=true
+set /p autochoice="Auto (sicko) mode or manual mode? (a/m) "
+if %autochoice% == m (set sickomode=false) else (set sickomode=true)
 
 :: Menu
 :menu
@@ -99,46 +85,30 @@ cls
 echo Read the README, ya bigot higot!
 echo.
 start C:\CyberPatriot\README.url
-
 pause
 
-if %sickomode% == true goto 2
+if %sickomode% == true (goto 2)
 
 goto menu
 
 :: Windows Update
 :2
-if %sickomode% == true (
-	cls
-	sc config wuauserv start= auto
-	if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-	sc start wuauserv
-	if %errorlevel% == 1 echo. && echo Uh oh. Error happened.
-
-	reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 4 /f
-
-	cls
-	echo Start Windows Update...
-	echo.
-    if %os% == Win7 start wuapp.exe
-    if %os% == Win8 start wuapp.exe
-    if %os% == Server2008 start wuapp.exe
-    if %os% == Win10 start ms-settings:windowsupdate
-    if %os% == Server2016 start ms-settings:windowsupdate
-	pause
-
-	goto 3
-)
-
 cls
-echo Start Windows Update...
+sc config wuauserv start= auto
+sc start wuauserv
+
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 4 /f
+
 echo.
-if %os% == Win7 start wuapp.exe
-if %os% == Win8 start wuapp.exe
-if %os% == Server2008 start wuapp.exe
-if %os% == Win10 start ms-settings:windowsupdate
-if %os% == Server2016 start ms-settings:windowsupdate
+echo Windows Automatic Update configured!
+echo.
+echo Now start Windows Update.
+echo.
+if %os% == Win10 (start ms-settings:windowsupdate)
+if %os% == Server2016 (start ms-settings:windowsupdate) else (start wuapp.exe)
 pause
+
+if %sickomode% == true (goto 3)
 
 goto menu
 
@@ -147,33 +117,37 @@ goto menu
 cls
 netsh advfirewall import "%compfiles%\firewall_templates\%os%Firewall.wfw"
 netsh advfirewall set allprofiles state on
-cls
+
+echo.
 echo Firewall enabled!
 echo.
 echo Don't worry if the template broke, it aint that important.
 echo.
+pause
 
-if %sickomode% == true goto 4
+if %sickomode% == true (goto 4)
 
 goto menu
 
 :: Hosts file
 :4
-echo Resetting hosts file...
-echo.
-
+cls
 takeown /f "%systemroot%\system32\drivers\etc"
 del "%systemroot%\system32\drivers\etc\hosts"
 copy "%compfiles%\hosts" "%systemroot%\system32\drivers\etc\hosts"
 
 echo.
-echo Done!
+echo Hosts file done!
 echo.
+pause
+
+if %sickomode% == true goto 5
+
+goto menu
 
 :: SCM Baselines
 :5
 cls
-
 LGPO /g "%scm%\IE11_Com_Sec"
 LGPO /g "%scm%\IE11_User_Sec"
 
@@ -187,7 +161,7 @@ if %os% == Server2016 (
 	goto server2016scm
 )
 
-if %os% == Win10 goto newscm
+if %os% == Win10 (goto newscm)
 
 LGPO /g "%scm%\%os%"
 
@@ -195,7 +169,7 @@ goto finishscm
 
 :newscm
 cls
-set ver=%pshellrun% "(get-wmiobject -class win32_operatingsystem).version"
+set ver=%pshellrun% "(Get-WmiObject -Class Win32_OperatingSystem).Version"
 
 if %ver% == 10.0.10240 (
 	LGPO /g "%scm%\Win10_1507"
@@ -229,33 +203,42 @@ if %ver% == 10.0.17134 (
 )
 
 :finishscm
-cls
+echo.
 echo SCM Baselines done!
 echo.
 echo Now wait for possible points.
 echo.
+echo MEANWHILE, look at forensics questions.
+echo.
 pause
 
-if %sickomode% == true goto 6
+if %sickomode% == true (goto 6)
 
 goto menu
 
 :: CISCAT Registry Gucci
 :6
 cls
-echo Alrighty, ciscat gucci script will run now...
-echo.
 call ciscatgucci.bat
 
+echo.
+echo CIS-CAT EPIC registry script done!
+echo.
+pause
+
 if %sickomode% == true goto 7
+
+:: If it's broke here, remove this goto :shrug:
+goto menu
 
 :: Services
 :7
 cls
-goto servicestart
+::goto servicestart
 if %sickomode% == true (
-    :servicestart
+    :::servicestart
 	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G & sc config %%G start= disabled)
+
 	sc config wuauserv start= auto & sc start wuauserv
 	sc config eventlog start= auto & sc start eventlog
 	sc config windefend start= auto & sc start windefend
@@ -267,6 +250,7 @@ if %sickomode% == true (
 	echo.
 	echo Note: Use "remote" for Remote Desktop below
 	echo.
+
 	set /p excludeserv="Type in any service that needs to stay enabled... "
  	if %excludeserv% == n goto 8
 	if %excludeserv% == remote (
@@ -595,8 +579,9 @@ cls
 echo Choco gucci script is gonna install programs now...
 echo.
 start chocogucci.bat
+pause
 
-if %sickomode% == true goto 9
+if %sickomode% == true (goto 9)
 
 goto menu
 
@@ -605,6 +590,7 @@ goto menu
 cls
 if %sickomode% == true (
     secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\infs\%os%BadInf.inf"
+
     cls
     echo Bad INF template applied!
     echo.
@@ -623,17 +609,9 @@ if %sickomode% == true (
 )
 
 set /p inf="Good or Bad Inf? (g/b) "
-if %inf% == g goto goodinf
-if %inf% == b goto badinf
-if %inf% == re goto menu
-if %inf% == n goto menu
-else (
-    cls
-    echo Oof try again.
-    echo.
-    pause
-    goto 9
-)
+if %inf% == g (goto goodinf)
+if %inf% == b (goto badinf)
+if %inf% == n (goto menu) else (goto menu)
 
 :goodinf
 cls
@@ -738,17 +716,11 @@ goto menu
 
 :: Activate/Disable Users
 :12
-if %usersbroken% == true set sickomode=false
-if %usersbroken% == false (
-	if %autochoice% == a set sickomode=true
-	if %autochoice% == m set sickomode=false
-)
-
 if %sickomode% == true (
 	if %autousers% == false (
 		set return=true
 		set return_number=12
-		goto getuserlist
+		goto 34
 	)
 	cls
 	net user BroShirt /active:no
@@ -800,17 +772,11 @@ goto disableusers
 
 :: Change passwords
 :13
-if %usersbroken% == true set sickomode=false
-if %usersbroken% == false (
-	if %autochoice% == a set sickomode=true
-	if %autochoice% == m set sickomode=false
-)
-
 if %sickomode% == true (
-	if %autousers% == false (
+	if %userlistmade% == false (
 		set return=true
 		set return_number=13
-		goto getuserlist
+		goto 34
 	)
 	cls
 	for /f %%G in (C:\users_admins.txt) do net user	%%G abc123ABC123@@
@@ -850,7 +816,7 @@ if %sickomode% == true (
 	if %autousers% == false (
 		set return=true
 		set return_number=14
-		goto getuserlist
+		goto 34
 	)
 
 	call icdiff C:\approved_users_gucci.txt C:\users.txt
@@ -902,7 +868,7 @@ if %sickomode% == true (
 	if %autousers% == false (
 		set return=true
 		set return_number=15
-		goto getuserlist
+		goto 34
 	)
 
 	call icdiff C:\approved_users_gucci.txt C:\users.txt
@@ -1518,7 +1484,8 @@ goto menu
 
 :: Generate User List
 :34
-choco list -l | findstr /i "powershell" && goto getuserlist
+choco list -l >nul | findstr /i "powershell" && goto getuserlist
+
 if %os% == Win7 (
 	choco install powershell dotnet4.5
 	cls
@@ -1556,7 +1523,7 @@ if %os% == Server2008 (
 )
 
 :getuserlist
-if %usersbroken% == n (
+if %userlistmade% == y (
 	set autousers=true
 	goto %return_number%
 )
@@ -1582,14 +1549,14 @@ echo.
 set /p usersbroken="Did the user list break? (y/n) "
 cls
 if %usersbroken% == y (
-	set usersbroken=true
-	if %return% == true goto %return_number%
+	set userlistmade=false
+	if %return% == true (goto %return_number%)
+	goto menu
+) else (
+	set userlistmade=true
+	if %return% == true (goto %return_number%)
 	goto menu
 )
-
-set autousers=true
-if %return% == true goto %return_number%
-goto menu
 
 :: Open DankMMC
 :35
