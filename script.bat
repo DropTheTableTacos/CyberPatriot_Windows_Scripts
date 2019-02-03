@@ -722,46 +722,54 @@ goto menu
 
 :: Activate/Disable Users
 :12
+cls
 if %sickomode% == true (
+	if %usersbroken% == true (goto 12_cont)
 	if %autousers% == false (
 		set return=true
 		set return_number=12
 		goto 34
 	)
-	cls
+
 	net user BroShirt /active:no
 	net user BroPants /active:no
-	for /f %%G in (C:\users.txt) do net user %%G /active:yes
-	cls
+
+	for /f %%G in (C:\users.txt) do (net user %%G /active:yes)
+
+	echo.
 	echo Activated users done!
 	echo.
 	echo Guest and Admin accounts have been disabled, so yeet.
 	echo.
+	pause
+
 	goto 13
 )
 
+:12_cont
 net user BroShirt /active:no
 net user BroPants /active:no
 
-cls
+echo.
 %listuser%
 
 echo Enable all accounts. Guest account has been disabled.
 echo.
 
 set /p choice="Activate or disable user? (a/d) "
-if %choice% == a goto activateusers
-if %choice% == d goto disableusers
-if %choice% == n goto menu
-if %choice% == re goto menu
+if %choice% == a (goto activateusers)
+if %choice% == d (goto disableusers)
+if %choice% == n (
+	if %sickomode% == true (goto 13)
+	goto menu
+)
 
 :activateusers
 cls
 %listuser%
 
 set /p user="Enter a user to activate... "
-if %user% == n goto 12
-if %user% == re goto menu
+if %user% == n (goto 12)
 net user %user% /active:yes
 goto activateusers
 
@@ -770,73 +778,77 @@ cls
 %listuser%
 
 set /p user="Enter a user to disable... "
-if %user% == n goto 12
-if %user% == re goto menu
+if %user% == n (goto 12)
 net user %user% /active:no
 
 goto disableusers
 
 :: Change passwords
 :13
+cls
 if %sickomode% == true (
-	if %userlistmade% == false (
+	if %usersbroken% == true (goto 13_cont)
+	if %autousers% == false (
 		set return=true
 		set return_number=13
 		goto 34
 	)
-	cls
-	for /f %%G in (C:\users_admins.txt) do net user	%%G abc123ABC123@@
-	cls
+
+	for /f %%G in (C:\users_admins.txt) do (net user %%G abc123ABC123@@)
+
+	echo.
 	echo Changing all passwords done!
 	echo.
 	echo Note: All passwords are abc123ABC123@@
 	echo.
 	pause
+
 	goto 14
 )
 
-cls
+:13_cont
 %listuser%
+if %errorlevel% == 1 (cls & net user)
 
+echo.
 echo All users' passwords will be abc123ABC123@@
 echo.
 
 set /p user="Enter user for password change... "
-if %user% == n goto menu
-if %user% == re goto menu
+if %choice% == n (
+	if %sickomode% == true (goto 14)
+	goto menu
+)
+
 net user %user% abc123ABC123@@
 
 goto 13
 
 :: Prohibited users' files
 :14
-if %usersbroken% == true set sickomode=false
-if %usersbroken% == false (
-	if %autochoice% == a set sickomode=true
-	if %autochoice% == m set sickomode=false
-)
-
 del /f /q C:\*files.txt
 
-if %sickomode% == true (
-	if %autousers% == false (
-		set return=true
-		set return_number=14
-		goto 34
-	)
-
-	call icdiff C:\approved_users_gucci.txt C:\users.txt
-	echo.
+if %autousers% == false (
+	set return=true
+	set return_number=14
+	goto 34
 )
 
-if %sickomode% == false (
+if %usersbroken% == true (
 	cls
-	net user
-	echo.
+	%listuser%
+	if %errorlevel% == 1 (cls & net user)
+) else (
+	call icdiff C:\approved_users_gucci.txt C:\users.txt
+	if %errorlevel% == 1 (cls & net user)
 )
 
+echo.
 set /p baduser="Enter an unauthorized user's name to find their files... "
-if %baduser% == n goto 15
+if %baduser% == n (
+	if %sickomode% == true (goto 15)
+	goto menu
+)
 
 cls
 echo Ok. Wait for ting to happen.
@@ -849,7 +861,7 @@ cls
 echo Look through the text file to find sketchiness.
 echo.
 set /p eekfile="Enter the filename of any suspicious files you see... "
-if %eekfile% == n goto 14
+if %eekfile% == n (goto 14)
 
 cd C:\
 dir /s /q /a "%eekfile%" >> C:\whomst.txt
@@ -864,57 +876,54 @@ goto badfiles
 
 :: Add/Delete Users
 :15
-if %usersbroken% == true set sickomode=false
-if %usersbroken% == false (
-	if %autochoice% == a set sickomode=true
-	if %autochoice% == m set sickomode=false
+if %autousers% == false (
+	set return=true
+	set return_number=15
+	goto 34
 )
 
-if %sickomode% == true (
-	if %autousers% == false (
-		set return=true
-		set return_number=15
-		goto 34
-	)
-
-	call icdiff C:\approved_users_gucci.txt C:\users.txt
-	echo.
-)
-
-if %sickomode% == false (
+if %usersbroken% == true (
 	cls
 	%listuser%
+	if %errorlevel% == 1 (cls & net user)
+) else (
+	call icdiff C:\approved_users_gucci.txt C:\users.txt
+	if %errorlevel% == 1 (cls & net user)
 )
 
+echo.
 set /p choice="Add or remove user? (a/r) "
-if %choice% == a goto addusers
-if %choice% == r goto delusers
+if %choice% == a (goto addusers)
+if %choice% == r (goto delusers)
 if %choice% == n (
-	if %autochoice% == a set sickomode=true
-	if %sickomode% == true goto 16
+	if %sickomode% == true (goto 16)
 	goto menu
 )
-if %choice% == re goto menu
 
 :addusers
 cls
 %listuser%
+if %errorlevel% == 1 (cls & net user)
 
 set /p user="Enter a username... "
-if %user% == n goto 15
-if %user% == re goto menu
+if %user% == n (goto 15)
 net user %user% /add
 
 goto addusers
 
 :delusers
 cls
-call icdiff C:\approved_users_gucci.txt C:\users.txt
-echo.
+if %usersbroken% == true (
+	%listuser%
+	if %errorlevel% == 1 (cls & net user)
+) else (
+	call icdiff C:\approved_users_gucci.txt C:\users.txt
+	if %errorlevel% == 1 (cls & net user)
+)
 
+echo.
 set /p user="Enter a user to delete... "
-if %user% == n goto 15
-if %user% == re goto menu
+if %user% == n (goto 15)
 net user %user% /delete
 
 goto delusers
@@ -923,25 +932,24 @@ goto delusers
 :16
 cls
 %listadmin%
+if %errorlevel% == 1 (cls & net localgroup administrators)
 
 set /p choice="Add or remove admin? (a/r) "
-
 if %choice% == a goto addadmins
 if %choice% == r goto deladmins
 if %choice% == n (
-	if %sickomode% == true goto 17
+	if %sickomode% == true (goto 17)
 	goto menu
 )
-if %choice% == re goto menu
 
 :addadmins
 cls
 %listuser%
+if %errorlevel% == 1 (cls & net user)
 net localgroup administrators
 
 set /p user="Enter a user to add to admin group... "
-if %user% == n goto 16
-if %user% == re goto menu
+if %user% == n (goto 16)
 net localgroup administrators %user% /add
 
 goto addadmins
@@ -949,10 +957,10 @@ goto addadmins
 :deladmins
 cls
 %listadmin%
+if %errorlevel% == 1 (cls & net localgroup administrators)
 
 set /p user="Enter a user to remove from admin group... "
-if %user% == n goto 16
-if %user% == re goto menu
+if %user% == n (goto 16)
 net localgroup administrators %user% /delete
 
 goto deladmins
@@ -963,10 +971,9 @@ cls
 echo Open the readme and do the specific things it says to do.
 echo Could be enabling service, adding user/group, etc.
 echo.
-
 pause
 
-if %sickomode% == true goto 18
+if %sickomode% == true (goto 18)
 
 goto menu
 
@@ -976,12 +983,17 @@ cls
 %pshellrun% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all"
 %pshellrun% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all"
 
-cls
 if %sickomode% == true (
-	for /f %%G in (%compfiles%\features.txt) do (%pshellrun% "Disable-WindowsOptionalFeature -Online -FeatureName '%%G'")
+	cls
+	echo A script to disable unnecessary features is going to run now...
+	echo.
+	start featuresgucci.bat
+	pause
+
 	goto 19
 )
 
+cls
 echo Disable features that are not lit.
 echo.
 echo Internet explorer has been enabled :ok_hand:
@@ -1549,20 +1561,15 @@ pause
 
 sort < C:\approved_users.txt > C:\approved_users_gucci.txt
 
+set autousers=true
+
 cls
 type C:\users.txt
 echo.
 set /p usersbroken="Did the user list break? (y/n) "
-cls
-if %usersbroken% == y (
-	set userlistmade=false
-	if %return% == true (goto %return_number%)
-	goto menu
-) else (
-	set userlistmade=true
-	if %return% == true (goto %return_number%)
-	goto menu
-)
+if %return% == true (goto %return_number%)
+
+goto menu
 
 :: Open DankMMC
 :35
