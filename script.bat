@@ -1045,7 +1045,7 @@ echo Generally just find all the malware, yo
 echo.
 pause
 
-if %sickomode% == true goto 20
+if %sickomode% == true (goto 20)
 goto menu
 
 :: Forensics
@@ -1055,20 +1055,19 @@ echo Do the forensics questions. Eek.
 echo.
 pause
 
-if %sickomode% == true goto 21
+if %sickomode% == true (goto 21)
 
 goto menu
 
 :: Media Files
 :21
-if %sickomode% == true goto deletemf
+if %sickomode% == true (goto deletemf)
 
 cls
 set /p choice="Search for or "delete" media files? (s/d) "
-if %choice% == s goto searchmf
-if %choice% == d goto deletemf
-if %choice% == n goto menu
-if %choice% == re goto menu
+if %choice% == s (goto searchmf)
+if %choice% == d (goto deletemf)
+if %choice% == n (goto menu)
 
 :deletemf
 cls
@@ -1086,7 +1085,7 @@ del "%homedrive%\mediafiles.txt" /f /q
 cd C:\
 del /s /f /q *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma
 
-cls
+echo.
 echo Media files deleted.
 echo.
 echo Now check for any .wav files possibly missed. Wait a moment...
@@ -1099,7 +1098,7 @@ start mediafiles.txt
 
 pause
 
-if %sickomode% == true goto 22
+if %sickomode% == true (goto 22)
 
 goto 21
 
@@ -1119,7 +1118,7 @@ start mediafiles.txt
 
 pause
 
-if %sickomode% == true goto 22
+if %sickomode% == true (goto 22)
 
 goto 21
 
@@ -1134,7 +1133,6 @@ echo C$, ADMIN$, IPC$
 echo.
 set /p share="Choose a share to delete cause it sketchy... "
 if %share% == n goto oscont
-if %share% == re goto menu
 net share %share% /del
 goto 22
 
