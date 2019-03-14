@@ -1083,7 +1083,7 @@ echo.
 del "%homedrive%\mediafiles.txt" /f /q
 
 cd C:\
-del /s /f /q *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma
+del /s /f /q /a *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma
 
 echo.
 echo Media files deleted.
