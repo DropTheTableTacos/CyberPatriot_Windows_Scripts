@@ -54,22 +54,22 @@ if %autochoice% == m (set sickomode=false) else (set sickomode=true)
 :: Menu
 :menu
 cls
-echo 1) README                    i) Disable features
-echo 2) Windows Update            j) Remove programs
-echo 3) Enable Firewall           k) Forensics
-echo 4) Hosts file                l) Media files
-echo 5) SCM baselines             m) Operating system settings
-echo 6) CIS-CAT Registry Gucci    n) Update programs
-echo 7) Services                  o) Prohibited files
-echo 8) Install Programs          p) Sysinternals
-echo 9) Inf files                 q) (Only Win10) Cat-Lite
-echo a) Audit Policy              r) MMC Stuff
-echo b) Nessus                    s) Application Settings
-echo c) Activate/Disable users    t) Server Manager
-echo d) Change passwords          u) Event Viewer
-echo e) Prohibited users' files   v) Backup
-echo f) Add/Delete users          w) Defensive Countermeasures
-echo g) Add/Delete admins         x) Random list of things at the end
+echo 1) README                        i) Disable features
+echo 2) Windows Update                j) Remove programs
+echo 3) Enable Firewall               k) Forensics
+echo 4) Hosts file + Firefox Config   l) Media files
+echo 5) SCM baselines                 m) Operating system settings
+echo 6) CIS-CAT Registry Gucci        n) Update programs
+echo 7) Services                      o) Prohibited files
+echo 8) Install Programs              p) Sysinternals
+echo 9) Inf files                     q) (Only Win10) Cat-Lite
+echo a) Audit Policy                  r) MMC Stuff
+echo b) Nessus                        s) Application Settings
+echo c) Activate/Disable users        t) Server Manager
+echo d) Change passwords              u) Event Viewer
+echo e) Prohibited users' files       v) Backup
+echo f) Add/Delete users              w) Defensive Countermeasures
+echo g) Add/Delete admins             x) Random list of things at the end
 echo h) Readme Requirements
 echo.
 echo y) Generate User List
@@ -132,15 +132,23 @@ if %sickomode% == true (goto 4)
 
 goto menu
 
-:: Hosts file
+:: Hosts file + Firefox Config
 :4
 cls
 takeown /f "%systemroot%\system32\drivers\etc"
 del "%systemroot%\system32\drivers\etc\hosts"
 copy "%compfiles%\hosts" "%systemroot%\system32\drivers\etc\hosts"
 
+if exist "%programfiles%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\override.ini" "%programfiles%\Mozilla Firefox\browser\"
+if exist "%programfiles%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\mozilla.cfg" "%programfiles%\Mozilla Firefox\"
+if exist "%programfiles%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\local-settings.js" "%programfiles%\Mozilla Firefox\defaults\pref"
+
+if exist "%ProgramFiles(x86)%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\override.ini" "%ProgramFiles(x86)%\Mozilla Firefox\browser\"
+if exist "%ProgramFiles(x86)%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\mozilla.cfg" "%ProgramFiles(x86)%\Mozilla Firefox\"
+if exist "%ProgramFiles(x86)%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\local-settings.js" "%ProgramFiles(x86)%\Mozilla Firefox\defaults\pref"
+
 echo.
-echo Hosts file done!
+echo Hosts file + Firefox config done!
 echo.
 pause
 
