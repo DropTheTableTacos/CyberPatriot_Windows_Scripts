@@ -1,25 +1,31 @@
 @echo off
 
-:: Set pshellrun
+:: Set powershell run variable
 cls
-set pshellrun=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
 
-:: Set up useful logon message initially
+set ps=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
+
+:: Set logon message to username and password (so we dont forget)
 cls
+
+:: Change password
 net user %username% abc123ABC123@@
 
+:: Set logon message
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Username: %username%" /f
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
 
 :: Set execution policy for powershell
 cls
-%pshellrun% "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine"
-%pshellrun% "Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser"
+
+%ps% "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine"
+%ps% "Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser"
 
 :: OS Check
 :oscheck
 cls
-set os=%pshellrun% "(Get-CimInstance -ClassName CIM_OperatingSystem).Name"
+
+set os=%ps% "(Get-CimInstance -ClassName CIM_OperatingSystem).Name"
 
 %os% | findstr /c:"Windows 7" >nul && set os=Win7 && goto setup
 %os% | findstr /c:"Windows 8.1" >nul && set os=Win8 && goto setup
@@ -30,6 +36,7 @@ set os=%pshellrun% "(Get-CimInstance -ClassName CIM_OperatingSystem).Name"
 :: Setup
 :setup
 cls
+
 mode con: cols=98 lines=22
 set desktop=%userprofile%\Desktop
 set compfiles=%desktop%\Windows
@@ -37,8 +44,8 @@ set scm=%compfiles%\scmbaselines
 set cmderbin=%compfiles%\cmder\bin
 set autousers=false
 set getservice=Get-WmiObject -Class Win32_Service ^| select Name, DisplayName, State, StartMode, ProcessId, InstallDate, PathName
-set listadmin=%pshellrun% "Get-LocalGroupMember -Group Administrators | select Name"
-set listuser=%pshellrun% "Get-LocalUser | select Name, Enabled"
+set listadmin=%ps% "Get-LocalGroupMember -Group Administrators | select Name"
+set listuser=%ps% "Get-LocalUser | select Name, Enabled"
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%
 
 cd C:\
@@ -180,7 +187,7 @@ goto finishscm
 
 :newscm
 cls
-set ver=%pshellrun% "(Get-WmiObject -Class Win32_OperatingSystem).Version"
+set ver=%ps% "(Get-WmiObject -Class Win32_OperatingSystem).Version"
 
 if %ver% == 10.0.10240 (
 	LGPO /g "%scm%\Win10_1507"
@@ -581,7 +588,7 @@ goto menu
 :: Install programs
 :8
 cls
-choco >nul && %pshellrun% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+choco >nul && %ps% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
 
 choco feature enable -n allowGlobalConfirmation
 choco feature enable -n useFipsCompliantChecksums
@@ -991,8 +998,8 @@ goto menu
 :: Enable/disable features
 :18
 cls
-%pshellrun% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all"
-%pshellrun% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all"
+%ps% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all"
+%ps% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all"
 
 if %sickomode% == true (
 	cls
@@ -1558,7 +1565,7 @@ if %userlistmade% == y (
 cls
 echo Generating user list...
 echo.
-for /f "skip=1 tokens=1" %%G in ('%pshellrun% "glu | select name | ft -hidetableheaders"') do (echo %%G >> C:\users_admins.txt)
+for /f "skip=1 tokens=1" %%G in ('%ps% "glu | select name | ft -hidetableheaders"') do (echo %%G >> C:\users_admins.txt)
 findstr /v "BroPants BroShirt DefaultAccount defaultuser0 Administrator Guest" C:\users_admins.txt > C:\users.txt
 call jrepl " +$" "" /f C:\users.txt /o -
 call jrepl " +$" "" /f C:\users_admins.txt /o -
