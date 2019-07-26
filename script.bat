@@ -37,7 +37,7 @@ set os=%ps% "(Get-CimInstance -ClassName CIM_OperatingSystem).Name"
 :setup
 cls
 
-mode con: cols=98 lines=22
+mode con: cols=80 lines=22
 set desktop=%userprofile%\Desktop
 set compfiles=%desktop%\Windows
 set scm=%compfiles%\scmbaselines
@@ -46,6 +46,7 @@ set autousers=false
 set getservice=Get-WmiObject -Class Win32_Service ^| select Name, DisplayName, State, StartMode, ProcessId, InstallDate, PathName
 set listadmin=%ps% "Get-LocalGroupMember -Group Administrators | select Name"
 set listuser=%ps% "Get-LocalUser | select Name, Enabled"
+set ver=%ps% "(Get-WmiObject -Class Win32_OperatingSystem).Version"
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%
 
 cd C:\
@@ -61,49 +62,54 @@ if %autochoice% == m (set sickomode=false) else (set sickomode=true)
 :: Menu
 :menu
 cls
-echo 1) README                        i) Disable features
-echo 2) Windows Update                j) Remove programs
-echo 3) Enable Firewall               k) Forensics
-echo 4) Hosts file + Firefox Config   l) Media files
-echo 5) SCM baselines                 m) Operating system settings
-echo 6) CIS-CAT Registry Gucci        n) Update programs
-echo 7) Services                      o) Prohibited files
-echo 8) Install Programs              p) Sysinternals
-echo 9) Inf files                     q) (Only Win10) Cat-Lite
-echo a) Audit Policy                  r) MMC Stuff
-echo b) Nessus                        s) Application Settings
-echo c) Activate/Disable users        t) Server Manager
-echo d) Change passwords              u) Event Viewer
-echo e) Prohibited users' files       v) Backup
-echo f) Add/Delete users              w) Defensive Countermeasures
-echo g) Add/Delete admins             x) Random list of things at the end
-echo h) Readme Requirements
+echo 1) README                    i) Disable features
+echo 2) Windows Update            j) Remove programs
+echo 3) Enable Firewall           k) Forensics
+echo 4) Hosts file                l) Media files
+echo 5) Firefox Config            m) Operating system settings
+echo 6) SCM baselines             n) Update programs
+echo 7) CIS-CAT Registry Gucci    o) Prohibited files
+echo 8) Services                  p) Sysinternals
+echo 9) Install Programs          q) (Only Win10) Cat-Lite
+echo a) Inf files                 r) MMC Stuff
+echo b) Audit Policy              s) Application Settings
+echo c) Nessus                    t) Server Manager
+echo d) Activate/Disable users    u) Event Viewer
+echo e) Change passwords          v) Backup
+echo f) Prohibited users' files   w) Defensive Countermeasures
+echo g) Add/Delete users          x) Random list of things at the end
+echo h) Add/Delete admins
 echo.
 echo y) Generate User List
 echo z) Open DankMMC
 echo.
 
 choice /c 123456789abcdefghijklmnopqrstuvwxyz /n /m "Where would you like to start? "
+
 goto %errorlevel%
 
 :: README
 :1
 cls
-echo Read the README, ya bigot higot!
+
+echo Read the README stoopid
 echo.
+
 start C:\CyberPatriot\README.url
 pause
 
 if %sickomode% == true (goto 2)
-
 goto menu
 
 :: Windows Update
 :2
 cls
+
+:: Enable & start update service automatically
 sc config wuauserv start= auto
 sc start wuauserv
 
+:: Enable automatic updates
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v NoAutoUpdate /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 4 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /t REG_DWORD /d 0 /f
@@ -112,20 +118,28 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v AUOptions
 echo.
 echo Windows Automatic Update configured!
 echo.
-echo Now start Windows Update.
+echo Now start the update biggie.
 echo.
-if %os% == Win10 (start ms-settings:windowsupdate)
-if %os% == Server2016 (start ms-settings:windowsupdate) else (start wuapp.exe)
+
+:: Checking which gui to open
+if %os% == Win10 (start ms-settings:windowsupdate & goto 2a)
+if %os% == Server2016 (start ms-settings:windowsupdate & goto 2a)
+start wuapp.exe
+
+:2a
 pause
 
 if %sickomode% == true (goto 3)
-
 goto menu
 
-:: Enable firewall + template
+:: Firewall + template
 :3
 cls
+
+:: Import template
 netsh advfirewall import "%compfiles%\firewall_templates\%os%Firewall.wfw"
+
+:: Enable firewall
 netsh advfirewall set allprofiles state on
 
 echo.
@@ -136,36 +150,52 @@ echo.
 pause
 
 if %sickomode% == true (goto 4)
-
 goto menu
 
-:: Hosts file + Firefox Config
+:: Hosts file
 :4
 cls
+
+:: Replace hosts file with clean version
 takeown /f "%systemroot%\system32\drivers\etc"
 del "%systemroot%\system32\drivers\etc\hosts"
 copy "%compfiles%\hosts" "%systemroot%\system32\drivers\etc\hosts"
 
+echo.
+echo Hosts file replaced!
+echo.
+pause
+
+if %sickomode% == true (goto 5)
+goto menu
+
+:: Firefox config
+:5
+cls
+
+:: Copy files for 64-bit
 if exist "%programfiles%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\override.ini" "%programfiles%\Mozilla Firefox\browser\"
 if exist "%programfiles%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\mozilla.cfg" "%programfiles%\Mozilla Firefox\"
 if exist "%programfiles%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\local-settings.js" "%programfiles%\Mozilla Firefox\defaults\pref"
 
+:: Copy files for 32-bit
 if exist "%ProgramFiles(x86)%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\override.ini" "%ProgramFiles(x86)%\Mozilla Firefox\browser\"
 if exist "%ProgramFiles(x86)%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\mozilla.cfg" "%ProgramFiles(x86)%\Mozilla Firefox\"
 if exist "%ProgramFiles(x86)%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\local-settings.js" "%ProgramFiles(x86)%\Mozilla Firefox\defaults\pref"
 
 echo.
-echo Hosts file + Firefox config done!
+echo Firefox config set!
 echo.
 pause
 
-if %sickomode% == true goto 5
-
+if %sickomode% == true (goto 6)
 goto menu
 
 :: SCM Baselines
-:5
+:6
 cls
+
+:: Internet Explorer baselines
 LGPO /g "%scm%\IE11_Com_Sec"
 LGPO /g "%scm%\IE11_User_Sec"
 
@@ -174,6 +204,7 @@ if %os% == Server2008 (
 	LGPO /g "%scm%\IE9_Com_Sec"
 )
 
+:: Check if Windows 10 or Server 2016
 if %os% == Server2016 (
 	set ver=1607
 	goto server2016scm
@@ -181,13 +212,14 @@ if %os% == Server2016 (
 
 if %os% == Win10 (goto newscm)
 
+:: Normal OS baselines
 LGPO /g "%scm%\%os%"
 
 goto finishscm
 
+:: New SCM for Win10 and Server2016
 :newscm
 cls
-set ver=%ps% "(Get-WmiObject -Class Win32_OperatingSystem).Version"
 
 if %ver% == 10.0.10240 (
 	LGPO /g "%scm%\Win10_1507"
@@ -224,19 +256,16 @@ if %ver% == 10.0.17134 (
 echo.
 echo SCM Baselines done!
 echo.
-echo Now wait for possible points.
-echo.
-echo MEANWHILE, look at forensics questions.
-echo.
 pause
 
-if %sickomode% == true (goto 6)
-
+if %sickomode% == true (goto 7)
 goto menu
 
 :: CISCAT Registry Gucci
-:6
+:7
 cls
+
+:: Apply all the things
 call ciscatgucci.bat
 
 echo.
@@ -244,33 +273,38 @@ echo CIS-CAT EPIC registry script done!
 echo.
 pause
 
-if %sickomode% == true goto 7
-
-:: If it's broke here, remove this goto :shrug:
+if %sickomode% == true (goto 8)
 goto menu
 
 :: Services
-:7
+:8
 cls
-::goto servicestart
+
+:: Auto disable bad services + exclusions
 if %sickomode% == true (
-    :::servicestart
 	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G & sc config %%G start= disabled)
 
+	:: Enable good services
 	sc config wuauserv start= auto & sc start wuauserv
 	sc config eventlog start= auto & sc start eventlog
 	sc config windefend start= auto & sc start windefend
-    sc config wscsvc start= auto & sc start wscsvc
+  sc config wscsvc start= auto & sc start wscsvc
 
-	:excludeserv
-	cls
+	echo.
 	echo Services disabled!
 	echo.
+	pause
+
+	:: Exclusions (stay enabled)
+	:excludeserv
+	cls
+
 	echo Note: Use "remote" for Remote Desktop below
 	echo.
 
 	set /p excludeserv="Type in any service that needs to stay enabled... "
- 	if %excludeserv% == n goto 8
+
+ 	if %excludeserv% == n goto 9
 	if %excludeserv% == remote (
 		sc config termservice start= auto & sc start termservice
 		sc config sessionenv start= auto & sc start sessionenv
@@ -280,11 +314,12 @@ if %sickomode% == true (
 	goto excludeserv
 )
 
+:: Manual service changing
 echo tlntsvr (Telnet)
 echo msftpsvc (FTP)
 echo snmptrap (SNMP Trap)
 echo ssdpsrv (SSDP Discovery)
-echo termservice, sessionenv (Remote Desktop Services) *Dont disable these if remote desktop is needed*
+echo termservice, sessionenv (Remote Desktop Services)
 echo remoteregistry (Remote Registry)
 echo Messenger (Windows Messenger)
 echo upnphos (Universal Plug n Play)
@@ -318,16 +353,17 @@ if %choice% == def (
 	sc start eventlog
 	sc config windefend start= auto
 	sc start windefend
-	goto 7
+	goto 8
 )
 
 :enableserv
 cls
+
 echo tlntsvr (Telnet)
 echo msftpsvc (FTP)
 echo snmptrap (SNMP Trap)
 echo ssdpsrv (SSDP Discovery)
-echo termservice, sessionenv (Remote Desktop Services) *Dont disable these if remote desktop is needed*
+echo termservice, sessionenv (Remote Desktop Services)
 echo remoteregistry (Remote Registry)
 echo Messenger (Windows Messenger)
 echo upnphos (Universal Plug n Play)
@@ -347,7 +383,8 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to enable... "
-if %serv% == n goto 7
+
+if %serv% == n goto 8
 if %serv% == re goto menu
 
 sc config %serv% start= auto
@@ -357,11 +394,12 @@ goto enableserv
 
 :disablegud
 cls
+
 echo tlntsvr (Telnet)
 echo msftpsvc (FTP)
 echo snmptrap (SNMP Trap)
 echo ssdpsrv (SSDP Discovery)
-echo termservice, sessionenv (Remote Desktop Services) *Dont disable these if remote desktop is needed*
+echo termservice, sessionenv (Remote Desktop Services)
 echo remoteregistry (Remote Registry)
 echo Messenger (Windows Messenger)
 echo upnphos (Universal Plug n Play)
@@ -381,7 +419,8 @@ echo W3SVC (World Wide Web Publishing)
 echo.
 
 set /p serv="Enter a service to disable... "
-if %serv% == n goto 7
+
+if %serv% == n goto 8
 if %serv% == re goto menu
 
 sc stop %serv%
@@ -389,7 +428,7 @@ sc config %serv% start= disabled
 
 goto disablegud
 
-:: Manual serv gucci
+:: Manual service gucci
 :manualserv
 set default=powershell "%getservice%"
 set running=powershell "%getservice% | ? state -match 'Running'"
@@ -418,17 +457,17 @@ echo 8) Exit
 echo.
 
 choice /c 12345678 /n /m "> "
-goto %errorlevel%a
+goto %errorlevel%_a
 
 :: Ask if display in cmd window or text file
 :outputask
 cls
 set /p output="Display output in cmd window or output to text file? (c/t) "
 
-goto %return%a
+goto %return%_a
 
 :: Default
-:1a
+:1_a
 if %output% == c (
 	%default% | more
 	goto manualserv
@@ -450,7 +489,7 @@ else (
 )
 
 :: Running
-:2a
+:2_a
 if %output% == c (
 	%running% | more
 	goto manualserv
@@ -472,7 +511,7 @@ else (
 )
 
 :: Automatic
-:3a
+:3_a
 if %output% == c (
 	%automatic% | more
 	goto manualserv
@@ -494,7 +533,7 @@ else (
 )
 
 :: Disabled
-:4a
+:4_a
 if %output% == c (
 	%disabled% | more
 	goto manualserv
@@ -516,7 +555,7 @@ else (
 )
 
 :: Stopped
-:5a
+:5_a
 if %output% == c (
 	%stopped% | more
 	goto manualserv
@@ -538,7 +577,7 @@ else (
 )
 
 :: Manual
-:6a
+:6_a
 if %output% == c (
 	%manual% | more
 	goto manualserv
@@ -560,7 +599,7 @@ else (
 )
 
 :: Non-system
-:7a
+:7_a
 if %output% == c (
 	%nonsystem% | more
 	goto manualserv
@@ -582,29 +621,28 @@ else (
 )
 
 :: Exit
-:8a
+:8_a
 goto menu
 
 :: Install programs
-:8
+:9
 cls
 choco >nul && %ps% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
 
 choco feature enable -n allowGlobalConfirmation
 choco feature enable -n useFipsCompliantChecksums
 
-cls
+echo.
 echo Choco gucci script is gonna install programs now...
 echo.
 start chocogucci.bat
 pause
 
-if %sickomode% == true (goto 9)
-
+if %sickomode% == true (goto 10)
 goto menu
 
 :: Inf files
-:9
+:10
 cls
 if %sickomode% == true (
     secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\infs\%os%BadInf.inf"
@@ -630,7 +668,7 @@ if %sickomode% == true (
 	echo.
 	pause
 
-    goto 10
+  goto 11
 )
 
 set /p inf="Good or Bad Inf? (g/b) "
@@ -649,7 +687,7 @@ echo Check the scoring report and copy/paste the vulnerabilities into notepad.
 echo.
 pause
 
-goto 9
+goto 10
 
 :badinf
 cls
@@ -662,10 +700,10 @@ echo Check the scoring report and copy/paste the vulnerabilities into notepad.
 echo.
 pause
 
-goto 9
+goto 10
 
 :: Audit Policy
-:10
+:11
 cls
 if %sickomode% == true (
     LGPO /a "%compfiles%\audit_templates\%os%NoAudit.csv"
@@ -688,7 +726,7 @@ if %sickomode% == true (
 	echo.
 	pause
 
-    goto 11
+    goto 12
 )
 
 set /p inf="No or All Auditing? (no/a) "
@@ -707,7 +745,7 @@ echo Wait and see if you got points...
 echo.
 pause
 
-goto 10
+goto 11
 
 :noaudit
 cls
@@ -720,10 +758,10 @@ echo Wait and see if you got points...
 echo.
 pause
 
-goto 10
+goto 11
 
 :: Nessus
-:11
+:12
 cls
 ipconfig | findstr /i "IPv4 Address."
 
@@ -734,18 +772,18 @@ echo If not, it's really not a big deal at all, tbh.
 echo.
 pause
 
-if %sickomode% == true goto 12
+if %sickomode% == true goto 13
 
 goto menu
 
 :: Activate/Disable Users
-:12
+:13
 cls
 if %sickomode% == true (
-	if %usersbroken% == true (goto 12_cont)
+	if %usersbroken% == true (goto 13_cont)
 	if %autousers% == false (
 		set return=true
-		set return_number=12
+		set return_number=13
 		goto 34
 	)
 
@@ -761,10 +799,10 @@ if %sickomode% == true (
 	echo.
 	pause
 
-	goto 13
+	goto 14
 )
 
-:12_cont
+:13_cont
 net user BroShirt /active:no
 net user BroPants /active:no
 
@@ -778,7 +816,7 @@ set /p choice="Activate or disable user? (a/d) "
 if %choice% == a (goto activateusers)
 if %choice% == d (goto disableusers)
 if %choice% == n (
-	if %sickomode% == true (goto 13)
+	if %sickomode% == true (goto 14)
 	goto menu
 )
 
@@ -787,7 +825,7 @@ cls
 %listuser%
 
 set /p user="Enter a user to activate... "
-if %user% == n (goto 12)
+if %user% == n (goto 13)
 net user %user% /active:yes
 goto activateusers
 
@@ -796,19 +834,19 @@ cls
 %listuser%
 
 set /p user="Enter a user to disable... "
-if %user% == n (goto 12)
+if %user% == n (goto 13)
 net user %user% /active:no
 
 goto disableusers
 
 :: Change passwords
-:13
+:14
 cls
 if %sickomode% == true (
-	if %usersbroken% == true (goto 13_cont)
+	if %usersbroken% == true (goto 14_cont)
 	if %autousers% == false (
 		set return=true
-		set return_number=13
+		set return_number=14
 		goto 34
 	)
 
@@ -821,10 +859,10 @@ if %sickomode% == true (
 	echo.
 	pause
 
-	goto 14
+	goto 15
 )
 
-:13_cont
+:14_cont
 %listuser%
 if %errorlevel% == 1 (cls & net user)
 
@@ -834,21 +872,21 @@ echo.
 
 set /p user="Enter user for password change... "
 if %choice% == n (
-	if %sickomode% == true (goto 14)
+	if %sickomode% == true (goto 15)
 	goto menu
 )
 
 net user %user% abc123ABC123@@
 
-goto 13
+goto 14
 
 :: Prohibited users' files
-:14
+:15
 del /f /q C:\*files.txt
 
 if %autousers% == false (
 	set return=true
-	set return_number=14
+	set return_number=15
 	goto 34
 )
 
@@ -864,7 +902,7 @@ if %usersbroken% == true (
 echo.
 set /p baduser="Enter an unauthorized user's name to find their files... "
 if %baduser% == n (
-	if %sickomode% == true (goto 15)
+	if %sickomode% == true (goto 16)
 	goto menu
 )
 
@@ -879,7 +917,7 @@ cls
 echo Look through the text file to find sketchiness.
 echo.
 set /p eekfile="Enter the filename of any suspicious files you see... "
-if %eekfile% == n (goto 14)
+if %eekfile% == n (goto 15)
 
 cd C:\
 dir /s /q /a "%eekfile%" >> C:\whomst.txt
@@ -893,10 +931,10 @@ pause
 goto badfiles
 
 :: Add/Delete Users
-:15
+:16
 if %autousers% == false (
 	set return=true
-	set return_number=15
+	set return_number=16
 	goto 34
 )
 
@@ -914,7 +952,7 @@ set /p choice="Add or remove user? (a/r) "
 if %choice% == a (goto addusers)
 if %choice% == r (goto delusers)
 if %choice% == n (
-	if %sickomode% == true (goto 16)
+	if %sickomode% == true (goto 17)
 	goto menu
 )
 
@@ -924,7 +962,7 @@ cls
 if %errorlevel% == 1 (cls & net user)
 
 set /p user="Enter a username... "
-if %user% == n (goto 15)
+if %user% == n (goto 16)
 net user %user% /add
 
 goto addusers
@@ -941,13 +979,13 @@ if %usersbroken% == true (
 
 echo.
 set /p user="Enter a user to delete... "
-if %user% == n (goto 15)
+if %user% == n (goto 16)
 net user %user% /delete
 
 goto delusers
 
 :: Deleting/adding admins
-:16
+:17
 cls
 %listadmin%
 if %errorlevel% == 1 (cls & net localgroup administrators)
@@ -956,7 +994,7 @@ set /p choice="Add or remove admin? (a/r) "
 if %choice% == a goto addadmins
 if %choice% == r goto deladmins
 if %choice% == n (
-	if %sickomode% == true (goto 17)
+	if %sickomode% == true (goto 18)
 	goto menu
 )
 
@@ -967,7 +1005,7 @@ if %errorlevel% == 1 (cls & net user)
 net localgroup administrators
 
 set /p user="Enter a user to add to admin group... "
-if %user% == n (goto 16)
+if %user% == n (goto 17)
 net localgroup administrators %user% /add
 
 goto addadmins
@@ -978,22 +1016,10 @@ cls
 if %errorlevel% == 1 (cls & net localgroup administrators)
 
 set /p user="Enter a user to remove from admin group... "
-if %user% == n (goto 16)
+if %user% == n (goto 17)
 net localgroup administrators %user% /delete
 
 goto deladmins
-
-:: README Requirements
-:17
-cls
-echo Open the readme and do the specific things it says to do.
-echo Could be enabling service, adding user/group, etc.
-echo.
-pause
-
-if %sickomode% == true (goto 18)
-
-goto menu
 
 :: Enable/disable features
 :18
