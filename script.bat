@@ -43,7 +43,7 @@ set compfiles=%desktop%\Windows
 set scm=%compfiles%\scmbaselines
 set cmderbin=%compfiles%\cmder\bin
 set autousers=false
-set getservice=Get-WmiObject -Class Win32_Service ^| select Name, DisplayName, State, StartMode, ProcessId, InstallDate, PathName
+set getservice=%ps% "Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, InstallDate, PathName"
 set listadmin=%ps% "Get-LocalGroupMember -Group Administrators | select Name"
 set listuser=%ps% "Get-LocalUser | select Name, Enabled"
 set ver=%ps% "(Get-WmiObject -Class Win32_OperatingSystem).Version"
@@ -215,7 +215,8 @@ if %os% == Win10 (
 )
 
 if %os% == Server2016 (
-	LGPO /g "%scm%\Win10_1607_Server2016" && goto finishscm
+	LGPO /g "%scm%\Win10_1607_Server2016"
+	goto finishscm
 )
 
 LGPO /g "%scm%\%os%"
@@ -398,13 +399,13 @@ goto disablegud
 
 :: Manual service gucci
 :manualserv
-set default=powershell "%getservice%"
-set running=powershell "%getservice% | ? state -match 'Running'"
-set automatic=powershell "%getservice% | ? startmode -match 'Auto'"
-set disabled=powershell "%getservice% | ? startmode -match 'Disabled'"
-set stopped=powershell "%getservice% | ? state -match 'Stopped'"
-set manual=powershell "%getservice% | ? startmode -match 'Manual'"
-set nonsystem=powershell "%getservice% | findstr /v svchost.exe"
+set default=%getservice%
+set running=%getservice% ^| ? state -match 'Running'
+set automatic=%getservice% ^| ? startmode -match 'Auto'
+set disabled=%getservice% ^| ? startmode -match 'Disabled'
+set stopped=%getservice% ^| ? state -match 'Stopped'
+set manual=%getservice% ^| ? startmode -match 'Manual'
+set nonsystem=%getservice% ^| findstr /v svchost.exe
 
 del /q /f "%userprofile%\Desktop\services.txt"
 set output=false
