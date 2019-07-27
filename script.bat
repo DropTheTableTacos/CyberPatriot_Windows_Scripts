@@ -204,53 +204,21 @@ if %os% == Server2008 (
 	LGPO /g "%scm%\IE9_Com_Sec"
 )
 
-:: Check if Windows 10 or Server 2016
+:: Operating system baselines
+if %os% == Win10 (
+	%ver% | findstr "10.0.10240" && LGPO /g "%scm%\Win10_1507" && goto finishscm
+	%ver% | findstr "10.0.10586" && LGPO /g "%scm%\Win10_1511" && goto finishscm
+	%ver% | findstr "10.0.14393" && LGPO /g "%scm%\Win10_1607_Server2016" && goto finishscm
+	%ver% | findstr "10.0.15063" && LGPO /g "%scm%\Win10_1703" && goto finishscm
+	%ver% | findstr "10.0.16299" && LGPO /g "%scm%\Win10_1709" && goto finishscm
+	%ver% | findstr "10.0.17134" && LGPO /g "%scm%\Win10_1803" && goto finishscm
+)
+
 if %os% == Server2016 (
-	set ver=1607
-	goto server2016scm
+	LGPO /g "%scm%\Win10_1607_Server2016" && goto finishscm
 )
 
-if %os% == Win10 (goto newscm)
-
-:: Normal OS baselines
 LGPO /g "%scm%\%os%"
-
-goto finishscm
-
-:: New SCM for Win10 and Server2016
-:newscm
-cls
-
-if %ver% == 10.0.10240 (
-	LGPO /g "%scm%\Win10_1507"
-	goto finishscm
-)
-
-if %ver% == 10.0.10586 (
-	LGPO /g "%scm%\Win10_1511"
-	goto finishscm
-)
-
-:server2016scm
-if %ver% == 10.0.14393 (
-	LGPO /g "%scm%\Win10_1607_Server2016"
-	goto finishscm
-)
-
-if %ver% == 10.0.15063 (
-	LGPO /g "%scm%\Win10_1703"
-	goto finishscm
-)
-
-if %ver% == 10.0.16299 (
-	LGPO /g "%scm%\Win10_1709"
-	goto finishscm
-)
-
-if %ver% == 10.0.17134 (
-	LGPO /g "%scm%\Win10_1803"
-	goto finishscm
-)
 
 :finishscm
 echo.
