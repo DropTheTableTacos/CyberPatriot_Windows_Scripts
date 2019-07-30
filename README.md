@@ -10,8 +10,9 @@ How to set up and use the scripts:
 
 4. Open cmder. You'll notice 3 tabs at the bottom: bash, powershell and cmd.
 
-5. In cmd, type "script" to launch the automatic script. Use this if you're Jackson and you know what you're doing.
-   Type "manscript" to launch the manual script, which has menus to choose what things to do. Use this if you're slightly less competent.
+5. In cmd, type "script" to launch the automatic script. Use this if you're Jackson and you know what you're doing. Type "manscript" to launch the manual script, which has menus to choose what things to do. Use this if you're slightly less competent.
+
+6. As you run the scripts, "progress.txt" on the desktop will update with the sections that you complete.
    
 Pro-tip: Don't become dependent on the script. Know how to do everything manually because the script always breaks. Always.
 
