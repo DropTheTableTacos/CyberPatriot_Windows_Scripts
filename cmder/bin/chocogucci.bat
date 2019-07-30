@@ -5,12 +5,6 @@ cls
 set ps=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%
 
-:: Install chocolatey if necessary
-choco >nul && %ps% "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
-
-choco feature enable -n allowGlobalConfirmation
-choco feature enable -n useFipsCompliantChecksums
-
 :: OS Check
 :oscheck
 cls
