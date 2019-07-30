@@ -1,43 +1,11 @@
 @echo off
-
-:: Set powershell run variable
 cls
 
-set ps=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
-
-:: Set logon message to username and password (so we dont forget)
-cls
-
-:: Change password
-net user %username% abc123ABC123@@
-
-:: Set logon message
-reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Username: %username%" /f
-reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
-
-:: Set execution policy for powershell
-cls
-
-%ps% "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine"
-%ps% "Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser"
-
-:: OS Check
-:oscheck
-cls
-
-set os=%ps% "(Get-CimInstance -ClassName CIM_OperatingSystem).Name"
-
-%os% | findstr /c:"Windows 7" >nul && set os=Win7 && goto setup
-%os% | findstr /c:"Windows 8.1" >nul && set os=Win8 && goto setup
-%os% | findstr /c:"Server 2008" >nul && set os=Server2008 && goto setup
-%os% | findstr /c:"Server 2016" >nul && set os=Server2016 && goto setup
-%os% | findstr /c:"Windows 10" >nul && set os=Win10 && goto setup
-
-:: Setup
+:: Set variables
 :setup
-cls
-
 mode con: cols=80 lines=22
+set ps=@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command
+set os=%ps% "(Get-CimInstance -ClassName CIM_OperatingSystem).Name"
 set desktop=%userprofile%\Desktop
 set compfiles=%desktop%\Windows
 set scm=%compfiles%\scmbaselines
@@ -49,44 +17,34 @@ set listuser=%ps% "Get-LocalUser | select Name, Enabled"
 set ver=%ps% "(Get-WmiObject -Class Win32_OperatingSystem).Version"
 set PATH=%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%
 
+:: Delete leftover text files
 cd C:\
 del /f /q approved_users.txt users_admins.txt mediafiles.txt sketchyfiles.txt eek.txt *files.txt whomst.txt sketchymemes.txt userdiff.txt
 
-:: sickomode Check
+:: Change our password
+net user %username% abc123ABC123@@
+
+:: Set logon message to username and password for helpfulness
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Username: %username%" /f
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
+
+:: Set execution policy for powershell
+%ps% "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine"
+%ps% "Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser"
+
+:: OS Check
+:oscheck
+%os% | findstr /c:"Windows 7" >nul && set os=Win7 && goto setup
+%os% | findstr /c:"Windows 8.1" >nul && set os=Win8 && goto setup
+%os% | findstr /c:"Server 2008" >nul && set os=Server2008 && goto setup
+%os% | findstr /c:"Server 2016" >nul && set os=Server2016 && goto setup
+%os% | findstr /c:"Windows 10" >nul && set os=Win10 && goto setup
+
+:: Return to user stuff check
 cls
-echo Hint: Auto is hetero and manual is not. nuff said.
-echo.
-set /p autochoice="Auto (sicko) mode or manual mode? (a/m) "
-if %autochoice% == m (set sickomode=false) else (set sickomode=true)
 
-:: Menu
-:menu
-cls
-echo 1) README                    i) Disable features
-echo 2) Windows Update            j) Remove programs
-echo 3) Enable Firewall           k) Forensics
-echo 4) Hosts file                l) Media files
-echo 5) Firefox Config            m) Operating system settings
-echo 6) SCM baselines             n) Update programs
-echo 7) CIS-CAT Registry Gucci    o) Prohibited files
-echo 8) Services                  p) Sysinternals
-echo 9) Install Programs          q) (Only Win10) Cat-Lite
-echo a) Inf files                 r) MMC Stuff
-echo b) Audit Policy              s) Application Settings
-echo c) Nessus                    t) Server Manager
-echo d) Activate/Disable users    u) Event Viewer
-echo e) Change passwords          v) Backup
-echo f) Prohibited users' files   w) Defensive Countermeasures
-echo g) Add/Delete users          x) Random list of things at the end
-echo h) Add/Delete admins
-echo.
-echo y) Generate User List
-echo z) Open DankMMC
-echo.
-
-choice /c 123456789abcdefghijklmnopqrstuvwxyz /n /m "Where would you like to start? "
-
-goto %errorlevel%
+set /p return="Returning after powershell install restart? "
+if %return% == y goto getuserlist
 
 :: README
 :1
@@ -98,8 +56,8 @@ echo.
 start C:\CyberPatriot\README.url
 pause
 
-if %sickomode% == true (goto 2)
-goto menu
+echo README read.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Windows Update
 :2
@@ -129,8 +87,8 @@ start wuapp.exe
 :2a
 pause
 
-if %sickomode% == true (goto 3)
-goto menu
+echo Windows automatic update configured and started.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Firewall + template
 :3
@@ -142,15 +100,8 @@ netsh advfirewall import "%compfiles%\firewall_templates\%os%Firewall.wfw"
 :: Enable firewall
 netsh advfirewall set allprofiles state on
 
-echo.
-echo Firewall enabled!
-echo.
-echo Don't worry if the template broke, it aint that important.
-echo.
-pause
-
-if %sickomode% == true (goto 4)
-goto menu
+echo Firewall enabled and template applied.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Hosts file
 :4
@@ -161,13 +112,8 @@ takeown /f "%systemroot%\system32\drivers\etc"
 del "%systemroot%\system32\drivers\etc\hosts"
 copy "%compfiles%\hosts" "%systemroot%\system32\drivers\etc\hosts"
 
-echo.
-echo Hosts file replaced!
-echo.
-pause
-
-if %sickomode% == true (goto 5)
-goto menu
+echo Hosts file replaced.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Firefox config
 :5
@@ -183,13 +129,8 @@ if exist "%ProgramFiles(x86)%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_con
 if exist "%ProgramFiles(x86)%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\mozilla.cfg" "%ProgramFiles(x86)%\Mozilla Firefox\"
 if exist "%ProgramFiles(x86)%\Mozilla Firefox\" copy /Y "%compfiles%\firefox_config\local-settings.js" "%ProgramFiles(x86)%\Mozilla Firefox\defaults\pref"
 
-echo.
-echo Firefox config set!
-echo.
-pause
-
-if %sickomode% == true (goto 6)
-goto menu
+echo Firefox config settings copied.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: SCM Baselines
 :6
@@ -206,29 +147,24 @@ if %os% == Server2008 (
 
 :: Operating system baselines
 if %os% == Win10 (
-	%ver% | findstr "10.0.10240" && LGPO /g "%scm%\Win10_1507" && goto finishscm
-	%ver% | findstr "10.0.10586" && LGPO /g "%scm%\Win10_1511" && goto finishscm
-	%ver% | findstr "10.0.14393" && LGPO /g "%scm%\Win10_1607_Server2016" && goto finishscm
-	%ver% | findstr "10.0.15063" && LGPO /g "%scm%\Win10_1703" && goto finishscm
-	%ver% | findstr "10.0.16299" && LGPO /g "%scm%\Win10_1709" && goto finishscm
-	%ver% | findstr "10.0.17134" && LGPO /g "%scm%\Win10_1803" && goto finishscm
+	%ver% | findstr "10.0.10240" && LGPO /g "%scm%\Win10_1507" && goto 6a
+	%ver% | findstr "10.0.10586" && LGPO /g "%scm%\Win10_1511" && goto 6a
+	%ver% | findstr "10.0.14393" && LGPO /g "%scm%\Win10_1607_Server2016" && goto 6a
+	%ver% | findstr "10.0.15063" && LGPO /g "%scm%\Win10_1703" && goto 6a
+	%ver% | findstr "10.0.16299" && LGPO /g "%scm%\Win10_1709" && goto 6a
+	%ver% | findstr "10.0.17134" && LGPO /g "%scm%\Win10_1803" && goto 6a
 )
 
 if %os% == Server2016 (
 	LGPO /g "%scm%\Win10_1607_Server2016"
-	goto finishscm
+	goto 6a
 )
 
 LGPO /g "%scm%\%os%"
 
-:finishscm
-echo.
-echo SCM Baselines done!
-echo.
-pause
-
-if %sickomode% == true (goto 7)
-goto menu
+:6a
+echo SCM Baselines applied. (IE and OS)>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: CISCAT Registry Gucci
 :7
@@ -237,361 +173,42 @@ cls
 :: Apply all the things
 call ciscatgucci.bat
 
-echo.
-echo CIS-CAT EPIC registry script done!
-echo.
-pause
-
-if %sickomode% == true (goto 8)
-goto menu
+echo Registry settings from CISCAT set.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Services
 :8
 cls
 
 :: Auto disable bad services + exclusions
-if %sickomode% == true (
-	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G & sc config %%G start= disabled)
+for /f %%G in (%compfiles%\services.txt) do (sc stop %%G & sc config %%G start= disabled)
 
-	:: Enable good services
-	sc config wuauserv start= auto & sc start wuauserv
-	sc config eventlog start= auto & sc start eventlog
-	sc config windefend start= auto & sc start windefend
-  sc config wscsvc start= auto & sc start wscsvc
+:: Enable good services
+sc config wuauserv start= auto & sc start wuauserv
+sc config eventlog start= auto & sc start eventlog
+sc config windefend start= auto & sc start windefend
+sc config wscsvc start= auto & sc start wscsvc
 
-	echo.
-	echo Services disabled!
-	echo.
-	pause
+echo Bad services stopped and disabled.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
-	:: Exclusions (stay enabled)
-	:excludeserv
-	cls
+:: Exclusions (stay enabled)
+:excludeserv
+cls
 
-	echo Note: Use "remote" for Remote Desktop below
-	echo.
+echo Note: Use "remote" for Remote Desktop below
+echo.
 
-	set /p excludeserv="Type in any service that needs to stay enabled... "
+set /p excludeserv="Type in any service that needs to stay enabled... "
 
- 	if %excludeserv% == n goto 9
-	if %excludeserv% == remote (
-		sc config termservice start= auto & sc start termservice
-		sc config sessionenv start= auto & sc start sessionenv
-		goto excludeserv
-	)
-	sc config %excludeserv% start= auto & sc start %excludeserv%
+if %excludeserv% == n goto 9
+if %excludeserv% == remote (
+	sc config termservice start= auto & sc start termservice
+	sc config sessionenv start= auto & sc start sessionenv
 	goto excludeserv
 )
-
-:: Manual service changing
-echo tlntsvr (Telnet)
-echo msftpsvc (FTP)
-echo snmptrap (SNMP Trap)
-echo ssdpsrv (SSDP Discovery)
-echo termservice, sessionenv (Remote Desktop Services)
-echo remoteregistry (Remote Registry)
-echo Messenger (Windows Messenger)
-echo upnphos (Universal Plug n Play)
-echo WAS (Web server Service)
-echo RemoteAccess (Routing and Remote Access)
-echo mnmsrvc (NetMeeting Remote Desktop Sharing)
-echo NetTcpPortSharing (Net.Tcp Port Sharing Service)
-echo RasMan (Access for dial-up and VPN)
-echo TabletInputService (Tablet crap)
-echo RpcSs (Remote Procedure Call)
-echo SENS (System Event Notification Service)
-echo EventSystem (COM+ Event System)
-echo XblAuthManager, XblGameSave, XboxGipSvc, xboxgip, xbgm (Xbox services)
-echo SysMain (Superfetch)
-echo EventLog (Event Log duh)
-echo W3SVC (World Wide Web Publishing)
-echo.
-
-set /p choice="Enable or Disable Service? (e/d/def) "
-
-if %choice% == e goto enableserv
-if %choice% == d goto disablegud
-if %choice% == n goto manualserv
-if %choice% == re goto menu
-if %choice% == def (
-	for /f %%G in (%compfiles%\services.txt) do (sc stop %%G)
-	for /f %%G in (%compfiles%\services.txt) do (sc config %%G start= disabled)
-	sc config wuauserv start= auto
-	sc start wuauserv
-	sc config eventlog start= auto
-	sc start eventlog
-	sc config windefend start= auto
-	sc start windefend
-	goto 8
-)
-
-:enableserv
-cls
-
-echo tlntsvr (Telnet)
-echo msftpsvc (FTP)
-echo snmptrap (SNMP Trap)
-echo ssdpsrv (SSDP Discovery)
-echo termservice, sessionenv (Remote Desktop Services)
-echo remoteregistry (Remote Registry)
-echo Messenger (Windows Messenger)
-echo upnphos (Universal Plug n Play)
-echo WAS (Web server Service)
-echo RemoteAccess (Routing and Remote Access)
-echo mnmsrvc (NetMeeting Remote Desktop Sharing)
-echo NetTcpPortSharing (Net.Tcp Port Sharing Service)
-echo RasMan (Access for dial-up and VPN)
-echo TabletInputService (Tablet crap)
-echo RpcSs (Remote Procedure Call)
-echo SENS (System Event Notification Service)
-echo EventSystem (COM+ Event System)
-echo XblAuthManager, XblGameSave, XboxGipSvc, xboxgip, xbgm (Xbox services)
-echo SysMain (Superfetch)
-echo EventLog (Event Log duh)
-echo W3SVC (World Wide Web Publishing)
-echo.
-
-set /p serv="Enter a service to enable... "
-
-if %serv% == n goto 8
-if %serv% == re goto menu
-
-sc config %serv% start= auto
-sc start %serv%
-
-goto enableserv
-
-:disablegud
-cls
-
-echo tlntsvr (Telnet)
-echo msftpsvc (FTP)
-echo snmptrap (SNMP Trap)
-echo ssdpsrv (SSDP Discovery)
-echo termservice, sessionenv (Remote Desktop Services)
-echo remoteregistry (Remote Registry)
-echo Messenger (Windows Messenger)
-echo upnphos (Universal Plug n Play)
-echo WAS (Web server Service)
-echo RemoteAccess (Routing and Remote Access)
-echo mnmsrvc (NetMeeting Remote Desktop Sharing)
-echo NetTcpPortSharing (Net.Tcp Port Sharing Service)
-echo RasMan (Access for dial-up and VPN)
-echo TabletInputService (Tablet crap)
-echo RpcSs (Remote Procedure Call)
-echo SENS (System Event Notification Service)
-echo EventSystem (COM+ Event System)
-echo XblAuthManager, XblGameSave, XboxGipSvc, xboxgip, xbgm (Xbox services)
-echo SysMain (Superfetch)
-echo EventLog (Event Log duh)
-echo W3SVC (World Wide Web Publishing)
-echo.
-
-set /p serv="Enter a service to disable... "
-
-if %serv% == n goto 8
-if %serv% == re goto menu
-
-sc stop %serv%
-sc config %serv% start= disabled
-
-goto disablegud
-
-:: Manual service gucci
-:manualserv
-set default=%getservice%
-set running=%getservice% ^| ? state -match 'Running'
-set automatic=%getservice% ^| ? startmode -match 'Auto'
-set disabled=%getservice% ^| ? startmode -match 'Disabled'
-set stopped=%getservice% ^| ? state -match 'Stopped'
-set manual=%getservice% ^| ? startmode -match 'Manual'
-set nonsystem=%getservice% ^| findstr /v svchost.exe
-
-del /q /f "%userprofile%\Desktop\services.txt"
-set output=false
-
-cls
-echo Here is a script to display services.
-echo.
-echo Select a filter...
-echo.
-echo 1) Default
-echo 2) Running
-echo 3) Automatic
-echo 4) Disabled
-echo 5) Stopped
-echo 6) Manual
-echo 7) Non-system (not svchost.exe)
-echo 8) Exit
-echo.
-
-choice /c 12345678 /n /m "> "
-goto %errorlevel%_srv
-
-:: Ask if display in cmd window or text file
-:outputask
-cls
-set /p output="Display output in cmd window or output to text file? (c/t) "
-
-goto %return%_srv
-
-:: Default
-:1_srv
-if %output% == c (
-	%default% | more
-	goto manualserv
-)
-
-if %output% == t (
-	%default% >> %userprofile%\Desktop\services.txt
-	cls
-	echo Outputted to %userprofile%\Desktop\services.txt
-	echo.
-	start %userprofile%\Desktop\services.txt
-	pause
-	goto manualserv
-)
-
-else (
-	set return=1
-	goto outputask
-)
-
-:: Running
-:2_srv
-if %output% == c (
-	%running% | more
-	goto manualserv
-)
-
-if %output% == t (
-	%running% >> %userprofile%\Desktop\services.txt
-	cls
-	echo Outputted to %userprofile%\Desktop\services.txt
-	echo.
-	start %userprofile%\Desktop\services.txt
-	pause
-	goto manualserv
-)
-
-else (
-	set return=2
-	goto outputask
-)
-
-:: Automatic
-:3_srv
-if %output% == c (
-	%automatic% | more
-	goto manualserv
-)
-
-if %output% == t (
-	%automatic% >> %userprofile%\Desktop\services.txt
-	cls
-	echo Outputted to %userprofile%\Desktop\services.txt
-	echo.
-	start %userprofile%\Desktop\services.txt
-	pause
-	goto manualserv
-)
-
-else (
-	set return=3
-	goto outputask
-)
-
-:: Disabled
-:4_srv
-if %output% == c (
-	%disabled% | more
-	goto manualserv
-)
-
-if %output% == t (
-	%disabled% >> %userprofile%\Desktop\services.txt
-	cls
-	echo Outputted to %userprofile%\Desktop\services.txt
-	echo.
-	start %userprofile%\Desktop\services.txt
-	pause
-	goto manualserv
-)
-
-else (
-	set return=4
-	goto outputask
-)
-
-:: Stopped
-:5_srv
-if %output% == c (
-	%stopped% | more
-	goto manualserv
-)
-
-if %output% == t (
-	%stopped% >> %userprofile%\Desktop\services.txt
-	cls
-	echo Outputted to %userprofile%\Desktop\services.txt
-	echo.
-	start %userprofile%\Desktop\services.txt
-	pause
-	goto manualserv
-)
-
-else (
-	set return=5
-	goto outputask
-)
-
-:: Manual
-:6_srv
-if %output% == c (
-	%manual% | more
-	goto manualserv
-)
-
-if %output% == t (
-	%manual% >> %userprofile%\Desktop\services.txt
-	cls
-	echo Outputted to %userprofile%\Desktop\services.txt
-	echo.
-	start %userprofile%\Desktop\services.txt
-	pause
-	goto manualserv
-)
-
-else (
-	set return=6
-	goto outputask
-)
-
-:: Non-system
-:7_srv
-if %output% == c (
-	%nonsystem% | more
-	goto manualserv
-)
-
-if %output% == t (
-	%nonsystem% >> %userprofile%\Desktop\services.txt
-	cls
-	echo Outputted to %userprofile%\Desktop\services.txt
-	echo.
-	start %userprofile%\Desktop\services.txt
-	pause
-	goto manualserv
-)
-
-else (
-	set return=7
-	goto outputask
-)
-
-:: Exit
-:8_srv
-goto menu
+sc config %excludeserv% start= auto & sc start %excludeserv%
+goto excludeserv
 
 :: Install programs
 :9
@@ -609,127 +226,32 @@ echo.
 start chocogucci.bat
 pause
 
-if %sickomode% == true (goto 10)
-goto menu
+echo Security programs installed.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Inf files
 :10
 cls
-if %sickomode% == true (
-  secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\infs\%os%BadInf.inf"
+::secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\infs\%os%BadInf.inf"
 
-  cls
-  echo Bad INF template applied!
-  echo.
-  echo Wait and see if you got any vulnerabilities from it...
-	echo.
-	echo MEANWHILE, look at Forensics Questions.
-  echo.
-  pause
-
-  secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\infs\%os%GoodInf.inf"
-
-	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Username: %username%" /f
-	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
-
-	echo.
-	echo Good inf done!
-	echo.
-	echo Big yeet!
-	echo.
-	pause
-
-  goto 11
-)
-
-set /p inf="Good or Bad Inf? (g/b) "
-if %inf% == g (goto goodinf)
-if %inf% == b (goto badinf)
-if %inf% == n (goto menu) else (goto menu)
-
-:goodinf
-cls
+:: Apply good inf
 secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\infs\%os%GoodInf.inf"
 
-echo.
-echo Good INF Done!
-echo.
-echo Check the scoring report and copy/paste the vulnerabilities into notepad.
-echo.
-pause
+echo Good INF applied.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
-goto 10
-
-:badinf
-cls
-secedit /configure /db "%systemroot%\dankdatabase2.db" /cfg "%compfiles%\infs\%os%BadInf.inf"
-
-echo.
-echo Bad Inf Done!
-echo.
-echo Check the scoring report and copy/paste the vulnerabilities into notepad.
-echo.
-pause
-
-goto 10
+:: Re-change logon message
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Username: %username%" /f
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
 
 :: Audit Policy
 :11
 cls
-if %sickomode% == true (
-    LGPO /a "%compfiles%\audit_templates\%os%NoAudit.csv"
 
-	echo.
-    echo Bad audit template applied!
-    echo.
-    echo Wait and see if you got any vulnerabilities from it...
-	echo.
-	echo MEANWHILE, look at Forensics Questions.
-    echo.
-    pause
-
-    LGPO /a "%compfiles%\audit_templates\%os%AllAudit.csv"
-
-	echo.
-	echo Good audit template done!
-	echo.
-	echo Big yeet!
-	echo.
-	pause
-
-    goto 12
-)
-
-set /p inf="No or All Auditing? (no/a) "
-if %inf% == a (goto allaudit)
-if %inf% == no (goto noaudit)
-if %inf% == n (goto menu) else (goto menu)
-
-:allaudit
-cls
 LGPO /a "%compfiles%\audit_templates\%os%AllAudit.csv"
 
-echo.
-echo All Auditing template done!
-echo.
-echo Wait and see if you got points...
-echo.
-pause
-
-goto 11
-
-:noaudit
-cls
-LGPO /a "%compfiles%\audit_templates\%os%NoAudit.csv"
-
-echo.
-echo No Auditing template done!
-echo.
-echo Wait and see if you got points...
-echo.
-pause
-
-goto 11
+echo Audit policy template applied.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Nessus
 :12
@@ -743,37 +265,90 @@ echo If not, it's really not a big deal at all, tbh.
 echo.
 pause
 
-if %sickomode% == true goto 13
+echo Nessus scan run.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
+
+:: Generate User List
+choco list -l >nul | findstr /i "powershell" && goto getuserlist
+
+if %os% == Win7 (
+	choco install powershell dotnet4.5
+	cls
+	echo Yeah, so you HAVE to restart the VM here
+	echo so that automatic users work. :shrug:
+	echo.
+	echo Feelsbadman.
+	echo.
+	pause
+	exit
+)
+
+if %os% == Win8 (
+	choco install powershell dotnet4.5
+	cls
+	echo Yeah, so you HAVE to restart the VM here
+	echo so that automatic users work. :shrug:
+	echo.
+	echo Feelsbadman.
+	echo.
+	pause
+	exit
+)
+
+if %os% == Server2008 (
+	choco install powershell dotnet4.5
+	cls
+	echo Yeah, so you HAVE to restart the VM here
+	echo so that automatic users work. :shrug:
+	echo.
+	echo Feelsbadman.
+	echo.
+	pause
+	exit
+)
+
+:getuserlist
+if %userlistmade% == y (
+	set autousers=true
+	goto %return_number%
+)
+
+cls
+echo Generating user list...
+echo.
+for /f "skip=1 tokens=1" %%G in ('%ps% "glu | select name | ft -hidetableheaders"') do (echo %%G >> C:\users_admins.txt)
+findstr /v "BroPants BroShirt DefaultAccount defaultuser0 Administrator Guest" C:\users_admins.txt > C:\users.txt
+call jrepl " +$" "" /f C:\users.txt /o -
+call jrepl " +$" "" /f C:\users_admins.txt /o -
+
+echo Please put all the users from README, including admins here and save then close > C:\approved_users.txt
+echo Replace these 2 lines btw smh >> C:\approved_users.txt
+start C:\approved_users.txt
+pause
+
+sort < C:\approved_users.txt > C:\approved_users_gucci.txt
+
+set autousers=true
+
+cls
+type C:\users.txt
+echo.
+set /p usersbroken="Did the user list break? (y/n) "
+if %return% == true (goto %return_number%)
 
 goto menu
 
 :: Activate/Disable Users
 :13
 cls
-if %sickomode% == true (
-	if %usersbroken% == true (goto 13_cont)
-	if %autousers% == false (
-		set return=true
-		set return_number=13
-		goto 34
-	)
 
-	net user BroShirt /active:no
-	net user BroPants /active:no
+:: Disable built-in accounts
+net user BroShirt /active:no
+net user BroPants /active:no
 
-	for /f %%G in (C:\users.txt) do (net user %%G /active:yes)
+for /f %%G in (C:\users.txt) do (net user %%G /active:yes)
 
-	echo.
-	echo Activated users done!
-	echo.
-	echo Guest and Admin accounts have been disabled, so yeet.
-	echo.
-	pause
-
-	goto 14
-)
-
-:13_cont
+:13a
 net user BroShirt /active:no
 net user BroPants /active:no
 
@@ -1511,77 +1086,6 @@ echo.
 pause
 
 set sickomode=false
-goto menu
-
-:: Generate User List
-:34
-choco list -l >nul | findstr /i "powershell" && goto getuserlist
-
-if %os% == Win7 (
-	choco install powershell dotnet4.5
-	cls
-	echo Yeah, so you HAVE to restart the VM here
-	echo so that automatic users work. :shrug:
-	echo.
-	echo Feelsbadman.
-	echo.
-	pause
-	exit
-)
-
-if %os% == Win8 (
-	choco install powershell dotnet4.5
-	cls
-	echo Yeah, so you HAVE to restart the VM here
-	echo so that automatic users work. :shrug:
-	echo.
-	echo Feelsbadman.
-	echo.
-	pause
-	exit
-)
-
-if %os% == Server2008 (
-	choco install powershell dotnet4.5
-	cls
-	echo Yeah, so you HAVE to restart the VM here
-	echo so that automatic users work. :shrug:
-	echo.
-	echo Feelsbadman.
-	echo.
-	pause
-	exit
-)
-
-:getuserlist
-if %userlistmade% == y (
-	set autousers=true
-	goto %return_number%
-)
-
-cls
-echo Generating user list...
-echo.
-for /f "skip=1 tokens=1" %%G in ('%ps% "glu | select name | ft -hidetableheaders"') do (echo %%G >> C:\users_admins.txt)
-findstr /v "BroPants BroShirt DefaultAccount defaultuser0 Administrator Guest" C:\users_admins.txt > C:\users.txt
-call jrepl " +$" "" /f C:\users.txt /o -
-call jrepl " +$" "" /f C:\users_admins.txt /o -
-
-echo Please put all the users from README, including admins here and save then close > C:\approved_users.txt
-echo Replace these 2 lines btw smh >> C:\approved_users.txt
-start C:\approved_users.txt
-pause
-
-sort < C:\approved_users.txt > C:\approved_users_gucci.txt
-
-set autousers=true
-
-cls
-type C:\users.txt
-echo.
-set /p usersbroken="Did the user list break? (y/n) "
-if %return% == true (goto %return_number%)
-
 goto menu
 
 :: Open DankMMC
