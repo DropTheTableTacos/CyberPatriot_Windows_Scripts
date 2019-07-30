@@ -253,21 +253,6 @@ LGPO /a "%compfiles%\audit_templates\%os%AllAudit.csv"
 echo Audit policy template applied.>> %desktop%\progress.txt
 echo.>> %desktop%\progress.txt
 
-:: Nessus
-:12
-cls
-ipconfig | findstr /i "IPv4 Address."
-
-echo.
-echo If Nessus is installed on your host PC, run it
-echo.
-echo If not, it's really not a big deal at all, tbh.
-echo.
-pause
-
-echo Nessus scan run.>> %desktop%\progress.txt
-echo.>> %desktop%\progress.txt
-
 :: Generate User List
 choco list -l >nul | findstr /i "powershell" && goto getuserlist
 
@@ -308,12 +293,8 @@ if %os% == Server2008 (
 )
 
 :getuserlist
-if %userlistmade% == y (
-	set autousers=true
-	goto %return_number%
-)
-
 cls
+
 echo Generating user list...
 echo.
 for /f "skip=1 tokens=1" %%G in ('%ps% "glu | select name | ft -hidetableheaders"') do (echo %%G >> C:\users_admins.txt)
@@ -328,15 +309,21 @@ pause
 
 sort < C:\approved_users.txt > C:\approved_users_gucci.txt
 
-set autousers=true
-
 cls
 type C:\users.txt
 echo.
-set /p usersbroken="Did the user list break? (y/n) "
-if %return% == true (goto %return_number%)
+echo Let's hope the user list isn't broken
+echo.
+pause
 
-goto menu
+:: Change passwords
+:12
+cls
+
+for /f %%G in (C:\users_admins.txt) do (net user %%G abc123ABC123@@)
+
+echo All user passwords changed. (abc123ABC123@@)>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Activate/Disable Users
 :13
@@ -348,210 +335,69 @@ net user BroPants /active:no
 
 for /f %%G in (C:\users.txt) do (net user %%G /active:yes)
 
-:13a
-net user BroShirt /active:no
-net user BroPants /active:no
-
-echo.
-%listuser%
-
-echo Enable all accounts. Guest account has been disabled.
-echo.
-
-set /p choice="Activate or disable user? (a/d) "
-if %choice% == a (goto activateusers)
-if %choice% == d (goto disableusers)
-if %choice% == n (
-	if %sickomode% == true (goto 14)
-	goto menu
-)
-
-:activateusers
-cls
-%listuser%
-
-set /p user="Enter a user to activate... "
-if %user% == n (goto 13)
-net user %user% /active:yes
-goto activateusers
-
-:disableusers
-cls
-%listuser%
-
-set /p user="Enter a user to disable... "
-if %user% == n (goto 13)
-net user %user% /active:no
-
-goto disableusers
-
-:: Change passwords
-:14
-cls
-if %sickomode% == true (
-	if %usersbroken% == true (goto 14_cont)
-	if %autousers% == false (
-		set return=true
-		set return_number=14
-		goto 34
-	)
-
-	for /f %%G in (C:\users_admins.txt) do (net user %%G abc123ABC123@@)
-
-	echo.
-	echo Changing all passwords done!
-	echo.
-	echo Note: All passwords are abc123ABC123@@
-	echo.
-	pause
-
-	goto 15
-)
-
-:14_cont
-%listuser%
-if %errorlevel% == 1 (cls & net user)
-
-echo.
-echo All users' passwords will be abc123ABC123@@
-echo.
-
-set /p user="Enter user for password change... "
-if %choice% == n (
-	if %sickomode% == true (goto 15)
-	goto menu
-)
-
-net user %user% abc123ABC123@@
-
-goto 14
-
-:: Prohibited users' files
-:15
-del /f /q C:\*files.txt
-
-if %autousers% == false (
-	set return=true
-	set return_number=15
-	goto 34
-)
-
-if %usersbroken% == true (
-	cls
-	%listuser%
-	if %errorlevel% == 1 (cls & net user)
-) else (
-	call icdiff C:\approved_users_gucci.txt C:\users.txt
-	if %errorlevel% == 1 (cls & net user)
-)
-
-echo.
-set /p baduser="Enter an unauthorized user's name to find their files... "
-if %baduser% == n (
-	if %sickomode% == true (goto 16)
-	goto menu
-)
-
-cls
-echo Ok. Wait for ting to happen.
-echo.
-dir /s /q /a /a-d /o-d /tc C:\ | findstr /i "%computername%\%baduser%" >> C:\%baduser%files.txt
-
-start C:\%baduser%files.txt
-:badfiles
-cls
-echo Look through the text file to find sketchiness.
-echo.
-set /p eekfile="Enter the filename of any suspicious files you see... "
-if %eekfile% == n (goto 15)
-
-cd C:\
-dir /s /q /a "%eekfile%" >> C:\whomst.txt
-
-start C:\whomst.txt
-cls
-echo It probably found something OOF
-echo.
-pause
-
-goto badfiles
+echo Disabled built-in users, enabled all others.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Add/Delete Users
-:16
-if %autousers% == false (
-	set return=true
-	set return_number=16
-	goto 34
-)
+:14
+cls
 
-if %usersbroken% == true (
-	cls
-	%listuser%
-	if %errorlevel% == 1 (cls & net user)
-) else (
-	call icdiff C:\approved_users_gucci.txt C:\users.txt
-	if %errorlevel% == 1 (cls & net user)
-)
+call icdiff C:\approved_users_gucci.txt C:\users.txt
 
 echo.
 set /p choice="Add or remove user? (a/r) "
 if %choice% == a (goto addusers)
 if %choice% == r (goto delusers)
 if %choice% == n (
-	if %sickomode% == true (goto 17)
-	goto menu
+	echo Users added/deleted.>> %desktop%\progress.txt
+	echo.>> %desktop%\progress.txt
+	goto 15
 )
 
 :addusers
 cls
 %listuser%
-if %errorlevel% == 1 (cls & net user)
 
 set /p user="Enter a username... "
-if %user% == n (goto 16)
+if %user% == n (goto 14)
 net user %user% /add
 
 goto addusers
 
 :delusers
 cls
-if %usersbroken% == true (
-	%listuser%
-	if %errorlevel% == 1 (cls & net user)
-) else (
-	call icdiff C:\approved_users_gucci.txt C:\users.txt
-	if %errorlevel% == 1 (cls & net user)
-)
+
+call icdiff C:\approved_users_gucci.txt C:\users.txt
 
 echo.
 set /p user="Enter a user to delete... "
-if %user% == n (goto 16)
+if %user% == n (goto 14)
 net user %user% /delete
 
 goto delusers
 
 :: Deleting/adding admins
-:17
+:15
 cls
 %listadmin%
-if %errorlevel% == 1 (cls & net localgroup administrators)
 
 set /p choice="Add or remove admin? (a/r) "
 if %choice% == a goto addadmins
 if %choice% == r goto deladmins
 if %choice% == n (
-	if %sickomode% == true (goto 18)
-	goto menu
+	echo Admins removed/added.>> %desktop%\progress.txt
+	echo.>> %desktop%\progress.txt
+	goto 16
 )
 
 :addadmins
 cls
 %listuser%
-if %errorlevel% == 1 (cls & net user)
+
 net localgroup administrators
 
 set /p user="Enter a user to add to admin group... "
-if %user% == n (goto 17)
+if %user% == n (goto 15)
 net localgroup administrators %user% /add
 
 goto addadmins
@@ -559,42 +405,44 @@ goto addadmins
 :deladmins
 cls
 %listadmin%
-if %errorlevel% == 1 (cls & net localgroup administrators)
 
 set /p user="Enter a user to remove from admin group... "
-if %user% == n (goto 17)
+if %user% == n (goto 15)
 net localgroup administrators %user% /delete
 
 goto deladmins
 
 :: Enable/disable features
-:18
+:16
 cls
+
+:: Enabling Internet Explorer
 %ps% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all"
 %ps% "Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all"
 
-if %sickomode% == true (
-	cls
-	echo A script to disable unnecessary features is going to run now...
-	echo.
-	start featuresgucci.bat
-	pause
+:: Disable features
+start featuresgucci.bat
 
-	goto 19
-)
+echo Lame features disabled and IE enabled.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
+:: Nessus
+:17
 cls
-echo Disable features that are not lit.
+ipconfig | findstr /i "IPv4 Address."
+
 echo.
-echo Internet explorer has been enabled :ok_hand:
+echo If Nessus is installed on your host PC, run it
 echo.
-appwiz.cpl
+echo If not, it's really not a big deal at all, tbh.
+echo.
 pause
 
-goto menu
+echo Nessus scan run.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Remove Programs
-:19
+:18
 cls
 echo Removing programs + features...
 echo.
@@ -635,32 +483,24 @@ echo Generally just find all the malware, yo
 echo.
 pause
 
-if %sickomode% == true (goto 20)
-goto menu
+echo Bad programs and *possibly* archives removed.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Forensics
-:20
+:19
 cls
+
 echo Do the forensics questions. Eek.
 echo.
 pause
 
-if %sickomode% == true (goto 21)
-
-goto menu
+echo Forensics questions attempted to be answered.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Media Files
-:21
-if %sickomode% == true (goto deletemf)
-
+:20
 cls
-set /p choice="Search for or "delete" media files? (s/d) "
-if %choice% == s (goto searchmf)
-if %choice% == d (goto deletemf)
-if %choice% == n (goto menu)
 
-:deletemf
-cls
 echo THIS IS ABOUT TO DELETE MEDIA FILES.
 echo.
 echo Make sure you did the forensics questions
@@ -688,33 +528,13 @@ start mediafiles.txt
 
 pause
 
-if %sickomode% == true (goto 22)
-
-goto 21
-
-:searchmf
-cls
-echo Note: "Could not find mediafiles.txt" is expected here.
-echo.
-echo Searching for media files...
-echo.
-
-del "%homedrive%\mediafiles.txt" /f /q
-
-cd %homedrive%\
-dir /s /a /b /o-d *.mp3 *.mp4 *.avi *.wmv *.mid *.mov *.m4v *.3gp *.wma *.wav >> mediafiles.txt
-
-start mediafiles.txt
-
-pause
-
-if %sickomode% == true (goto 22)
-
-goto 21
+echo Media files deleted.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Operating System Settings
-:22
+:21
 cls
+
 net share
 echo.
 echo The default, acceptable shares are:
@@ -724,7 +544,7 @@ echo.
 set /p share="Choose a share to delete cause it sketchy... "
 if %share% == n goto oscont
 net share %share% /del
-goto 22
+goto 21
 
 :oscont
 cls
@@ -763,12 +583,8 @@ echo.
 start gpedit.msc
 pause
 
-if %sickomode% == true goto 23
-
-goto menu
-
 :: Update programs
-:23
+:22
 cls
 echo Update all programs you need to.
 echo.
@@ -787,12 +603,8 @@ echo and enable em, gamer
 echo.
 pause
 
-if %sickomode% == true goto 24
-
-goto menu
-
 :: Prohibited files
-:24
+:23
 cls
 echo Yaboi prohibited files is a thing now.
 echo.
@@ -843,9 +655,44 @@ start eek.txt
 
 pause
 
-if %sickomode% == true goto 25
+:: Prohibited users' files
+:24
+del /f /q C:\*files.txt
 
-goto menu
+call icdiff C:\approved_users_gucci.txt C:\users.txt
+
+echo.
+echo Enter an unauthorized username to
+set /p baduser="find their leftover files... "
+if %baduser% == n (
+	echo Prohibited user leftover files maybe found.>> %desktop%\progress.txt
+	echo.>> %desktop%\progress.txt
+	goto 25
+)
+
+cls
+echo Ok. Wait for ting to happen.
+echo.
+dir /s /q /a /a-d /o-d /tc C:\ | findstr /i "%computername%\%baduser%" >> C:\%baduser%files.txt
+
+start C:\%baduser%files.txt
+:badfiles
+cls
+echo Look through the text file to find sketchiness.
+echo.
+set /p eekfile="Enter the filename of any suspicious files you see... "
+if %eekfile% == n (goto 24)
+
+cd C:\
+dir /s /q /a "%eekfile%" >> C:\whomst.txt
+
+start C:\whomst.txt
+cls
+echo It probably found something OOF
+echo.
+pause
+
+goto badfiles
 
 :: Sysinternals
 :25
@@ -859,9 +706,8 @@ autoruns
 tcpview
 pause
 
-if %sickomode% == true goto 26
-
-goto menu
+echo Sysinternals used to find malware and sketchiness.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: CAT-Lite
 :26
@@ -876,46 +722,47 @@ if %os% == Win10 (
 	start /d "%cmderbin%\cis-cat-lite" CISCAT.jar
 	pause
 
-	if %sickomode% == true goto 27
+	echo CAT-Lite scanner run.>> %desktop%\progress.txt
+	echo.>> %desktop%\progress.txt
 
-	goto menu
+	goto 27
 )
-if %sickomode% == true goto 27
-
-cls
-echo Sorry man. This OS can't use Cat-Lite.
-echo.
-pause
-
-goto menu
 
 :: MMC Stuff
 :27
 cls
 echo Check locked users/other user stuff
 echo.
-if %sickomode% == true start compmgmt.msc
+compmgmt.msc
 pause
+
+echo Checked for locked users.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 cls
 echo Enable Windows Defender
 echo.
-if %sickomode% == true start gpedit.msc
+start gpedit.msc
 pause
+
+echo Enabled windows defender.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 cls
 echo Enable Smartscreen (doesn't apply to Server 2008)
 echo.
 pause
 
+echo Enabled smartscreen.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
+
 cls
 echo Disable autoplay
 echo.
 pause
 
-if %sickomode% == true goto 28
-
-goto menu
+echo Disabled autoplay.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Application Settings
 :28
@@ -942,9 +789,8 @@ start iexplore.exe
 
 pause
 
-if %sickomode% == true goto 29
-
-goto menu
+echo Set some security settings for firefox and IE.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Server Manager
 :29
@@ -969,16 +815,11 @@ echo.
 start /d "%SystemRoot%\system32" CompMgmtLauncher.exe
 pause
 
-if %sickomode% == true goto 30
-goto menu
+echo Server manager stuff done. (IE Enhanced Security Config, enable backup, whatevs)>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :noserv
-if %sickomode% == true goto 30
-cls
-echo Oof no server manager here. Y'all bad.
-echo.
-pause
-goto menu
+goto 30
 
 :: Event Viewer
 :30
@@ -988,9 +829,8 @@ echo.
 start eventvwr.msc
 pause
 
-if %sickomode% == true goto 31
-
-goto menu
+echo Event Viewer checked out.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Backup
 :31
@@ -1004,9 +844,8 @@ set /p location="Enter the drive letter for the backup location... "
 
 wbadmin enable backup -addtarget:%location%: -include:C: -schedule:03:00 -quiet
 
-if %sickomode% == true goto 32
-
-goto menu
+echo Set up theoretical backup.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Defensive Countermeasures
 :32
@@ -1025,9 +864,8 @@ echo Scan on all those programs
 echo.
 pause
 
-if %sickomode% == true goto 33
-
-goto menu
+echo Re-ran scan on security programs.>> %desktop%\progress.txt
+echo.>> %desktop%\progress.txt
 
 :: Random Things At The End
 :33
@@ -1044,7 +882,7 @@ echo.
 pause
 
 cls
-echo Go through every single step again (extreme thorough-ness not super necessary)
+echo Go through every single step again bro
 echo.
 pause
 
@@ -1070,25 +908,13 @@ if %os% == Server2008 start /d "%compfiles%" Official%os%Checklist.docx
 if %os% == Server2016 start /d "%compfiles%" Official%os%Checklist.docx
 pause
 
-if %sickomode% == true goto end
-
-goto menu
-
 :: End
 :end
-echo If you reached this screen, you did a good.
+echo I'd be suprised if you managed to make it to this screen.
 echo.
-echo You got that bread! That's legit epic.
-echo.
-echo Sending you back to the menu now...
+echo If you did, good job, I think? Exiting script...
 echo.
 
 pause
 
-set sickomode=false
-goto menu
-
-:: Open DankMMC
-:35
-start /d "%cmderbin%" DankMMC.msc
-goto menu
+exit
