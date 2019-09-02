@@ -1,0 +1,514 @@
+# Restrict Accelerators to those deployed through Group Policy
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Activities\Restrictions" -Name "UsePolicyActivitiesOnly" -PropertyType DWord -Value "1" -Force
+
+# Turn off Accelerators
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Activities" -Name "NoActivities" -PropertyType DWord -Value "1" -Force
+
+# Bypass prompting for Clipboard access for scripts running in any process
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\Feature_Enable_Script_Paste_URLAction_If_Prompt" -Name "*" -PropertyType String -Value "0" -Force
+
+# Bypass prompting for Clipboard access for scripts running in the Internet Explorer process
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\Feature_Enable_Script_Paste_URLAction_If_Prompt" -Name "(Reserved)" -PropertyType String -Value "0" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\Feature_Enable_Script_Paste_URLAction_If_Prompt" -Name "explorer.exe" -PropertyType String -Value "0" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\Feature_Enable_Script_Paste_URLAction_If_Prompt" -Name "iexplore.exe" -PropertyType String -Value "0" -Force
+
+# Define applications and processes that can access the Clipboard without prompting
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl" -Name "ListBox_Support_Feature_Enable_Script_Paste_URLAction_If_Prompt" -PropertyType DWord -Value "1" -Force
+
+# Turn off Print Menu
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Restrictions" -Name "NoPrinting" -PropertyType DWord -Value "1" -Force
+
+# Turn off the ability to launch report site problems using a menu option
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "NoReportSiteProblems" -PropertyType String -Value "no" -Force
+
+# Include updated website lists from Microsoft
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserEmulation" -Name "MSCompatibilityMode" -PropertyType DWord -Value "1" -Force
+
+# Turn off Compatibility View button
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\CommandBar" -Name "ShowCompatibilityViewButton" -PropertyType DWord -Value "1" -Force
+
+# Turn off Compatibility View
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserEmulation" -Name "DisableSiteListEditing" -PropertyType DWord -Value "0" -Force
+
+# Turn on Internet Explorer 7 Standards Mode
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserEmulation" -Name "AllSitesCompatibilityMode" -PropertyType DWord -Value "1" -Force
+
+# Turn on Internet Explorer Standards Mode for local intranet
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserEmulation" -Name "IntranetCompatibilityMode" -PropertyType DWord -Value "1" -Force
+
+# Prevent specifying the code download path for each computer
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "CodeBaseSearchPath" -PropertyType String -Value "CODEBASE" -Force
+
+# Allow active content from CDs to run on user machines
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_LOCALMACHINE_LOCKDOWN\Settings" -Name "LOCALMACHINE_CD_UNLOCK" -PropertyType DWord -Value "0" -Force
+
+# Allow Install On Demand (except Internet Explorer)
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "NoWebJITSetup" -PropertyType DWord -Value "1" -Force
+
+# Allow Install On Demand (Internet Explorer)
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "NoJITSetup" -PropertyType DWord -Value "1" -Force
+
+# Allow Internet Explorer to use the SPDY/3 network protocol
+New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "EnableSPDY3_0" -PropertyType DWord -Value "1" -Force
+
+# Allow software to run or install even if the signature is invalid
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Download" -Name "RunInvalidSignatures" -PropertyType DWord -Value "0" -Force
+
+# Allow third-party browser extensions
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "Enable Browser Extensions" -PropertyType String -Value "no" -Force
+
+# Always send Do Not Track header
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "DoNotTrack" -PropertyType DWord -Value "1" -Force
+
+# Check for server certificate revocation
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "CertificateRevocation" -PropertyType DWord -Value "1" -Force
+
+# Check for signatures on downloaded programs
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Download" -Name "CheckExeSignatures" -PropertyType String -Value "yes" -Force
+
+# Do not allow ActiveX controls to run in Protected Mode when Enhanced Protected Mode is enabled
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "DisableEPMCompat" -PropertyType DWord -Value "1" -Force
+
+# Do not allow resetting Internet Explorer settings
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "DisableRIED" -PropertyType DWord -Value "0" -Force
+
+# Do not save encrypted pages to disk
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "DisableCachingOfSSLPages" -PropertyType DWord -Value "1" -Force
+
+# Empty Temporary Internet Files folder when browser is closed
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Cache" -Name "Persistent" -PropertyType DWord -Value "0" -Force
+
+# Play animations in web pages
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "Play_Animations" -PropertyType String -Value "yes" -Force
+
+# Play sounds in web pages
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "Play_Background_Sounds" -PropertyType String -Value "yes" -Force
+
+# Play videos in web pages
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "Display Inline Videos" -PropertyType String -Value "yes" -Force
+
+# Turn off ClearType
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "UseClearType" -PropertyType String -Value "yes" -Force
+
+# Turn off encryption support
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "SecureProtocols" -PropertyType DWord -Value "2560" -Force
+
+# Turn off loading websites and content in the background to optimize performance
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\PrefetchPrerender" -Name "Enabled" -PropertyType DWord -Value "1" -Force
+
+# Turn off Profile Assistant
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Security\P3Global" -Name "Enabled" -PropertyType DWord -Value "0" -Force
+
+# Turn off sending UTF-8 query strings for URLs
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "UTF8URLQuery" -PropertyType DWord -Value "3" -Force
+
+# Turn off the flip ahead with page prediction feature
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\FlipAhead" -Name "Enabled" -PropertyType DWord -Value "1" -Force
+
+# Turn on 64-bit tab processes when running in Enhanced Protected Mode on 64-bit versions of Windows
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "Isolation64Bit" -PropertyType DWord -Value "1" -Force
+
+# Turn on Caret Browsing support
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\CaretBrowsing" -Name "EnableOnStartup" -PropertyType DWord -Value "1" -Force
+
+# Turn on Enhanced Protected Mode
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "Isolation" -PropertyType String -Value "PMEM" -Force
+
+# Use HTTP 1.1 through proxy connections
+New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "ProxyHttp1.1" -PropertyType DWord -Value "1" -Force
+
+# Use HTTP 1.1
+New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "EnableHttp1_1" -PropertyType DWord -Value "1" -Force
+
+# Show Content Advisor on Internet Options
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "ShowContentAdvisor" -PropertyType DWord -Value "1" -Force
+
+# Allow websites to store application caches on client computers
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage\AppCache" -Name "AllowWebsiteCaches" -PropertyType DWord -Value "1" -Force
+
+# Allow websites to store indexed databases on client computers
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage\IndexedDB" -Name "AllowWebsiteDatabases" -PropertyType DWord -Value "1" -Force
+
+# Set application caches expiration time limit for individual domains
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage\AppCache" -Name "GarbageCollectionThresholdInDays" -PropertyType DWord -Value "0" -Force
+
+# Set application cache storage limits for individual domains
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage\AppCache" -Name "MaxTrustedDomainLimitInMB" -PropertyType DWord -Value "50" -Force
+
+# Set default storage limits for websites
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage" -Name "DefaultDomainCacheLimitInMB" -PropertyType DWord -Value "10" -Force
+
+# Set indexed database storage limits for individual domains
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage\IndexedDB" -Name "MaxTrustedDomainLimitInMB" -PropertyType DWord -Value "500" -Force
+
+# Set maximum application cache individual resource size
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage\AppCache" -Name "ManifestSingleResourceQuotaInMB" -PropertyType DWord -Value "50" -Force
+
+# Set maximum application cache resource list size
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage\AppCache" -Name "ManifestResourceQuota" -PropertyType DWord -Value "1000" -Force
+
+# Set maximum application caches storage limit for all domains
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage\AppCache" -Name "TotalLimitInMB" -PropertyType DWord -Value "1024" -Force
+
+# Set maximum indexed database storage limit for all domains
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\BrowserStorage\IndexedDB" -Name "TotalLimitInMB" -PropertyType DWord -Value "4096" -Force
+
+# Start Internet Explorer with tabs from last browsing session
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\ContinuousBrowsing" -Name "Enabled" -PropertyType DWord -Value "0" -Force
+
+# Internet Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "Internet" -PropertyType DWord -Value "4" -Force
+
+# Intranet Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "Intranet" -PropertyType DWord -Value "4" -Force
+
+# Restricted Sites Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "RestrictedSitesZoneTemplate" -PropertyType DWord -Value "4" -Force
+
+# Local Machine Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "LocalMachineZoneTemplate" -PropertyType DWord -Value "4" -Force
+
+# Trusted Sites Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "TrustedSitesZoneTemplate" -PropertyType DWord -Value "4" -Force
+
+# Locked-Down Internet Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "InternetZoneLockdownTemplate" -PropertyType DWord -Value "4" -Force
+
+# Locked-Down Intranet Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "IntranetZoneLockdownTemplate" -PropertyType DWord -Value "4" -Force
+
+# Locked-Down Restricted Sites Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "RestrictedSitesZoneLockdownTemplate" -PropertyType DWord -Value "4" -Force
+
+# Locked-Down Local Machine Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "LocalMachineZoneLockdownTemplate" -PropertyType DWord -Value "4" -Force
+
+# Locked-Down Trusted Sites Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "TrustedSitesZoneLockdownTemplate" -PropertyType DWord -Value "4" -Force
+
+#  Zone Template
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "" -PropertyType DWord -Value "4" -Force
+
+# Zone template settings
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1001" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1004" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1200" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1201" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1206" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1207" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1208" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1209" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "120a" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "120b" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1400" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1402" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1405" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1406" -PropertyType DWord -Value "3" -Force
+
+# Allow cut, copy or paste operations from the clipboard via script
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1407" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1409" -PropertyType DWord -Value "0" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1601" -PropertyType DWord -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1604" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1605" -PropertyType DWord -Value "0" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1606" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1607" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1608" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1609" -PropertyType DWord -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "160A" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1800" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1802" -PropertyType DWord -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1803" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1804" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1807" -PropertyType DWord -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1808" -PropertyType DWord -Value "0" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1809" -PropertyType DWord -Value "0" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "180a" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "180b" -PropertyType DWord -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1a00" -PropertyType DWord -Value "65536" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1a02" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1a03" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1a04" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1a05" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1a06" -PropertyType DWord -Value "3" -Force
+
+# Java permissions
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1c00" -PropertyType DWord -Value "0" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "1e05" -PropertyType DWord -Value "65536" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2000" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2001" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2004" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2005" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2100" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2101" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2102" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2103" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2104" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2105" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2106" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2200" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2201" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2300" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2301" -PropertyType DWord -Value "0" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2400" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2401" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2402" -PropertyType DWord -Value "3" -Force
+
+# Turn on Protected Mode
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2500" -PropertyType DWord -Value "0" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2600" -PropertyType DWord -Value "3" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Template Policies" -Name "2700" -PropertyType DWord -Value "0" -Force
+
+# Prevent ignoring certificate errors
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "PreventIgnoreCertErrors" -PropertyType DWord -Value "1" -Force
+
+# Send internationalized domain names
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "EnablePunyCode" -PropertyType DWord -Value "3" -Force
+
+# Use UTF-8 for mailto links
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Protocols\Mailto" -Name "UTF8Encoding" -PropertyType DWord -Value "1" -Force
+
+# Go to an intranet site for a one-word entry in the Address bar
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "GotoIntranetSiteForSingleWordEntry" -PropertyType DWord -Value "0" -Force
+
+# Turn off phone number detection
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FormatDetection" -Name "PhoneNumberEnabled" -PropertyType DWord -Value "0" -Force
+
+# Allow Internet Explorer to play media files that use alternative codecs
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "EnableAlternativeCodec" -PropertyType String -Value "yes" -Force
+
+# Prevent configuration of search on Address bar
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "AutoSearch" -PropertyType DWord -Value "0" -Force
+
+# Turn off URL Suggestions
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\DomainSuggestion" -Name "Enabled" -PropertyType DWord -Value "0" -Force
+
+# Turn off Windows Search AutoComplete
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\WindowsSearch" -Name "EnabledScopes" -PropertyType DWord -Value "0" -Force
+
+# Prevent specifying cipher strength update information URLs
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion" -Name "IEAKUpdateUrl" -PropertyType String -Value "http://www.microsoft.com/isapi/redir.dll?prd=ie&ar=128bit" -Force
+
+# Prevent changing the URL for checking updates to Internet Explorer and Internet Tools
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "Update_Check_Page" -PropertyType String -Value "http://www.microsoft.com/isapi/redir.dll?Prd=ie&Pver=5.0&Ar=ie5update" -Force
+
+# Prevent specifying the update check interval (in days)
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "Update_Check_Interval" -PropertyType DWord -Value "30" -Force
+
+# Open Internet Explorer tiles on the desktop
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "ApplicationTileImmersiveActivation" -PropertyType DWord -Value "1" -Force
+
+# Set how links are opened in Internet Explorer
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "AssociationActivationMode" -PropertyType DWord -Value "2" -Force
+
+# Establish InPrivate Filtering threshold
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Safety\PrivacIE" -Name "Threshold" -PropertyType DWord -Value "10" -Force
+
+# Establish Tracking Protection threshold
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Safety\PrivacIE" -Name "TrackingProtectionThreshold" -PropertyType DWord -Value "10" -Force
+
+# Prevent the computer from loading toolbars and Browser Helper Objects when InPrivate Browsing starts
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Safety\PrivacIE" -Name "DisableToolbars" -PropertyType DWord -Value "1" -Force
+
+# Turn off collection of InPrivate Filtering data
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Safety\PrivacIE" -Name "DisableLogging" -PropertyType DWord -Value "1" -Force
+
+# Turn off InPrivate Browsing
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Privacy" -Name "EnableInPrivateBrowsing" -PropertyType DWord -Value "1" -Force
+
+# Turn off InPrivate Filtering
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Safety\PrivacIE" -Name "DisableInPrivateBlocking" -PropertyType DWord -Value "1" -Force
+
+# Turn off Tracking Protection
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Safety\PrivacIE" -Name "DisableTrackingProtection" -PropertyType DWord -Value "0" -Force
+
+# Do not display the reveal password button
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "DisablePasswordReveal" -PropertyType DWord -Value "1" -Force
+
+# Prevent bypassing SmartScreen Filter warnings
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\PhishingFilter" -Name "PreventOverride" -PropertyType DWord -Value "1" -Force
+
+# Prevent bypassing SmartScreen Filter warnings about files that are not commonly downloaded from the Internet
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\PhishingFilter" -Name "PreventOverrideAppRepUnknown" -PropertyType DWord -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Restrictions" -Name "NoExtensionManagement" -PropertyType DWord -Value "1" -Force
+
+New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Internet Explorer\Restrictions" -Name "NoSelectDownloadDir" -PropertyType DWord -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Security\ActiveX" -Name "BlockNonAdminActiveXInstall" -PropertyType DWord -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\AxInstaller" -Name "OnlyUseAXISForActiveXInstall" -PropertyType DWord -Value "1" -Force
+
+# Turn on ActiveX Filtering
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Safety\ActiveXFiltering" -Name "IsEnabled" -PropertyType DWord -Value "1" -Force
+
+# Turn off ActiveX Opt-In prompt
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Ext" -Name "NoFirsttimeprompt" -PropertyType DWord -Value "0" -Force
+
+# Do not allow ActiveX controls to run in Protected Mode when Enhanced Protected Mode is enabled
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "DisableEPMCompat" -PropertyType DWord -Value "1" -Force
+
+# Disable "Configuring History"
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "History" -PropertyType DWord -Value "1" -Force
+
+# Days to keep pages in History
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Url History" -Name "DaysToKeep" -PropertyType DWord -Value "40" -Force
+
+# Prevent access to Delete Browsing History
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "DisableDeleteBrowsingHistory" -PropertyType DWord -Value "1" -Force
+
+# Turn on certificate address mismatch warning
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings" -Name "WarnOnBadCertRecving" -PropertyType DWord -Value "1" -Force
+
+# Disable changing certificate settings
+New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "Certificates" -PropertyType DWord -Value "1" -Force
+
+# Turn off browser geolocation
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Geolocation" -Name "PolicyDisableGeolocation" -PropertyType DWord -Value "1" -Force
+
+# Restrict ActiveX install for Internet Explorer Processes
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_RESTRICT_ACTIVEXINSTALL" -Name "(Reserved)" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_RESTRICT_ACTIVEXINSTALL" -Name "explorer.exe" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_RESTRICT_ACTIVEXINSTALL" -Name "iexplore.exe" -PropertyType String -Value "1" -Force
+
+# Restrict window scripts for Internet Explorer Processes
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_WINDOW_RESTRICTIONS" -Name "(Reserved)" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_WINDOW_RESTRICTIONS" -Name "explorer.exe" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_WINDOW_RESTRICTIONS" -Name "iexplore.exe" -PropertyType String -Value "1" -Force
+
+# Mime Sniffing Safety Feature for Internet Explorer Processes
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_MIME_SNIFFING" -Name "(Reserved)" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_MIME_SNIFFING" -Name "explorer.exe" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_MIME_SNIFFING" -Name "iexplore.exe" -PropertyType String -Value "1" -Force
+
+# Notification bar for Internet Explorer Processes
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_SECURITYBAND" -Name "(Reserved)" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_SECURITYBAND" -Name "explorer.exe" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_SECURITYBAND" -Name "iexplore.exe" -PropertyType String -Value "1" -Force
+
+# MK Protocol Security Restriction for Internet Explorer Processes
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_DISABLE_MK_PROTOCOL" -Name "(Reserved)" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_DISABLE_MK_PROTOCOL" -Name "explorer.exe" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_DISABLE_MK_PROTOCOL" -Name "iexplore.exe" -PropertyType String -Value "1" -Force
+
+# Consistent MIME Handling for Internet Explorer Processes
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_MIME_HANDLING" -Name "(Reserved)" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_MIME_HANDLING" -Name "explorer.exe" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_MIME_HANDLING" -Name "iexplore.exe" -PropertyType String -Value "1" -Force
+
+# Restrict file download for Internet Explorer Processes
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_RESTRICT_FILEDOWNLOAD" -Name "(Reserved)" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_RESTRICT_FILEDOWNLOAD" -Name "explorer.exe" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_RESTRICT_FILEDOWNLOAD" -Name "iexplore.exe" -PropertyType String -Value "1" -Force
+
+# Protection From Zone Elevation for Internet Explorer Processes
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_ZONE_ELEVATION" -Name "(Reserved)" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_ZONE_ELEVATION" -Name "explorer.exe" -PropertyType String -Value "1" -Force
+
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_ZONE_ELEVATION" -Name "iexplore.exe" -PropertyType String -Value "1" -Force
+
+# Disable the Security page
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "SecurityTab" -PropertyType DWord -Value "1" -Force
+
+# Disable the Advanced page
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "AdvancedTab" -PropertyType DWord -Value "1" -Force
+
+# Prevent downloading of enclosures
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Feeds" -Name "DisableEnclosureDownload" -PropertyType DWord -Value "1" -Force
+
+# Prevent changing proxy settings
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "Proxy" -PropertyType DWord -Value "1" -Force
+
+# Prevent "Fix settings" functionality
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Security" -Name "DisableFixSecuritySettings" -PropertyType DWord -Value "0" -Force
+
+# Turn off the Security Settings Check feature
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Security" -Name "DisableSecuritySettingsCheck" -PropertyType DWord -Value "0" -Force
+
+# Turn off Crash Detection
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Internet Explorer\Restrictions" -Name "NoCrashDetection" -PropertyType DWord -Value "1" -Force
+
+# Disable AutoComplete for forms
+New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "Use FormSuggest" -PropertyType String -Value "no" -Force
+
+New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "FormSuggest" -PropertyType DWord -Value "1" -Force
+
+# Turn on the auto-complete feature for user names and passwords on forms
+New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Internet Explorer\Main" -Name "FormSuggest Passwords" -PropertyType String -Value "no" -Force
+
+New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Internet Explorer\Control Panel" -Name "FormSuggest Passwords" -PropertyType DWord -Value "1" -Force
