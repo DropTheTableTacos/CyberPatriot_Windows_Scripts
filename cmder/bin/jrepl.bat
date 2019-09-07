@@ -63,10 +63,10 @@
 ::                     Added /PFLAG - set search flags for /P regex
 ::                     Added /JQ and /JMATCHQ as Quick forms of /J and /JMATCH.
 ::                     Augmented /INC and /EXC so can now specify lines by regex.
-::                     Changed behavior - /V now applies to /INC and /EXC.
+::                     Changed behavior - -Name now applies to /INC and /EXC.
 ::                     Improved performance of /INC, /EXC, /T, /JBEGLN, /JENDLN.
 ::                     Added HISTORY and UPDATE topics to the help system.
-::    2016-09-27 v5.2: Bug fix - Search & Replace now ignore /V if /T FILE used.
+::    2016-09-27 v5.2: Bug fix - Search & Replace now ignore -Name if /T FILE used.
 ::                     Added a /T FILE example to the documentation.
 ::    2016-09-20 v5.1: Added the FILE alternative for the /T option.
 ::    2016-09-18 v5.0: Added the /U option for Unix line terminators of /n.
@@ -188,7 +188,7 @@
 ::      /TFLAG Flags           - Specify XRegExp flags for use with /T
 ::      /U                     - Unix line terminators (\n instead of \r\n)
 ::      /UTF                   - All input and output as UTF-16LE (BOM optional)
-::      /V                     - use Variables for Search/Replace and code
+::      -Name                     - use Variables for Search/Replace and code
 ::      /X                     - shorthand for combined /XFILE and /XSEQ
 ::      /XBYTES                - force creation of new XBYTES.DAT
 ::      /XBYTESOFF             - force /XSEQ \xnn to be treated as Windows-1252
@@ -429,7 +429,7 @@
 :::            per line. A line matches if any of the search terms are found
 :::            witin the line. The file can be opened via ADO if |CharSet
 :::            (internet character set name) is appended to the file name.
-:::            Note: the /V option does not apply to Search if /K :FILE is used.
+:::            Note: the -Name option does not apply to Search if /K :FILE is used.
 :::
 :::            /K is incompatible with /A, /J, /JQ, /JMATCH, /JMATCHQ, /M,
 :::            /MATCH, /R, /S, and /T.
@@ -586,7 +586,7 @@
 :::
 :::            /PREPL cannot be used with /K or /R.
 :::
-:::            Note that neither /V nor /XFILE apply to /PREPL.
+:::            Note that neither -Name nor /XFILE apply to /PREPL.
 :::
 :::            Example - Substitute X for each character within curly braces,
 :::                      excluding the braces.
@@ -615,7 +615,7 @@
 :::            per line. A line is rejected if any of the search terms are found
 :::            witin the line. The file can be opened via ADO if |CharSet
 :::            (internet character set name) is appended to the file name.
-:::            Note: the /V option does not apply to Search if /K :FILE is used.
+:::            Note: the -Name option does not apply to Search if /K :FILE is used.
 :::
 :::            /R is incomptaible with /A, /J, /JQ, /JMATCH, /JMATCHQ, /K, /M,
 :::            /MATCH, /S, and /T.
@@ -671,7 +671,7 @@
 :::            specify files that contain the search and replace expressions,
 :::            one expression per line. Each file can be opened via ADO if
 :::            |CharSet (internet character set name) is appended to the file
-:::            name. Note that the /V option does not apply to Search and Replace
+:::            name. Note that the -Name option does not apply to Search and Replace
 :::            if /T FILE is used.
 :::
 :::            Each substring from the input that matches a particular search
@@ -818,14 +818,14 @@
 :::
 :::            Unfortunately, /UTF is incompatible with /RTN.
 :::
-:::      /V  - Search, Replace, /INC BlockList, /EXC BlockList, /P FilterRegex,
+:::      -Name  - Search, Replace, /INC BlockList, /EXC BlockList, /P FilterRegex,
 :::            /JBEG InitCode, /JBEGLN NewLineCode, /JEND FinalCode, and
 :::            /JENDLN EndLineCode all represent the names of environment
 :::            variables that contain the respective values. An undefined
 :::            variable is treated as an empty string.
 :::
 :::            Variable names beginning with / are reserved for option storage
-:::            and other internal uses. So user defined variables used with /V
+:::            and other internal uses. So user defined variables used with -Name
 :::            must not have a name that begins with /.
 :::
 :::      /X  - Shorthand for combined /XFILE and /XSEQ.
@@ -1225,10 +1225,10 @@
 :::          1 = No line was written
 :::          2 = Invalid call syntax or incompatible options
 :::          3 = JScript runtime error
-::/VERSION
+::-NameERSION
 :::
 :::  JREPL.BAT version 7.13 was written by Dave Benham, and originally posted at
-:::  http://www.dostips.com/forum/viewtopic.php?f=3&t=6044
+:::  http://www.dostips.com/forum-Nameiewtopic.php?f=3&t=6044
 ::/
 
 ============= :Batch portion ===========
@@ -1242,7 +1242,7 @@ if .%2 equ . call :help "%~1" && exit /b 0 || call :exitErr "Insufficient argume
 set ^"/options= /A: /APP: /B: /C: /D:":" /E: /EXC:"" /F:"" /I: /INC:""^
                 /J: /JBEG:"" /JBEGLN:"" /JEND:"" /JENDLN:"" /JLIB:"" /JMATCH: /JMATCHQ: /JQ:^
                 /K:"" /L: /M: /MATCH: /N:0 /O:"" /OFF:0 /P:"" /PFLAG:"g" /PREPL:"" /R:"" /RTN:"" /S:""^
-                /T:"none" /TFLAG:"" /U: /UTF: /V: /X: /XBYTES: /XBYTESOFF: /XFILE: /XSEQ: /XREG:"" "
+                /T:"none" /TFLAG:"" /U: /UTF: -Name: /X: /XBYTES: /XBYTESOFF: /XFILE: /XSEQ: /XREG:"" "
 :: Set default option values
 for %%O in (%/options%) do for /f "tokens=1,* delims=:" %%A in ("%%O") do set "%%A=%%~B"
 
@@ -1345,7 +1345,7 @@ if defined /UTF (
   set "/REPL=/REPL2"
   goto :noLock
 )
-if defined /V if /i "%/T%" neq "FILE" set "/FindReplVar=1"
+if defined -Name if /i "%/T%" neq "FILE" set "/FindReplVar=1"
 if defined /XFILE if /i "%/T%" neq "FILE" set "/FindReplVar=1"
 if defined /RTN goto :lock
 if not defined /XFILE goto :noLock
@@ -1367,7 +1367,7 @@ if defined /RTN set "/O=%/LOCK%.RTN"
       if defined /XFILE (
         setlocal enableDelayedExpansion
         if defined /S call :writeVar S
-        if defined /V (
+        if defined -Name (
           if defined /FindReplVar (
             call :writeVar FIND
             call :writeVar REPL
@@ -1475,7 +1475,7 @@ if /i "!help!" equ "regex" (
     explorer "https://msdn.microsoft.com/en-US/library/efy6s3e6.aspx"
     exit /b 0
 ) else if /i "!help!" equ "update" (
-    explorer "http://www.dostips.com/forum/viewtopic.php?f=3&t=6044"
+    explorer "http://www.dostips.com/forum-Nameiewtopic.php?f=3&t=6044"
     exit /b 0
 ) else if /i "!help!" equ "charset" (
     explorer "https://msdn.microsoft.com/en-us/library/windows/desktop/dd317756.aspx"
@@ -1486,19 +1486,19 @@ if /i "!help!" equ "regex" (
 ) else if "!help!" equ "" ( %= /? =%
     set "find=^:::(.*)"
     set "repl=$1"
-    set ^"cmd="%~f0" find repl /v /a /f "%~f0"^"
+    set ^"cmd="%~f0" find repl -Name /a /f "%~f0"^"
 ) else if "!help:~0,1!" equ "/" (   %= /?/Option =%
     set "find=^:::(.*)"
     set "repl=$1"
     set "help=!help:/=\/!"
     set "inc=/^^::: {6}!help!(?= |$)/i/:/^^::: {6}\/(?^!!help:~2!(?= |$))|^^::\//i-1"
     set "help=!help:\/=/!"
-    set ^"cmd=echo(^&call "%~f0" find repl /v /jmatch /inc inc /f "%~f0"^|^|echo Help not found for option %help%^"
+    set ^"cmd=echo(^&call "%~f0" find repl -Name /jmatch /inc inc /f "%~f0"^|^|echo Help not found for option %help%^"
 ) else ( %= /?Topic =%
     set "find=^:::?(.*)"
     set "repl=$1"
     set "inc=/^^::\/!help:/=\/!$/i/+1:/^^::\//-1"
-    set ^"cmd="%~f0" find repl /v /jmatch /inc inc /f "%~f0"^|^|(echo(^&echo Help not found for topic %help%^)^"
+    set ^"cmd="%~f0" find repl -Name /jmatch /inc inc /f "%~f0"^|^|(echo(^&echo Help not found for topic %help%^)^"
 )
 if defined noMore (
   setlocal
@@ -1843,7 +1843,7 @@ try {
   }
 
   _g.loc=' in /JBEG code';
-  eval( _g.readVar( env('/JBEG'), env('/V'), '.JBEG' ) );
+  eval( _g.readVar( env('/JBEG'), env('-Name'), '.JBEG' ) );
   _g.loc='';
 
   _g.fmtNum=function(val,pad){return pad.length==0 ? '' : lpad(val,pad)+_g.delim;}
@@ -1878,8 +1878,8 @@ try {
   _g.main=function() {
     _g.rtn=1;
     var args=WScript.Arguments;
-    var search =  env('/FindReplVar') ? _g.readVar( args.Item(0), env('/V')||env('/UTF'), '.FIND' ) : args.Item(0);
-    var replace = env('/FindReplVar') ? _g.readVar( args.Item(1), env('/V')||env('/UTF'), '.REPL' ) : args.Item(1);
+    var search =  env('/FindReplVar') ? _g.readVar( args.Item(0), env('-Name')||env('/UTF'), '.FIND' ) : args.Item(0);
+    var replace = env('/FindReplVar') ? _g.readVar( args.Item(1), env('-Name')||env('/UTF'), '.REPL' ) : args.Item(1);
     var multi=env('/M')!='';
     var literal=env('/L')!='';
     var alterations=env('/A')!='';
@@ -1889,7 +1889,7 @@ try {
     var jmatchq=env('/JMATCHQ')!='';
     var jquick=env('/JQ')!='';
     var translate=env('/T');
-    var filter = _g.readVar( env('/P'), env('/V'), '.P' );
+    var filter = _g.readVar( env('/P'), env('-Name'), '.P' );
     var keep, reject, context, krfile=false;
     var rtnVar=env('/RTN');
     if (reject=env('/R')) {
@@ -1907,8 +1907,8 @@ try {
       context[1]=(context.length==1 || context[1]=='FILE')?context[0]:Number(context[1]);
     }
     var options = (keep||reject)?"":"g";
-    _g.begLn = _g.readVar( env('/JBEGLN'), env('/V'), '.JBEGLN' );
-    _g.endLn = _g.readVar( env('/JENDLN'), env('/V'), '.JENDLN' );
+    _g.begLn = _g.readVar( env('/JBEGLN'), env('-Name'), '.JBEGLN' );
+    _g.endLn = _g.readVar( env('/JENDLN'), env('-Name'), '.JENDLN' );
 
     _g.incBlock = new Array();
     _g.excBlock = new Array();
@@ -1990,14 +1990,14 @@ try {
         }
       }
     }
-    var str = _g.readVar( env('/INC'), env('/V'), '.INC' );
+    var str = _g.readVar( env('/INC'), env('-Name'), '.INC' );
     while ( (blockMatch=blockSearch.exec(str)) !== null ) {
       _g.loc=' while parsing /INC block['+_g.incBlock.length+']';
       var block = new _g.Block(blockMatch);
       _g.incBlock.dynamic=(_g.incBlock.dynamic || block.type=='regex' || block.endType=='regex');
       _g.incBlock.push(block);
     }
-    str = _g.readVar( env('/EXC'), env('/V'), '.EXC' );
+    str = _g.readVar( env('/EXC'), env('-Name'), '.EXC' );
     while ( (blockMatch=blockSearch.exec(str)) !== null ) {
       _g.loc=' while parsing /EXC block['+_g.excBlock.length+']';
       var block = new _g.Block(blockMatch);
@@ -2242,7 +2242,7 @@ try {
       var match, arr, filterResult, post, pre=new Array();
       var cmd='while(!input.AtEndOfStream&&!quit){match=reject;str1=input.ReadLine();';
       if ( _g.incBlock.length || _g.excBlock.length || lnWidth
-           || _g.begLn || _g.endLn || env(env('/V')?env('/JEND'):'/JEND')
+           || _g.begLn || _g.endLn || env(env('-Name')?env('/JEND'):'/JEND')
          ) cmd+='ln++;';
       if (_g.incBlock.dynamic) cmd+='_g.setBlocks(_g.incBlock,str1);';
       if (_g.excBlock.dynamic) cmd+='_g.setBlocks(_g.excBlock,str1);';
@@ -2250,7 +2250,7 @@ try {
       str1='';str2='if(';
       if (_g.incBlock.length) {str1+=str2+'inc()';str2='&&';}
       if (_g.excBlock.length) {str1+=str2+'!exc()';str2='&&';}
-      if (_g.begLn||_g.endLn||jexpr||env(env('/V')?env('/JBEG'):'/JBEG')) {str1+=str2+'!skip';}
+      if (_g.begLn||_g.endLn||jexpr||env(env('-Name')?env('/JBEG'):'/JBEG')) {str1+=str2+'!skip';}
       if (str1) cmd+=str1+')';
       if (!filter) {
         cmd+='if ((arr=search.exec(str1))!==null) match=!reject;';
@@ -2301,7 +2301,7 @@ try {
     */
       var cmd='while(!input.AtEndOfStream&&!quit){str2=str1=input.ReadLine();';
       if ( _g.incBlock.length || _g.excBlock.length || lnWidth
-           || _g.begLn || _g.endLn|| jexpr || env(env('/V')?env('/JEND'):'/JEND')
+           || _g.begLn || _g.endLn|| jexpr || env(env('-Name')?env('/JEND'):'/JEND')
          ) cmd+='ln++;';
       if (_g.incBlock.dynamic) cmd+='_g.setBlocks(_g.incBlock,str2);';
       if (_g.excBlock.dynamic) cmd+='_g.setBlocks(_g.excBlock,str2);';
@@ -2309,7 +2309,7 @@ try {
       str1='';str2='if(';
       if (_g.incBlock.length) {str1+=str2+'inc()';str2='&&';}
       if (_g.excBlock.length) {str1+=str2+'!exc()';str2='&&';}
-      if (_g.begLn||_g.endLn||jexpr||env(env('/V')?env('/JBEG'):'/JBEG')) {str1+=str2+'!skip';}
+      if (_g.begLn||_g.endLn||jexpr||env(env('-Name')?env('/JBEG'):'/JBEG')) {str1+=str2+'!skip';}
       if (str1) cmd+=str1+')';
       cmd+='str2=str2.replace(search,repl);';
       if (_g.endLn) cmd+='str2=_g.endLn(str2);';
@@ -2329,7 +2329,7 @@ try {
   _g.main();
 
   _g.loc=' in /JEND code';
-  eval( _g.readVar( env('/JEND'), env('/V'), '.JEND' ) );
+  eval( _g.readVar( env('/JEND'), env('-Name'), '.JEND' ) );
   _g.loc='';
   if (_g.inFile) input.Close();
   if (_g.outFile) output.Close();

@@ -1,0 +1,10 @@
+*.mp3
+*.mp4
+*.avi
+*.wmv
+*.mid
+*.mov
+*.m4v
+*.3gp
+*.wma
+*.wav

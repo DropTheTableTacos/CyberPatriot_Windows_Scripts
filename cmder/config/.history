@@ -22,3 +22,9 @@ git add *
 git status
 git commit -m "Changed few cmder personalization settings"
 git push
+git commit -m "Changed few cmder personalization settings"
+git push
+alias
+alias script=cd /d "%userprofile%\Desktop\Script" & ".\profile.ps1"
+alias script=cd /d "%userprofile%\Desktop\Script" & .\profile.ps1
+script

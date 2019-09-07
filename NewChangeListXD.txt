@@ -21,7 +21,7 @@ POST COMP TINGS:
 
 - .wpl file extension
 
-- Audit policy lgpo broke
+- Audit policy .\LGPO broke
 
 - wscsvc service enabled!
     - it was a vuln for "antivirus protection"

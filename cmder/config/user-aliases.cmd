@@ -14,3 +14,4 @@ unalias=alias /d $1
 vi=vim $*
 cmderr=cd /d "%CMDER_ROOT%"
 editscript=notepad "%userprofile%\Desktop\Windows\script.bat"  
+script=cd /d "C:\Users\Jackson\Desktop\Script"  

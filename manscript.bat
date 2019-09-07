@@ -12,8 +12,8 @@ cls
 net user %username% abc123ABC123@@
 
 :: Set logon message
-reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Username: %username%" /f
-reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
+New-ItemProperty -Path "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name legalnoticecaption /t REG_SZ /d "Username: %username%" /f
+New-ItemProperty -Path "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
 
 :: Set execution policy for powershell
 cls
@@ -110,10 +110,10 @@ sc config wuauserv start= auto
 sc start wuauserv
 
 :: Enable automatic updates
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v NoAutoUpdate /t REG_DWORD /d 0 /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 4 /f
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /t REG_DWORD /d 0 /f
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v AUOptions /t REG_DWORD /d 4 /f
+New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" -Name NoAutoUpdate /t REG_DWORD /d 0 /f
+New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" -Name AUOptions /t REG_DWORD /d 4 /f
+New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate /t REG_DWORD /d 0 /f
+New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name AUOptions /t REG_DWORD /d 4 /f
 
 echo.
 echo Windows Automatic Update configured!
@@ -196,30 +196,30 @@ goto menu
 cls
 
 :: Internet Explorer baselines
-LGPO /g "%scm%\IE11_Com_Sec"
-LGPO /g "%scm%\IE11_User_Sec"
+.\LGPO /g "%scm%\IE11_Com_Sec"
+.\LGPO /g "%scm%\IE11_User_Sec"
 
 if %os% == Server2008 (
-	LGPO /g "%scm%\IE9_User_Sec"
-	LGPO /g "%scm%\IE9_Com_Sec"
+	.\LGPO /g "%scm%\IE9_User_Sec"
+	.\LGPO /g "%scm%\IE9_Com_Sec"
 )
 
 :: Operating system baselines
 if %os% == Win10 (
-	%ver% | findstr "10.0.10240" && LGPO /g "%scm%\Win10_1507" && goto finishscm
-	%ver% | findstr "10.0.10586" && LGPO /g "%scm%\Win10_1511" && goto finishscm
-	%ver% | findstr "10.0.14393" && LGPO /g "%scm%\Win10_1607_Server2016" && goto finishscm
-	%ver% | findstr "10.0.15063" && LGPO /g "%scm%\Win10_1703" && goto finishscm
-	%ver% | findstr "10.0.16299" && LGPO /g "%scm%\Win10_1709" && goto finishscm
-	%ver% | findstr "10.0.17134" && LGPO /g "%scm%\Win10_1803" && goto finishscm
+	%ver% | findstr "10.0.10240" && .\LGPO /g "%scm%\Win10_1507" && goto finishscm
+	%ver% | findstr "10.0.10586" && .\LGPO /g "%scm%\Win10_1511" && goto finishscm
+	%ver% | findstr "10.0.14393" && .\LGPO /g "%scm%\Win10_1607_Server2016" && goto finishscm
+	%ver% | findstr "10.0.15063" && .\LGPO /g "%scm%\Win10_1703" && goto finishscm
+	%ver% | findstr "10.0.16299" && .\LGPO /g "%scm%\Win10_1709" && goto finishscm
+	%ver% | findstr "10.0.17134" && .\LGPO /g "%scm%\Win10_1803" && goto finishscm
 )
 
 if %os% == Server2016 (
-	LGPO /g "%scm%\Win10_1607_Server2016"
+	.\LGPO /g "%scm%\Win10_1607_Server2016"
 	goto finishscm
 )
 
-LGPO /g "%scm%\%os%"
+.\LGPO /g "%scm%\%os%"
 
 :finishscm
 echo.
@@ -405,7 +405,7 @@ set automatic=%getservice% ^| ? startmode -match 'Auto'
 set disabled=%getservice% ^| ? startmode -match 'Disabled'
 set stopped=%getservice% ^| ? state -match 'Stopped'
 set manual=%getservice% ^| ? startmode -match 'Manual'
-set nonsystem=%getservice% ^| findstr /v svchost.exe
+set nonsystem=%getservice% ^| findstr -Name svchost.exe
 
 del /q /f "%userprofile%\Desktop\services.txt"
 set output=false
@@ -629,8 +629,8 @@ if %sickomode% == true (
 
   secedit /configure /db "%systemroot%\dankdatabase1.db" /cfg "%compfiles%\infs\%os%GoodInf.inf"
 
-	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Username: %username%" /f
-	reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
+	New-ItemProperty -Path "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name legalnoticecaption /t REG_SZ /d "Username: %username%" /f
+	New-ItemProperty -Path "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name legalnoticetext /t REG_SZ /d "Password: abc123ABC123@@" /f
 
 	echo.
 	echo Good inf done!
@@ -677,7 +677,7 @@ goto 10
 :11
 cls
 if %sickomode% == true (
-    LGPO /a "%compfiles%\audit_templates\%os%NoAudit.csv"
+    .\LGPO /a "%compfiles%\audit_templates\%os%NoAudit.csv"
 
 	echo.
     echo Bad audit template applied!
@@ -688,7 +688,7 @@ if %sickomode% == true (
     echo.
     pause
 
-    LGPO /a "%compfiles%\audit_templates\%os%AllAudit.csv"
+    .\LGPO /a "%compfiles%\audit_templates\%os%AllAudit.csv"
 
 	echo.
 	echo Good audit template done!
@@ -707,7 +707,7 @@ if %inf% == n (goto menu) else (goto menu)
 
 :allaudit
 cls
-LGPO /a "%compfiles%\audit_templates\%os%AllAudit.csv"
+.\LGPO /a "%compfiles%\audit_templates\%os%AllAudit.csv"
 
 echo.
 echo All Auditing template done!
@@ -720,7 +720,7 @@ goto 11
 
 :noaudit
 cls
-LGPO /a "%compfiles%\audit_templates\%os%NoAudit.csv"
+.\LGPO /a "%compfiles%\audit_templates\%os%NoAudit.csv"
 
 echo.
 echo No Auditing template done!
@@ -1380,7 +1380,7 @@ if %os% == Win8 goto noserv
 if %os% == Win10 goto noserv
 
 :servmgr
-reg add "HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\WinRS" /v "AllowRemoteShellAccess" /t reg_dword /d "1" /f
+New-ItemProperty -Path "HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\WinRS" -Name "AllowRemoteShellAccess" /t reg_dword /d "1" /f
 
 cls
 echo Do all the things for Server Manager:
@@ -1563,7 +1563,7 @@ cls
 echo Generating user list...
 echo.
 for /f "skip=1 tokens=1" %%G in ('%ps% "glu | select name | ft -hidetableheaders"') do (echo %%G >> C:\users_admins.txt)
-findstr /v "BroPants BroShirt DefaultAccount defaultuser0 Administrator Guest" C:\users_admins.txt > C:\users.txt
+findstr -Name "BroPants BroShirt DefaultAccount defaultuser0 Administrator Guest" C:\users_admins.txt > C:\users.txt
 call jrepl " +$" "" /f C:\users.txt /o -
 call jrepl " +$" "" /f C:\users_admins.txt /o -
 

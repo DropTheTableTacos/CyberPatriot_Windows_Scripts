@@ -3,7 +3,6 @@
 # List of things that need to happen:
 #   - Get-UserList
 #   - List-Functions
-#   - How to efficiently use lists (csv likely not gamer)
 #   - Finish all the rest of the stuff
 
 # Make transcript file
@@ -22,8 +21,7 @@ function Set-Variables {
     $global:scm = "$compfiles\scmbaselines";
     $global:cmderbin = "$compfiles\cmder\bin";
     $global:autousers = $false;
-    $global:program_list = Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, InstallLocation, InstallDate, InstallSource, DisplayVersion, Publisher;
-    $global:lists = Import-Csv "$compfiles\lists.csv";
+    $global:pass = ConvertTo-SecureString "abc123ABC123@@"
     [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine);
 }
 
@@ -74,23 +72,26 @@ function Get-Ver {
 # Get user list
 function Get-UserList {
     $global:user_list_admins = Get-LocalUser | select name
-    $global:user_list = Get-LocalUser | select name | where name -notin "BroPants","BroShirt","DefaultAccount","defaultuser0","Administrator","Guest"
+
+    Import-Lists builtin_users
+    $global:user_list = Get-LocalUser | select name | where name -notin $lists
 
     # Add readme users to file
     cls
-    echo "Please put all the users from README in the column"
-    start-process "$compfiles\lists.csv"
+    echo "Please put all the users from README in this text file"
+    start-process "$compfiles\lists\good_users.txt"
     pause
 
     # Get good user and bad user list
-    $good_users = $lists | select good_users
-    $global:bad_users = (Compare-Object $user_list $good_users -PassThru).Name
+    Import-Lists good_users
+    $global:bad_users = (Compare-Object $user_list $lists -PassThru).Name
 
     $bad_users
 }
 
 # Get program list
 function List-Programs {
+    $program_list = Get-WmiObject -Class Win32_Product | select name, installsource, installlocation, version, installdate, vendor | format-table -AutoSize
     $program_list > C:\program_list.txt
     Start-Process C:\program_list.txt
 }
@@ -103,17 +104,17 @@ function Ask-Prompt {
 # Set logon message to username and password
 function Set-LogonMessage {
     # Change password
-    New-LocalUser $env:username -Password abc123ABC123@@
+    New-LocalUser $env:username -Password $pass
 
     # Set logon message
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticecaption -PropertyType String -Value "Username: $env:username" -Force
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticetext -PropertyType String -Value "Password: abc123ABC123@@" -Force
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticecaption -PropertyType String -Value "Username: $env:username" -Force -InformationAction SilentlyContinue
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticetext -PropertyType String -Value "Password: abc123ABC123@@" -Force -InformationAction SilentlyContinue
 }
 
 # Delete leftover text files
 function Remove-TempTxt {
     cd C:\
-    Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt,userdiff.txt -Force -ErrorAction:SilentlyContinue;
+    Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt,userdiff.txt -Force -ErrorAction SilentlyContinue;
 }
 
 # List services
@@ -128,19 +129,18 @@ function List-Service {
     if ($args -eq "auto","disabled","manual") {
         $get_service | where startmode -match "$args";
         break;
+    } else {
+        $get_service;
     }
-
-    $get_service;
-}
 
 # List users
 function List-User {
-    Get-LocalUser | select Name, Enabled;
+    Get-LocalUser | select Name, Enabled | format-wide;
 }
 
 # List admins
 function List-Admin {
-    Get-LocalGroupMember -Group Administrators | select Name;
+    Get-LocalGroupMember -Group Administrators | select Name | format-wide;
 }
 
 # Add to progress log
@@ -149,12 +149,14 @@ function Add-Progress {
     echo "`n" >> "$desktop\progress.txt";
 }
 
+# Import lists
+function Import-Lists {
+    $global:lists = Get-Content "$compfiles\lists\$args.txt"
+}
+
 # README
 function Open-Readme {
-    echo Read the README, idiot.;
     Start-Process C:\CyberPatriot\README.url;
-
-    Add-Progress "README read";
 }
 
 # Windows Update
@@ -175,8 +177,8 @@ function Update-Windows {
     echo "Now start the update, biggie.";
 
     # Opening gui
-    Start-Process ms-settings:windowsupdate -ErrorAction:SilentlyContinue;
-    Start-Process wuapp.exe -ErrorAction:SilentlyContinue;
+    Start-Process ms-settings:windowsupdate -ErrorAction SilentlyContinue;
+    Start-Process wuapp.exe -ErrorAction SilentlyContinue;
 
     pause
 
@@ -201,47 +203,48 @@ function Clear-Hosts {
 # Firefox config
 function Set-FirefoxConfig {
     # 64-bit
-    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles\Mozilla Firefox\browser\override.ini" -Force -ErrorAction:SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles\Mozilla Firefox\mozilla.cfg" -Force -ErrorAction:SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\local-settings.js" "$env:programfiles\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction:SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles\Mozilla Firefox\browser\override.ini" -Force -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles\Mozilla Firefox\mozilla.cfg" -Force -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\local-settings.js" "$env:programfiles\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction SilentlyContinue
 
     # 32-bit
-    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles(x86)\Mozilla Firefox\browser\override.ini" -Force -ErrorAction:SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles(x86)\Mozilla Firefox\mozilla.cfg" -Force -ErrorAction:SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\local-settings.js" "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction:SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles(x86)\Mozilla Firefox\browser\override.ini" -Force -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles(x86)\Mozilla Firefox\mozilla.cfg" -Force -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\local-settings.js" "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction SilentlyContinue
 
     Add-Progress "Firefox config files copied"
 }
 
 # SCM Baselines
 function Import-SCM {
+    Get-Ver
+    Get-OS
+
+    cd "$cmderbin"
+
     # IE Baselines
-    LGPO /g "$scm\IE11_Com_Sec";
-    LGPO /g "$scm\IE11_User_Sec";
+    .\LGPO /g "$scm\IE11_Com_Sec";
+    .\LGPO /g "$scm\IE11_User_Sec";
 
     if ($os -eq "Server2008") {
-        LGPO /g "$scm\IE9_User_Sec";
-	    LGPO /g "$scm\IE9_Com_Sec";
+        .\LGPO /g "$scm\IE9_User_Sec";
+	    .\LGPO /g "$scm\IE9_Com_Sec";
     }
 
     # OS baselines
-    Get-Ver
-
-    if ($os -eq "Windows10") {
-        if ($ver -eq "10.0.10240") {LGPO /g "$scm\Win10_1507"};
-        if ($ver -eq "10.0.10586") {LGPO /g "$scm\Win10_1511"};
-        if ($ver -eq "10.0.14393") {LGPO /g "$scm\Win10_1607_Server2016"};
-        if ($ver -eq "10.0.15063") {LGPO /g "$scm\Win10_1703"};
-        if ($ver -eq "10.0.16299") {LGPO /g "$scm\Win10_1709"};
-        if ($ver -eq "10.0.17134") {LGPO /g "$scm\Win10_1803"};
+    if ($os -eq "Win10") {
+        if ($ver -eq "10.0.10240") {.\LGPO /g "$scm\Win10_1507"};
+        if ($ver -eq "10.0.10586") {.\LGPO /g "$scm\Win10_1511"};
+        if ($ver -eq "10.0.14393") {.\LGPO /g "$scm\Win10_1607_Server2016"};
+        if ($ver -eq "10.0.15063") {.\LGPO /g "$scm\Win10_1703"};
+        if ($ver -eq "10.0.16299") {.\LGPO /g "$scm\Win10_1709"};
+        if ($ver -eq "10.0.17134") {.\LGPO /g "$scm\Win10_1803"};
     }
 
     if ($os -eq "Server2016") {
-        LGPO /g "$scm\Win10_1607_Server2016";
-    }
-
-    if ($os -notin "Windows10","Server2016") {
-        LGPO /g "$scm\$os";
+        .\LGPO /g "$scm\Win10_1607_Server2016";
+    } else {
+        .\LGPO /g "$scm\$os";
     }
 
     Add-Progress "SCM Baselines imported";
@@ -249,7 +252,11 @@ function Import-SCM {
 
 # CISCAT Registry batch file
 function Run-CiscatRegistry {
-    Start-Process $cmderbin\ciscatgucci.bat;
+    Import-Lists ciscat_registry
+
+    $lists.foreach{
+        $_;
+    }
 
     Add-Progress "CISCAT Registry batch file run";
 }
@@ -268,17 +275,16 @@ function Disable-Services {
 
         if ($answer -eq "remote") {
             $global:serv_exclusions = "termservice","sessionenv";
+        } else {
+            $serv_exclusions += $answer;
         }
 
-        $serv_exclusions += $answer;
-    }
-
     # Disable list of services
-    $service_list = $lists | select services
+    Import-Lists services
 
-    $service_list.foreach{
+    $lists.foreach{
         Stop-Service $_;
-        Set-Service $_ -startuptype Disabled;
+        Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
     }
 
     # Enable exlusions
@@ -302,24 +308,24 @@ function Disable-Services {
 
 # Import INF file
 function Import-Inf {
+    Get-OS
+    cd "$cmderbin"
+
     # Good inf
     if ($args -eq "good") {
-        cmd /c "secedit /configure /db '$env:systemroot\dankdatabase1.db' /cfg '$compfiles\infs\${os}GoodInf.inf'";
+        .\LGPO /s "$compfiles\infs\${os}GoodInf.inf";
+        Set-LogonMessage
 
         Add-Progress "Good INF applied"
     }
 
     # Bad inf
     if ($args -eq "bad") {
-        cmd /c "secedit /configure /db '$env:systemroot\dankdatabase1.db' /cfg '$compfiles\infs\${os}GoodInf.inf'";
+        .\LGPO /s "$compfiles\infs\${os}BadInf.inf";
+        Set-LogonMessage
 
         Add-Progress "Bad INF applied"
-    }
-
-    # Re-set logon message
-    Set-LogonMessage
-
-    else {
+    } else {
         echo "Please specify 'good' or 'bad' INF.";
         break;
     }
@@ -327,21 +333,22 @@ function Import-Inf {
 
 # Import Audit policy
 function Import-Audit {
+    Get-OS
+    cd "$cmderbin"
+
     # Good
     if ($args -eq "good") {
-        cmd /c "LGPO /a '$compfiles\audit_templates\${os}AllAudit.csv'";
+        .\LGPO /a "$compfiles\audit_templates\${os}AllAudit.csv"
 
         Add-Progress "Good audit policy applied";
     }
 
     # Bad inf
     if ($args -eq "bad") {
-        cmd /c "LGPO /a '$compfiles\audit_templates\${os}NoAudit.csv'";
+        .\LGPO /a "$compfiles\audit_templates\${os}NoAudit.csv"
 
         Add-Progress "Bad audit policy applied";
-    }
-
-    else {
+    } else {
         echo "Please specify 'good' or 'bad' template.";
         break;
     }
@@ -357,8 +364,10 @@ function Get-Ip {
 }
 
 # Activate/Disable users
-function Enable_Users {
+function Enable-Users {
     if ($args -in "man","manual","m") {
+        Open-Readme
+
         while ($true) {
             cls
 
@@ -372,9 +381,7 @@ function Enable_Users {
 
             Enable-LocalUser $answer
         }
-    }
-
-    else {
+    } else {
         $user_list_admins.foreach{
             Enable-LocalUser $_;
         }
@@ -389,8 +396,10 @@ function Enable_Users {
 }
 
 # Disable Users
-function Disable_Users {
+function Disable-Users {
     if ($args -in "m","man","manual") {
+        Open-Readme
+
         while ($true) {
             cls
 
@@ -404,9 +413,7 @@ function Disable_Users {
 
             Disable-LocalUser $answer
         }
-    }
-
-    else {
+    } else {
         Disable-LocalUser BroShirt;
         Disable-LocalUser BroPants;
 
@@ -433,13 +440,11 @@ function Change-Passwords {
                 break
             }
 
-            New-LocalUser $answer abc123ABC123@@
+            New-LocalUser $answer -Password $pass
         }
-    }
-
-    else {
+    } else {
         $user_list_admins.foreach{
-            New-LocalUser $_ abc123ABC123@@
+            New-LocalUser $_ -Password $pass
         }
 
         Add-Progress "All passwords changed to a gamer secure password"
@@ -472,7 +477,7 @@ function Add-Users {
             break;
         }
 
-        New-LocalUser $answer abc123ABC123@@
+        New-LocalUser $answer -Password $pass
     }
 
     Add-Progress "User(s) have been added"
@@ -548,15 +553,15 @@ function Remove-Admins {
 # Enable internet explorer
 function Enable-InternetExplorer {
     # Enable IE
-    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all
-    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all
+    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue
+    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue
 
     Add-Progress "Enabled Internet Explorer"
 }
 
 # Disable features
 function Disable-Features {
-    $feature_list = $lists | select features
+    $feature_list = Get-Content
 
     $feature_list.foreach{
         Disable-WindowsOptionalFeature -Online -FeatureName $_;
@@ -581,9 +586,9 @@ function Open-Forensics {
 
 # Delete Media files
 function Remove-MediaFiles {
-    $extensions = $lists | select media_extensions
+    Import-Lists media_extensions
 
-    $extensions.foreach{
+    $lists.foreach{
         Remove-Item "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
     }
 
@@ -592,9 +597,9 @@ function Remove-MediaFiles {
 
 # Find media files
 function Find-MediaFiles {
-    $extensions = $lists | select media_extensions
+    Import-Lists media_extensions
 
-    $extensions.foreach{
+    $lists.foreach{
         $mediafiles = Get-ChildItem "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
     }
 
@@ -651,33 +656,41 @@ function Secure-Screensaver {
     New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "Control Panel"
     New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Control Panel" -Name "Desktop" -Force
     New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop" -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
+
+    Add-Progress "Screensaver secured with password"
 }
 
 # Disable remote desktop
 function Disable-RemoteDesktop {
     New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -PropertyType DWord -Value "1" -Force
+
+    Add-Progress "Remote Desktop disabled"
 }
 
 # List functions
-function List-Functions {
-    $function_list_temp = $lists | select functions | format-table -HideTableHeaders | out-string -stream;
-    $function_list_temp.foreach{
-        if (![string]::IsNullOrWhiteSpace($_)) {
-            $function_list += $_;
-        }
-    }
-
-    $function_list | format-wide;
-}
+#function List-Functions {
+#    $function_list_temp = $lists | select functions | format-table -HideTableHeaders | out-string -stream;
+#    $function_list_temp.foreach{
+#        if (![string]::IsNullOrWhiteSpace($_)) {
+#            $function_list += $_;
+#        }
+#    }
+#
+#    $function_list | format-wide;
+#}
 
 # Delete applocker rules
 function Delete-AppLocker {
     Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
+
+    Add-Progress "AppLocker policies cleared"
 }
 
 # enable uac because that would be a good idea though its already enabled by default but whatever frick off
 function Enable-UAC {
     New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -PropertyType DWord -Value "1" -Force
+
+    Add-Progress "UAC Enabled"
 }
 
 # Install gucci programs
@@ -689,7 +702,8 @@ function Install-Programs {
 
 # IE registry gamers
 function Import-IERegistry {
-    $ie_reg = Get-Content "$compfiles\ie_registry.txt" | Select-String -NotMatch "#"
+    Import-Lists ie_registry
+    $ie_reg = $lists | Select-String -NotMatch "#"
 
     $ie_reg.foreach{
         $_
@@ -699,6 +713,8 @@ function Import-IERegistry {
 }
 
 # Intro screen bois
+cls
+
 echo "__          ___    _       _______   _    _ _____"
 echo "\ \        / / |  | |   /\|__   __| | |  | |  __ \"
 echo " \ \  /\  / /| |__| |  /  \  | |    | |  | | |__) |"
@@ -711,7 +727,7 @@ echo "`n"
 echo " _____ _____ _   _  _____   _____   ____  _   _  _____  _____"
 echo "|  __ \_   _| \ | |/ ____| |  __ \ / __ \| \ | |/ ____|/ ____|"
 echo "| |  | || | |  \| | |  __  | |  | | |  | |  \| | |  __| (___"
-echo "| |  | || | | . ` | | |_ | | |  | | |  | | . ` | | |_ |\___ \"
+echo "| |  | || | | .   | | |_ | | |  | | |  | | .   | | |_ |\___ \"
 echo "| |__| || |_| |\  | |__| | | |__| | |__| | |\  | |__| |____) |"
 echo "|_____/_____|_| \_|\_____| |_____/ \____/|_| \_|\_____|_____/"
 

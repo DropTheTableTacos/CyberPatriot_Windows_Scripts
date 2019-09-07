@@ -158,7 +158,7 @@ https://conemu.github.io/en/Whats_New.html
 
 
 2018.3.9
-* Tab tooltip was not shown for Far editor/viewer tabs.
+* Tab tooltip was not shown for Far editor-Nameiewer tabs.
 * Ellipsis was not shown for long tab titles.
 * gh-1440: Fix error dialog when toggling ‘Show buttons (toolbar) in tab bar’.
 * Workaround for unexpected WINDOW_BUFFER_SIZE_EVENT appeared after console scrolling.
@@ -1023,7 +1023,7 @@ TermMode(<Mode>[,<Action>])
 
 
 2016.3.13
-* On WinXP/Vista the icon in the TitleBar was unexpectedly changed to active tab icon.
+* On WinXP-Nameista the icon in the TitleBar was unexpectedly changed to active tab icon.
 * Intelligent selection: RClick over selected region will Paste selected text,
   bypassing Windows' clipboard, and Reset selection region.
 * Fix garbage displayed in VCon during console startup on WinXP.
@@ -1304,7 +1304,7 @@ Line1^nLine2
 * gh-539, gh-535: Option ‘Default task for new console’ was ignored (d93b5d9 regression).
 * gh-540: In some cases ‘Enhance preudographics’ was skipped.
 * Avoid spare RealConsole resize on HideCaption changes.
-* Fix broken Far's Editor/Viewer close from TabMenu (7631ffd regression).
+* Fix broken Far's Editor-Nameiewer close from TabMenu (7631ffd regression).
 
 
 2016.2.7
@@ -1349,7 +1349,7 @@ Line1^nLine2
   If there is no settings file, user will see FastConfiguration dialog,
   which is unexpected for automatic action (`-SetDefTerm` and `-Exit`).
   If one needs to run ConEmu without settings, they may use `-basic` switch.
-* Double-width glyph in the col 1 was cropped in Far editor/viewer.
+* Double-width glyph in the col 1 was cropped in Far editor-Nameiewer.
   For example, if the following text
   中英文Block mode复制初步修复。
   was started from the leftmost console cell,
@@ -1415,7 +1415,7 @@ Line1^nLine2
 * All 64-bit binaries are built with VS14.
   32-bit binaries are still built with VS9 (WinSDK7) to be compatible with old systems.
 * gh#486: Use https for github links.
-* gh#488: Full paths were shown in Far's editor/viewer tabs (6ce49af regression).
+* gh#488: Full paths were shown in Far's editor-Nameiewer tabs (6ce49af regression).
 * GuiMacro: Return xml instead of json for `GetInfo Root`.
 * API GuiMacro: In-process GuiMacro execution improvements.
   Prototype: int __stdcall ConsoleMain3(int anWorkMode, LPCWSTR asCmdLine)
@@ -1525,7 +1525,7 @@ Line1^nLine2
 * In some cases PID of terminal-connector was not shown in the StatusBar.
 * Xterm's alternative screen was not cleared on activating.
 * gh#351: Allow changing URL for retrieving version location on Settings/Update.
-* gh#351: Use `https://conemu.github.io/version.ini` by default.
+* gh#351: Use `https://conemu.github.io-Nameersion.ini` by default.
 * Changes in processing of default hotkey `Win+X`.
   * It runs whole task contents, but not only first ‘tab’ from task;
   * If no one task was marked as ‘Default shell’, run default `COMSPEC`
@@ -1575,7 +1575,7 @@ Line1^nLine2
 
 2015.11.26
 * First try to create cygwin/msys terminal connector:
-  https://github.com/Maximus5/cygwin-connector/releases/tag/v0.3
+  https://github.com/Maximus5/cygwin-connector/releases/tag-Name0.3
 * JumpList icon was not created properly for Task in some cases.
   If `/icon` switch was not specified for Task parameters,
   and first line of Task commands started with specials `*` or `>`,
@@ -1757,7 +1757,7 @@ Line1^nLine2
 * Vim terminal mode was not finished properly on exit.
 * ANSI `\e[K` has not cleared rightmost cell.
 * Checkbox ‘Desktop mode’ was removed from settings.
-* gh#336: Don't poll Far 2.x current directories while Editor/Viewer is active.
+* gh#336: Don't poll Far 2.x current directories while Editor-Nameiewer is active.
 * gh#17: Send WM_ENTERSIZEMOVE/WM_EXITSIZEMOVE to ChildGui during resize.
 
 
@@ -2968,7 +2968,7 @@ Line1^nLine2
 
 2014.09.14
 [*] Wrong macro was sended to Far 3 (Lua) on hyperlink click if file was already opened.
-[*] Fix drop files to Far command line. Add menu items to press ‘Enter’ after goto/edit/view.
+[*] Fix drop files to Far command line. Add menu items to press ‘Enter’ after goto/edit-Nameiew.
 [*] Fix wrong ‘sleep/speed’ written to the log.
 [*] Avoid numerous writing of equal lines to log (console size).
 [*] Internal changes.
@@ -3244,7 +3244,7 @@ Line1^nLine2
 
 2014.05.28
 [*] Issue 1588: Crash when setting ‘Settings > Main > Cell = -1’.
-[*] Show Far editors/viewers tabs from all panes, but not active VCon only.
+[*] Show Far editors-Nameiewers tabs from all panes, but not active VCon only.
 [*] Issue 1594: Do not expect space after ‘file.ext:line:’ in hyperlink detector.
 [*] Update Far panel tab title immediately after pressing Ctrl-F10 in editor.
 [*] Do not add trailing space while pasting with RBtnClick.
@@ -3278,8 +3278,8 @@ Line1^nLine2
 [+] New environment variable ConEmuServerPID set during server init.
 [%] Issue 1505: Fix attach of several ChildGui at the same time.
 [+] Issue 1214: Support overtab clicks for activate/close/menu
-[%] Fix panel tab title blinking during edit/view opening.
-[%] Issue 436: Do not lose recent tab (editor/viewer) history after cmd execution from Far.
+[%] Fix panel tab title blinking during edit-Nameiew opening.
+[%] Issue 436: Do not lose recent tab (editor-Nameiewer) history after cmd execution from Far.
 
 
 2014.05.05
@@ -3718,7 +3718,7 @@ Line1^nLine2
 
 2014.01.09
 [%] Palette was failed to be set properly for elevated consoles.
-[%] Elevated console was hidden even if "ConEmu /visible" was called.
+[%] Elevated console was hidden even if "ConEmu -Nameisible" was called.
 [+] Allow '-'style arguments in ConEmu.exe cmd line.
 [*] Default terminal. Remove real console flickering when starting console app from explorer.
 [*] Issue 1340: Alternatively attached console was closed by Ctrl+C.
@@ -4528,7 +4528,7 @@ Line1^nLine2
     Also, you need to re-register menu items.
 [+] Vim 256 colors next try. Hope, it will be usable now.
     You need to configure your vimrc for enabling 256 colors.
-    Sample lines are here: http://conemu-maximus5.googlecode.com/svn/files/Temp/vimrc_add
+    Sample lines are here: http://conemu-maximus5.googlecode.com/svn/files/Temp-Nameimrc_add
 
 
 2013.01.17
@@ -5260,7 +5260,7 @@ Line1^nLine2
     For debug purposes: "/insidewnd <HWND>" & "/insidepid <PID>".
     ConEmu_Inside.reg file updated.
 [+] Right click on leftmost part of status bar pop up system menu (useful in 'ConEmu inside' mode).
-[*] Minor fix in Close Far editor/viewer confirmation.
+[*] Minor fix in Close Far editor-Nameiewer confirmation.
 
 
 2012.06.25
@@ -5516,7 +5516,7 @@ Line1^nLine2
 2012.05.14
 [%] Issue 543, Issue 544: Правим баги несчастливой версии :)
 [%] Issue 56: При драге поверх окна ConEmu больше не забирается фокус.
-[+] Drag&Drop: При дропе файлов в ком.строку Far - отображается контекстное меню (Paste/Goto/Edit/View).
+[+] Drag&Drop: При дропе файлов в ком.строку Far - отображается контекстное меню (Paste/Goto/Edit-Nameiew).
 [*] Drag&Drop: Internal changes in overlay image.
 
 
@@ -6372,7 +6372,7 @@ Line1^nLine2
 
 
 2010.11.28
-[%] Far2 падал при попытке выгрузки плагина (http://bugs.farmanager.com/view.php?id=1604).
+[%] Far2 падал при попытке выгрузки плагина (http://bugs.farmanager.com-Nameiew.php?id=1604).
 [*] 'Tray' переименован в 'TSA' (Taskbar Status Area).
 [+] Добавлен флажок 'Always show TSA icon'.
 
@@ -6595,7 +6595,7 @@ Line1^nLine2
 2010.05.20
 [*] PanelViews. Mouse is working now. Small restriction: when clicked item is not visible on real panel - plugin executes macro "panel.setposidx(...)" instead of left or right click.
 [%] Minor D&D bugfixes.
-[%] Не работал 'Edit/View console output'.
+[%] Не работал 'Edit-Nameiew console output'.
 
 
 2010.05.18
@@ -7343,7 +7343,7 @@ Maximus5 - 2009.06.14
 Maximus5 - 2009.06.13
 
 +) Возможность задавать шрифт для реальной консоли (см. reg-файл).
-%) Некорректно отображались табы при запуске 'far /e ...' или 'far /v ...'.
+%) Некорректно отображались табы при запуске 'far /e ...' или 'far -Name ...'.
 %) В сборке 2009.06.12 часть консоли могла отображатся некорректным шрифтом.
 %) Продолжаем бороться с неотрисовкой.
 

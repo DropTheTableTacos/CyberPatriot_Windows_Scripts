@@ -573,7 +573,7 @@
 		<!--
 		<key name="test">
 			<value name="TabMargins" type="hex" data="00,00,00,00,19,00,00,00,00,00,00,00,00,00,00,00"/>
-			<value name="CmdLineHistory" type="multi"><line data="cmd"/><line data="telnet"/></value>
+			<value name="CmdLineHistory" type="multi"><line data="cmd"/><line data="telnet"/><-Namealue>
 		</key>
 		-->
 	</key>

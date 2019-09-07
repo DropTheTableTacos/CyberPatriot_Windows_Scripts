@@ -3,7 +3,7 @@
 
 
 -- Several Far instances may be opened in ConEmu tabs.
--- This macro activates existing Editor/Viewer, wich
+-- This macro activates existing Editor-Nameiewer, wich
 -- may be opened in then inactive instance of Far.
 
 local ConEmu   = "4b675d80-1d4a-4ea9-8436-fdc23f2fc14b"

@@ -39,7 +39,7 @@ Description
     * cursor: standard console (horizontal) or GUI (vertical);
     * optional per-application settings (e.g. palette);
     * vertical console buffer scrolling using the keyboard (BufferHeight mode);
-    * show full output (1K+ lines) of last command in Far Manager's editor/viewer;
+    * show full output (1K+ lines) of last command in Far Manager's editor-Nameiewer;
     * customizable Far Manager right click behaviour (long click opens context menu);
     * drag and drop (explorer style) of files and folders in Far Manager;
     * limited support of BDF fonts;

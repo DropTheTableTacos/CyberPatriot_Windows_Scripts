@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <oval_definitions xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5" xmlns:unix-def="http://oval.mitre.org/XMLSchema/oval-definitions-5#unix" xmlns:oval-def="http://oval.mitre.org/XMLSchema/oval-definitions-5"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oval="http://oval.mitre.org/XMLSchema/oval-common-5" xmlns:independent-def="http://oval.mitre.org/XMLSchema/oval-definitions-5#independent"
-    xsi:schemaLocation="http://oval.mitre.org/XMLSchema/oval-definitions-5 http://oval.mitre.org/language/version5.11/ovaldefinition/complete/oval-definitions-schema.xsd    http://oval.mitre.org/XMLSchema/oval-definitions-5#independent http://oval.mitre.org/language/version5.11/ovaldefinition/complete/independent-definitions-schema.xsd   http://oval.mitre.org/XMLSchema/oval-common-5 http://oval.mitre.org/language/version5.11/ovaldefinition/complete/oval-common-schema.xsd    http://oval.mitre.org/XMLSchema/oval-definitions-5#unix http://oval.mitre.org/language/version5.11/ovaldefinition/complete/unix-definitions-schema.xsd   http://oval.mitre.org/XMLSchema/oval-definitions-5#windows http://oval.mitre.org/language/version5.11/ovaldefinition/complete/windows-definitions-schema.xsd    http://oval.mitre.org/XMLSchema/oval-definitions-5#linux http://oval.mitre.org/language/version5.11/ovaldefinition/complete/linux-definitions-schema.xsd http://oval.mitre.org/XMLSchema/oval-definitions-5#cmd x-shellcommand-schema.xsd">
+    xsi:schemaLocation="http://oval.mitre.org/XMLSchema/oval-definitions-5 http://oval.mitre.org/language-Nameersion5.11/ovaldefinition/complete/oval-definitions-schema.xsd    http://oval.mitre.org/XMLSchema/oval-definitions-5#independent http://oval.mitre.org/language-Nameersion5.11/ovaldefinition/complete/independent-definitions-schema.xsd   http://oval.mitre.org/XMLSchema/oval-common-5 http://oval.mitre.org/language-Nameersion5.11/ovaldefinition/complete/oval-common-schema.xsd    http://oval.mitre.org/XMLSchema/oval-definitions-5#unix http://oval.mitre.org/language-Nameersion5.11/ovaldefinition/complete/unix-definitions-schema.xsd   http://oval.mitre.org/XMLSchema/oval-definitions-5#windows http://oval.mitre.org/language-Nameersion5.11/ovaldefinition/complete/windows-definitions-schema.xsd    http://oval.mitre.org/XMLSchema/oval-definitions-5#linux http://oval.mitre.org/language-Nameersion5.11/ovaldefinition/complete/linux-definitions-schema.xsd http://oval.mitre.org/XMLSchema/oval-definitions-5#cmd x-shellcommand-schema.xsd">
     <generator>
         <oval:product_name>Center for Internet Security</oval:product_name>
         <oval:schema_version>5.11</oval:schema_version>
@@ -2549,103 +2549,103 @@
             <family operation="case insensitive equals">windows</family>
         </family_state>
         <registry_state id="oval:org.mitre.oval:ste:5477" version="4" comment="The registry key matches with Windows XP" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] [Xx][Pp][a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] [Xx][Pp][a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <registry_state id="oval:org.mitre.oval:ste:5027" version="4" comment="The registry key matches with Windows 7" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] 7[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] 7[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <registry_state id="oval:org.mitre.oval:ste:19981" version="1" comment="The registry key matches with Windows 8" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] 8[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] 8[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <registry_state id="oval:org.mitre.oval:ste:23178" version="1" comment="The registry key matches with Windows 8.1" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] 8\.1[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] 8\.1[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <registry_state id="oval:org.mitre.oval:ste:4907" version="4" comment="The registry key matches with 2003" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2003[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2003[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <registry_state id="oval:org.mitre.oval:ste:3207" version="3" comment="The registry key matches with 2008" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2008[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2008[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <registry_state id="oval:org.mitre.oval:ste:5506" version="4" comment="The registry key matches with 2008 R2" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2008 [Rr]2[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2008 [Rr]2[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <registry_state id="oval:org.mitre.oval:ste:20132" version="1" comment="The registry key matches with Windows Server 2012" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2012[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2012[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <registry_state id="oval:org.mitre.oval:ste:24147" version="1" comment="The registry key matches with Windows Server 2012 R2" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2012\s[rR]2[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2012\s[rR]2[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" comment="The registry key matches with Windows Server 2016" id="oval:org.cisecurity:ste:1519" version="1">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2016\s[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*2016\s[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <rpminfo_state id="oval:org.mitre.oval:ste:20228" version="1" comment="version matches regex ^6.*$" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
-            <version operation="pattern match">^6.*$</version>
+            <version operation="pattern match">^6.*$<-Nameersion>
         </rpminfo_state>
         <family_state id="oval:org.mitre.oval:ste:3907" version="1" comment="Unix family" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#independent">
             <family>unix</family>
         </family_state>
         <rpminfo_state id="oval:org.mitre.oval:ste:11366" version="3" comment="version matches ^4\D.+$" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
-            <version operation="pattern match">^4\D.+$</version>
+            <version operation="pattern match">^4\D.+$<-Nameersion>
         </rpminfo_state>
         <rpminfo_state id="oval:org.mitre.oval:ste:11314" version="3" comment="version matches ^5\D.+$" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
-            <version operation="pattern match">^5\D.+$</version>
+            <version operation="pattern match">^5\D.+$<-Nameersion>
         </rpminfo_state>
         <rpminfo_state id="oval:org.mitre.oval:ste:25172" version="1" comment="version matches ^6.*$" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
             <release operation="pattern match">^6.*$</release>
         </rpminfo_state>
         <rpminfo_state id="oval:org.mitre.oval:ste:31675" version="1" comment="version matches regex ^7.*$" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
-            <version operation="pattern match">^7.*$</version>
+            <version operation="pattern match">^7.*$<-Nameersion>
         </rpminfo_state>
         <rpminfo_state id="oval:org.mitre.oval:ste:31757" version="1" comment="version matches ^7.*$" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
-            <version operation="pattern match">^7.*$</version>
+            <version operation="pattern match">^7.*$<-Nameersion>
         </rpminfo_state>
         <rpminfo_state id="oval:org.mitre.oval:ste:31728" version="1" comment="version matches regex ^7.*$" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
-            <version operation="pattern match">^7.*$</version>
+            <version operation="pattern match">^7.*$<-Nameersion>
         </rpminfo_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.mitre.oval:ste:11759" version="1" comment="State matches if Apache Tomcat is installed">
-            <value operation="pattern match">^Apache Tomcat .*$</value>
+            <value operation="pattern match">^Apache Tomcat .*$<-Namealue>
         </registry_state>
         <uname_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#unix" comment="State matches Linux machine info" id="oval:org.cisecurity.oval:ste:500000" version="1">
             <os_name>Linux</os_name>
         </uname_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.mitre.oval:ste:37256" version="1" comment="State matches 8 (reg_dword)">
-            <value datatype="int">8</value>
+            <value datatype="int">8<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.cisecurity.oval:ste:500002" version="1" comment="State matches 7 (reg_dword)">
-            <value datatype="int">7</value>
+            <value datatype="int">7<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.mitre.oval:ste:165" version="1">
-            <value datatype="int">0</value>
+            <value datatype="int">0<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.cisecurity.oval:ste:1" version="1">
-            <value datatype="int">5</value>
+            <value datatype="int">5<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.mitre.oval:ste:19992" version="1" comment="State matches if Microsoft Internet Explorer 10 is installed">
-            <value operation="pattern match">^10\..*$</value>
+            <value operation="pattern match">^10\..*$<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.mitre.oval:ste:24230" version="1" comment="State matches if Microsoft Internet Explorer 11 is installed">
-            <value operation="pattern match">^11\..*$</value>
+            <value operation="pattern match">^11\..*$<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" comment="Version is less than 11.0.0.0" id="oval:org.mitre.oval:ste:19385" version="1">
-            <value datatype="version" operation="less than">11.0.0.0</value>
+            <value datatype="version" operation="less than">11.0.0.0<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.mitre.oval:ste:11991" version="1">
-            <value datatype="version" operation="greater than or equal">10.50.1600.1</value>
+            <value datatype="version" operation="greater than or equal">10.50.1600.1<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.mitre.oval:ste:11829" version="1">
-            <value datatype="version" operation="greater than or equal">10.50.1600.1</value>
+            <value datatype="version" operation="greater than or equal">10.50.1600.1<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.mitre.oval:ste:19503" version="1" comment="Version is greater than 11.0.0.0">
-            <value datatype="version" operation="greater than">11.0.0.0</value>
+            <value datatype="version" operation="greater than">11.0.0.0<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.mitre.oval:ste:19160" version="1" comment="Version is less than 12.0.0.0">
-            <value datatype="version" operation="less than">12.0.0.0</value>
+            <value datatype="version" operation="less than">12.0.0.0<-Namealue>
         </registry_state>
         <file_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.cisecurity.benchmarks.mozilla_firefox_esr_24:ste:8002" version="1" comment="Firefox executable version">
-            <version datatype="version" operation="greater than or equal">24</version>
+            <version datatype="version" operation="greater than or equal">24<-Nameersion>
         </file_state>
         <file_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.cisecurity.benchmarks.mozilla_firefox_esr_24:ste:8003" version="1" comment="Firefox executable version">
-            <version datatype="version" operation="less than">25</version>
+            <version datatype="version" operation="less than">25<-Nameersion>
         </file_state>
         <family_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#independent" comment="Microsoft Windows family" id="oval:org.cisecurity.benchmarks.vmware_esxi_5.5:ste:100000" version="2">
             <family operation="equals">windows</family>
@@ -2657,16 +2657,16 @@
             <family>unix</family>
         </family_state>
         <rpminfo_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux" id="oval:org.cisecurity.benchmarks.oracle_oracle_linux_6:ste:102" version="1">
-            <version operation="pattern match">^6</version>
+            <version operation="pattern match">^6<-Nameersion>
         </rpminfo_state>
         <family_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#independent" id="oval:org.cisecurity.benchmarks.oracle_oracle_linux_7:ste:101" version="1">
             <family>unix</family>
         </family_state>
         <rpminfo_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux" id="oval:org.cisecurity.benchmarks.oracle_oracle_linux_7:ste:102" version="1">
-            <version operation="pattern match">^7</version>
+            <version operation="pattern match">^7<-Nameersion>
         </rpminfo_state>
         <registry_state id="oval:org.mitre.oval:ste:24370" version="1" comment="State matches if Opera version is greater than or equals to 12.0" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows">
-            <value datatype="version" operation="greater than or equal">12.0</value>
+            <value datatype="version" operation="greater than or equal">12.0<-Namealue>
         </registry_state>
         <family_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#independent" id="oval:org.cisecurity.benchmarks.apple_osx_10_5:ste:999999" version="1" comment="Apple MacOS family">
             <family operation="equals">macos</family>
@@ -2750,17 +2750,17 @@
         <rpminfo_state id="oval:org.mitre.oval:ste:3459" version="1" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
             <arch operation="pattern match">(^i586$)|(^x86_64$)</arch>
             <epoch>(none)</epoch>
-            <version>9</version>
+            <version>9<-Nameersion>
             <signature_keyid>a84edae89c800aca</signature_keyid>
         </rpminfo_state>
         <rpminfo_state id="oval:org.mitre.oval:ste:3857" version="3" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
             <arch operation="pattern match">^(i586$)|(x86_64$)$</arch>
             <epoch>(none)</epoch>
-            <version datatype="version">10</version>
+            <version datatype="version">10<-Nameersion>
             <signature_keyid>a84edae89c800aca</signature_keyid>
         </rpminfo_state>
         <rpminfo_state id="oval:org.mitre.oval:ste:20890" version="2" comment="version is equal to 11.x" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
-            <version operation="pattern match">^11(\.\d)*$</version>
+            <version operation="pattern match">^11(\.\d)*$<-Nameersion>
         </rpminfo_state>
         <textfilecontent54_state id="oval:org.mitre.oval:ste:19925" version="1" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#independent">
             <subexpression>12.04</subexpression>
@@ -2771,19 +2771,19 @@
         <rpminfo_state id="oval:org.mitre.oval:ste:37425" version="1" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#linux">
             <arch operation="pattern match">^(i586$)|(x86_64$)|(s390x$)|(ppc64le$)$</arch>
             <epoch>(none)</epoch>
-            <version datatype="version">12</version>
+            <version datatype="version">12<-Nameersion>
         </rpminfo_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" comment="The registry key matches with any version of Google Chrome" id="oval:org.mitre.oval:ste:11937" version="2">
-            <value operation="pattern match">^Google Chrome.*$</value>
+            <value operation="pattern match">^Google Chrome.*$<-Namealue>
         </registry_state>
         <registry_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" comment="The registry key matches with Windows 10" id="oval:org.mitre.oval:ste:38974" version="1">
-            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] 10[a-zA-Z0-9\(\)\s]*$</value>
+            <value operation="pattern match">^[a-zA-Z0-9\(\)\s]*[Ww][Ii][Nn][Dd][Oo][Ww][Ss] 10[a-zA-Z0-9\(\)\s]*$<-Namealue>
         </registry_state>
         <file_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.cisecurity.benchmarks.mozilla_firefox_esr_38:ste:8002" version="1" comment="Firefox executable version">
-            <version datatype="version" operation="greater than or equal">38</version>
+            <version datatype="version" operation="greater than or equal">38<-Nameersion>
         </file_state>
         <file_state xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#windows" id="oval:org.cisecurity.benchmarks.mozilla_firefox_esr_38:ste:8003" version="1" comment="Firefox executable version">
-            <version datatype="version" operation="less than">39</version>
+            <version datatype="version" operation="less than">39<-Nameersion>
         </file_state>
         <family_state id="oval:org.cisecurity.benchmarks.o_debian_debian_linux7:ste:10001" version="1" xmlns="http://oval.mitre.org/XMLSchema/oval-definitions-5#independent">
             <family>unix</family>
@@ -2830,5 +2830,5 @@
                 <literal_component>\firefox.exe</literal_component>
             </concat>
         </local_variable>
-    </variables>
+    <-Nameariables>
 </oval_definitions>

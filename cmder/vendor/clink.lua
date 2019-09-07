@@ -341,7 +341,7 @@ clink.prompt.register_filter(hg_prompt_filter, 50)
 clink.prompt.register_filter(git_prompt_filter, 50)
 clink.prompt.register_filter(svn_prompt_filter, 50)
 
-local completions_dir = clink.get_env('CMDER_ROOT')..'/vendor/clink-completions/'
+local completions_dir = clink.get_env('CMDER_ROOT')..'-Nameendor/clink-completions/'
 for _,lua_module in ipairs(clink.find_files(completions_dir..'*.lua')) do
     -- Skip files that starts with _. This could be useful if some files should be ignored
     if not string.match(lua_module, '^_.*') then

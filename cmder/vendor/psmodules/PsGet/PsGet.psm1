@@ -226,7 +226,7 @@ function Install-Module {
         [String] $PackageVersion,
 
         [Parameter(ValueFromPipelineByPropertyName=$true, ParameterSetName='NuGet')]
-        [String] $NugetSource = 'https://nuget.org/api/v2/',
+        [String] $NugetSource = 'https://nuget.org/api-Name2/',
 
         [Parameter(ValueFromPipelineByPropertyName=$true, ParameterSetName='NuGet')]
         [Switch] $PreRelease,
@@ -1036,7 +1036,7 @@ function Install-ModuleFromNuGet {
         [String] $PackageVersion,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [String] $NugetSource = 'https://nuget.org/api/v2/',
+        [String] $NugetSource = 'https://nuget.org/api-Name2/',
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [Switch] $PreRelease,

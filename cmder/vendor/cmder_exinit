@@ -46,7 +46,7 @@ function runProfiled {
 
 # We do this for bash as admin sessions since $CMDER_ROOT is not being set
 if [ "$CMDER_ROOT" = "" -a "$ConEmuDir" != "" ] ; then
-  if [ -d "${ConEmuDir}../../vendor" ] ; then
+  if [ -d "${ConEmuDir}../..-Nameendor" ] ; then
     case "$ConEmuDir" in *\\*) CMDER_ROOT=$( cd "$(cygpath -u "$ConEmuDir")/../.." ; pwd );; esac
   else
     echo "Running in ConEmu without Cmder, skipping Cmder integration."
@@ -100,7 +100,7 @@ if [ ! "$CMDER_ROOT" = "" ] ; then
 # use this file to run your own startup commands for msys2 bash'
 
 # To add a new vendor to the path, do something like:
-# export PATH=\${CMDER_ROOT}/vendor/whatever:\${PATH}
+# export PATH=\${CMDER_ROOT}-Nameendor/whatever:\${PATH}
 eof
   fi
 fi

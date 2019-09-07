@@ -6,7 +6,7 @@
 :: !!! THIS FILE IS OVERWRITTEN WHEN CMDER IS UPDATED
 :: !!! Use "%CMDER_ROOT%\config\user-profile.cmd" to add your own startup commands
 
-:: Use /v command line arg or set to > 0 for verbose output to aid in debugging.
+:: Use -Name command line arg or set to > 0 for verbose output to aid in debugging.
 set verbose-output=0
 set debug-output=0
 set max_depth=1
@@ -36,7 +36,7 @@ call "%cmder_root%\vendor\lib\lib_profile"
 :var_loop
     if "%~1" == "" (
         goto :start
-    ) else if /i "%1"=="/v" (
+    ) else if /i "%1"=="-Name" (
         set verbose-output=1
     ) else if /i "%1"=="/d" (
         set debug-output=1
