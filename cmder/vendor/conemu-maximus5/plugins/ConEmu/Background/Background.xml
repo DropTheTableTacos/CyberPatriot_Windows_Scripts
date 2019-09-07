@@ -13,7 +13,7 @@
 			may be "PANELS", "EDITOR", "VIEWER"
 	child nodes:
 		panel, disabled, color, title, img
-		Note: "color, title, img" nodes may exists only in EDITOR-NameIEWER
+		Note: "color, title, img" nodes may exists only in EDITOR/VIEWER
 
 === disabled ===
 	syntax:

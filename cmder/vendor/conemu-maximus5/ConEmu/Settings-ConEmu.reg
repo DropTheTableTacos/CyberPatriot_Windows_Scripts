@@ -21,7 +21,7 @@ REGEDIT4
 
 ;; Transparency of the main window (28..FF). FF - opaque.
 "AlphaValue"=hex:ff
-;; Transparent ï¿½User screenï¿½ while panel(s) is turned off
+;; Transparent «User screen» while panel(s) is turned off
 ;"UseColorKey"=hex:01
 ;"ColorKey"=dword:00010101
 
@@ -167,7 +167,7 @@ REGEDIT4
 ;"SleepInBackground"=hex:01
 
 ;; Turn on 'User screen' transparency, when panel(s) is lifted up or hided.
-;; You may temporary reveal ï¿½User screenï¿½ by depressing Ctrl-Alt-Shift.
+;; You may temporary reveal «User screen» by depressing Ctrl-Alt-Shift.
 ;"UserScreenTransparent"=hex:00
 
 ;; No comments
@@ -287,7 +287,7 @@ REGEDIT4
 
 ;; Tabs: 0 - don't show, 1 - always, 2 - auto
 "Tabs"=hex:02
-;; Key macros for close active tab (editor-Nameiewer/panel)
+;; Key macros for close active tab (editor/viewer/panel)
 ;"TabCloseMacro"="F10"
 ;; Handle 'Ctrl-Tab' & 'Ctrl-Shift-Tab' internally
 "TabSelf"=hex:01

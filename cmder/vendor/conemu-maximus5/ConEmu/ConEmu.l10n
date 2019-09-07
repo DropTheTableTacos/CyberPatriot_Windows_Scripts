@@ -740,7 +740,7 @@
       "id": 2403 }
     ,
     "cbStartFarRestoreEditors": {
-      "en": "When ‘Auto save/restore opened tabs’ save/restore Far Manager editors-Nameiewers too",
+      "en": "When ‘Auto save/restore opened tabs’ save/restore Far Manager editors/viewers too",
       "zh": "当‘自动保存/恢复打开过的标签页’时，同时保存/恢复Far Manager编辑器/视图",
       "id": 2238 }
     ,
@@ -1126,7 +1126,7 @@
       "id": 1575 }
     ,
     "tCloseTabMacro": {
-      "en": [ "Macro for close Editor-Nameiewer/Panels in Far Manager, when you choose ‘Close’ from tab context menu\r\n"
+      "en": [ "Macro for close Editor/Viewer/Panels in Far Manager, when you choose ‘Close’ from tab context menu\r\n"
             , "Clear field to reset to defaults" ],
       "zh": [ "Far Manager里的关闭编辑器/视图/面板的宏， 当你从标签页上下文菜单中选择‘Close’时\r\n"
             , "清除字段重置为默认值" ],
@@ -1561,10 +1561,10 @@
     ,
     "tUpdateVerLocation": {
       "en": [ "URL to retrieve latest version information,\r\n"
-            , "default is: https://conemu.github.io-Nameersion.ini\r\n"
+            , "default is: https://conemu.github.io/version.ini\r\n"
             , "Erase text box to revert to default URL." ],
       "zh": [ "接收最新版本的信息的URL \r\n"
-            , "默认为： https://conemu.github.io-Nameersion.ini\r\n"
+            , "默认为： https://conemu.github.io/version.ini\r\n"
             , "删除文本框，以恢复默认的网址。" ],
       "id": 2052 }
     ,
@@ -3300,7 +3300,7 @@
       "id": 2179 }
     ,
     "cbCloseEditViewConfirm": {
-      "en": "Confirm Far Manager Editor-Nameiewer tab closing",
+      "en": "Confirm Far Manager Editor/Viewer tab closing",
       "zh": "确认Far Manager编辑器/视图标签页关闭",
       "id": 2517 }
     ,
@@ -4177,7 +4177,7 @@
       "id": 2403 }
     ,
     "cbStartFarRestoreEditors": {
-      "en": "Far editors-Nameiewers also",
+      "en": "Far editors/viewers also",
       "zh": "Far编辑器/视图也",
       "id": 2238 }
     ,
@@ -4799,7 +4799,7 @@
       "id": 3055 }
     ,
     "gbTabs": {
-      "en": "Tabs (consoles, Far Manager panels/editors-Nameiewers)",
+      "en": "Tabs (consoles, Far Manager panels/editors/viewers)",
       "zh": "标签页（控制台，Far Manager面板/编辑器/视图）",
       "id": 2981 }
     ,

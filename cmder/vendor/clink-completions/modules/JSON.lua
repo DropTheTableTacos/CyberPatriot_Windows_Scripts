@@ -569,7 +569,7 @@ local function unicode_codepoint_as_utf8(codepoint)
 
       --
       -- Check for an invalid character (thanks Andy R. at Adobe).
-      -- See table 3.7, page 93, in http://www.unicode.org-Nameersions/Unicode5.2.0/ch03.pdf#G28070
+      -- See table 3.7, page 93, in http://www.unicode.org/versions/Unicode5.2.0/ch03.pdf#G28070
       --
       if ( highpart == 0xE0 and midpart < 0xA0 ) or
          ( highpart == 0xED and midpart > 0x9F ) or

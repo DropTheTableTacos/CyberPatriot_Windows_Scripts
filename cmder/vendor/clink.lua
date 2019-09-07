@@ -14,6 +14,14 @@ dofile(clink_lua_file)
 -- now add our own things...
 
 ---
+-- Makes a string safe to use as the replacement in string.gsub
+---
+local function verbatim(s)
+    s = string.gsub(s, "%%", "%%%%")
+    return s
+end
+
+---
 -- Setting the prompt in clink means that commands which rewrite the prompt do
 -- not destroy our own prompt. It also means that started cmds (or batch files
 -- which echo) don't get the ugly '{lamb}' shown.
@@ -41,11 +49,16 @@ local function set_prompt_filter()
     -- color codes: "\x1b[1;37;40m"
     local cmder_prompt = "\x1b[1;32;40m{cwd} {git}{hg}{svn} \n\x1b[1;39;40m{lamb} \x1b[0m"
     local lambda = "λ"
-    cmder_prompt = string.gsub(cmder_prompt, "{cwd}", cwd)
+    cmder_prompt = string.gsub(cmder_prompt, "{cwd}", verbatim(cwd))
+
     if env ~= nil then
         lambda = "("..env..") "..lambda
     end
-    clink.prompt.value = string.gsub(cmder_prompt, "{lamb}", lambda)
+    clink.prompt.value = string.gsub(cmder_prompt, "{lamb}", verbatim(lambda))
+end
+
+local function percent_prompt_filter()
+    clink.prompt.value = string.gsub(clink.prompt.value, "{percent}", "%%")
 end
 
 ---
@@ -176,12 +189,15 @@ end
 -- @return {false|mercurial branch name}
 ---
 local function get_hg_branch()
-    for line in io.popen("hg branch 2>nul"):lines() do
+    local file = io.popen("hg branch 2>nul")
+    for line in file:lines() do
         local m = line:match("(.+)$")
         if m then
+            file:close()
             return m
         end
     end
+    file:close()
 
     return false
 end
@@ -191,12 +207,15 @@ end
 -- @return {false|svn branch name}
 ---
 local function get_svn_branch(svn_dir)
-    for line in io.popen("svn info 2>nul"):lines() do
+    local file = io.popen("svn info 2>nul")
+    for line in file:lines() do
         local m = line:match("^Relative URL:")
         if m then
+            file:close()
             return line:sub(line:find("/")+1,line:len())
         end
     end
+    file:close()
 
     return false
 end
@@ -217,6 +236,21 @@ local function get_git_status()
 end
 
 ---
+-- Gets the conflict status
+-- @return {bool} indicating true for conflict, false for no conflicts
+---
+function get_git_conflict()
+    local file = io.popen("git diff --name-only --diff-filter=U 2>nul")
+    for line in file:lines() do
+        file:close()
+        return true;
+    end
+    file:close()
+    return false
+end
+
+
+---
 -- Get the status of working dir
 -- @return {bool}
 ---
@@ -235,7 +269,7 @@ end
 -- Get the status of working dir
 -- @return {bool}
 ---
-function get_svn_status()
+local function get_svn_status()
     local file = io.popen("svn status -q")
     for line in file:lines() do
         file:close()
@@ -251,7 +285,8 @@ local function git_prompt_filter()
     -- Colors for git status
     local colors = {
         clean = "\x1b[1;37;40m",
-        dirty = "\x1b[31;1m",
+        dirty = "\x1b[33;3m",
+        conflict = "\x1b[31;1m"
     }
 
     local git_dir = get_git_dir()
@@ -261,13 +296,19 @@ local function git_prompt_filter()
         local color
         if branch then
             -- Has branch => therefore it is a git folder, now figure out status
-            if get_git_status() then
+            local gitStatus = get_git_status()
+            local gitConflict = get_git_conflict()
+
+            color = colors.dirty
+            if gitStatus then
                 color = colors.clean
-            else
-                color = colors.dirty
             end
 
-            clink.prompt.value = string.gsub(clink.prompt.value, "{git}", color.."("..branch..")")
+            if gitConflict then
+                color = colors.conflict
+            end 
+
+            clink.prompt.value = string.gsub(clink.prompt.value, "{git}", color.."("..verbatim(branch)..")")
             return false
         end
     end
@@ -279,31 +320,40 @@ end
 
 local function hg_prompt_filter()
 
-    -- Colors for mercurial status
-    local colors = {
-        clean = "\x1b[1;37;40m",
-        dirty = "\x1b[31;1m",
-    }
+    local result = ""
 
-    if get_hg_dir() then
-        -- if we're inside of mercurial repo then try to detect current branch
-        local branch = get_hg_branch()
-        local color
-        if branch then
-            -- Has branch => therefore it is a mercurial folder, now figure out status
-            if get_hg_status() then
-                color = colors.clean
-            else
-                color = colors.dirty
-            end
+    local hg_dir = get_hg_dir()
+    if hg_dir then
+        -- Colors for mercurial status
+        local colors = {
+            clean = "\x1b[1;37;40m",
+            dirty = "\x1b[31;1m",
+        }
 
-            clink.prompt.value = string.gsub(clink.prompt.value, "{hg}", color.."("..branch..")")
-            return false
+        local pipe = io.popen("hg branch 2>&1")
+        local output = pipe:read('*all')
+        local rc = { pipe:close() }
+
+        -- strip the trailing newline from the branch name
+        local n = #output
+        while n > 0 and output:find("^%s", n) do n = n - 1 end
+        local branch = output:sub(1, n)
+
+        if branch ~= nil and
+           string.sub(branch,1,7) ~= "abort: " and             -- not an HG working copy
+           (not string.find(branch, "is not recognized")) then -- 'hg' not in path
+            local color = colors.clean
+
+            local pipe = io.popen("hg status -amrd 2>&1")
+            local output = pipe:read('*all')
+            local rc = { pipe:close() }
+
+            if output ~= nil and output ~= "" then color = colors.dirty end
+            result = color .. "(" .. branch .. ")"
         end
     end
 
-    -- No mercurial present or not in mercurial file
-    clink.prompt.value = string.gsub(clink.prompt.value, "{hg}", "")
+    clink.prompt.value = string.gsub(clink.prompt.value, "{hg}", verbatim(result))
     return false
 end
 
@@ -325,7 +375,7 @@ local function svn_prompt_filter()
                 color = colors.dirty
             end
 
-            clink.prompt.value = string.gsub(clink.prompt.value, "{svn}", color.."("..branch..")")
+            clink.prompt.value = string.gsub(clink.prompt.value, "{svn}", color.."("..verbatim(branch)..")")
             return false
         end
     end
@@ -340,8 +390,9 @@ clink.prompt.register_filter(set_prompt_filter, 1)
 clink.prompt.register_filter(hg_prompt_filter, 50)
 clink.prompt.register_filter(git_prompt_filter, 50)
 clink.prompt.register_filter(svn_prompt_filter, 50)
+clink.prompt.register_filter(percent_prompt_filter, 51)
 
-local completions_dir = clink.get_env('CMDER_ROOT')..'-Nameendor/clink-completions/'
+local completions_dir = clink.get_env('CMDER_ROOT')..'/vendor/clink-completions/'
 for _,lua_module in ipairs(clink.find_files(completions_dir..'*.lua')) do
     -- Skip files that starts with _. This could be useful if some files should be ignored
     if not string.match(lua_module, '^_.*') then
@@ -350,4 +401,14 @@ for _,lua_module in ipairs(clink.find_files(completions_dir..'*.lua')) do
         -- so config reloading using Alt-Q won't reload updated modules.
         dofile(filename)
     end
+end
+
+if clink.get_env('CMDER_USER_CONFIG') then
+  local cmder_config_dir = clink.get_env('CMDER_ROOT')..'/config/'
+  for _,lua_module in ipairs(clink.find_files(cmder_config_dir..'*.lua')) do
+    local filename = cmder_config_dir..lua_module
+    -- use dofile instead of require because require caches loaded modules
+    -- so config reloading using Alt-Q won't reload updated modules.
+    dofile(filename)
+  end
 end

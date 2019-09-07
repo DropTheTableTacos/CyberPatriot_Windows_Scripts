@@ -1,6 +1,6 @@
 
-[![Build status](https://ci.appveyor.com/api/projects/status/h401gvqery4wwa6p/branch/master?svg=true)](https://ci.appveyor.com/project-Nameladimir-kotikov/clink-completions/branch/master)
-[![codecov](https://codecov.io/gh-Nameladimir-kotikov/clink-completions/branch/master/graph/badge.svg)](https://codecov.io/gh-Nameladimir-kotikov/clink-completions)
+[![Build status](https://ci.appveyor.com/api/projects/status/h401gvqery4wwa6p/branch/master?svg=true)](https://ci.appveyor.com/project/vladimir-kotikov/clink-completions/branch/master)
+[![codecov](https://codecov.io/gh/vladimir-kotikov/clink-completions/branch/master/graph/badge.svg)](https://codecov.io/gh/vladimir-kotikov/clink-completions)
 
 clink-completions
 =================

@@ -1,12 +1,11 @@
 @echo off
 
-
 call "%~dp0lib_base.cmd"
 call "%%~dp0lib_console"
 set lib_profile=call "%~dp0lib_profile.cmd"
 
 if "%~1" == "/h" (
-    %lib_base% help "%0"
+    %lib_base% help "%~0"
 ) else if "%1" neq "" (
     call :%*
 )
@@ -19,7 +18,7 @@ exit /b
 :::
 :::include:
 :::
-:::  call "$0"
+:::  call "lib_profile.cmd"
 :::
 :::usage:
 :::
@@ -39,8 +38,9 @@ exit /b
 
   pushd "%~1"
   for /f "usebackq" %%x in ( `dir /b *.bat *.cmd 2^>nul` ) do (
-    %lib_console% verbose-output "Calling '%~1\%%x'..."
+    %lib_console% verbose_output "Calling '%~1\%%x'..."
     call "%~1\%%x"
   )
   popd
   exit /b
+
