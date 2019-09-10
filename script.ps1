@@ -132,6 +132,7 @@ function List-Service {
     } else {
         $get_service;
     }
+}
 
 # List users
 function List-User {
@@ -739,7 +740,7 @@ pause
 Set-Variables
 
 cls
-List-Functions
+#List-Functions
 
 # Actually run all the functions now
 #Set-Variables
