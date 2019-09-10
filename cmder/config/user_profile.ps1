@@ -1,0 +1,1 @@
+Copy-Item "$env:userprofile\Desktop\Script\script.ps1" "$env:userprofile\Documents\WindowsPowerShell\Microsoft.Powershell_profile.ps1"

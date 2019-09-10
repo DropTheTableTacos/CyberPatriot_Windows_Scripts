@@ -279,6 +279,7 @@ function Disable-Services {
         } else {
             $serv_exclusions += $answer;
         }
+    }
 
     # Disable list of services
     Import-Lists services
