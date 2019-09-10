@@ -670,16 +670,10 @@ function Disable-RemoteDesktop {
 }
 
 # List functions
-#function List-Functions {
-#    $function_list_temp = $lists | select functions | format-table -HideTableHeaders | out-string -stream;
-#    $function_list_temp.foreach{
-#        if (![string]::IsNullOrWhiteSpace($_)) {
-#            $function_list += $_;
-#        }
-#    }
-#
-#    $function_list | format-wide;
-#}
+function List-Functions {
+    Import-Lists functions
+    $lists
+}
 
 # Delete applocker rules
 function Delete-AppLocker {
@@ -741,40 +735,7 @@ pause
 Set-Variables
 
 cls
-#List-Functions
+List-Functions
 
 # Actually run all the functions now
-#Set-Variables
-#Check-Powershell5
-#Get-OS
-#Get-UserList
-#List-Programs
-#Set-LogonMessage
-#Remove-TempTxt
-#Open-Readme
-#Update-Windows
-#Enable-Firewall
-#Clear-Hosts
-#Set-FirefoxConfig
-#Import-SCM
-#Run-CiscatRegistry
-#Disable-Services
-#Import-Inf
-#Import-Audit
-#Get-Ip
-#pause
-
-#EnableDisable_Users
-#Change-Passwords
-#Find-ProhibitedUserFiles
-#AddDelete-Users
-#AddDelete-Admins
-#EnableDisable-Features
-#Remove-Program
-#Open-Forensics
-#Remove-MediaFiles
-#Find-MediaFiles
-#View-Shares
-#Remove-Shares
-#Secure-Screensaver
-#Disable-RemoteDesktop
+# Put stuff here
