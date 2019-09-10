@@ -694,6 +694,8 @@ function Install-Programs {
     Install-Choco
 
     choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
+
+    Add-Progress "Good security programs installed"
 }
 
 # IE registry gamers
@@ -707,6 +709,43 @@ function Import-IERegistry {
 
     Add-Progress "Set CISCAT Internet Explorer registry settings"
 }
+
+# Update programs
+function Update-Programs {
+    cls
+    echo "Update all the dang programs, son."
+    echo "`n"
+    echo "IMPORTANT: Check if the programs have auto updates"
+    pause
+}
+
+# Find prohibited files
+function Find-ProhibitedFiles {
+       # Put stuff here eventually
+}
+
+# Run Sysinternals
+function Run-Sysinternals {
+    $sysinternals = "autoruns","procexp","tcpview"
+
+    $sysinternals.foreach{
+        Start-Process "$cmderbin\$_"
+    }
+}
+
+# Cat-Lite scanner
+function Run-CatLite {
+    Get-OS
+
+    if ($os -in "Win10") {
+        Start-Process "$cmderbin\cis-cat-lite\CISCAT.jar"
+    } else {
+        cls
+        echo "Sorry mate, you can't use the Cat-Lite scanner. Cause it aint Windows 10."
+    }
+}
+
+# Check locked users or something
 
 # Intro screen bois
 cls
