@@ -693,7 +693,7 @@ function Enable-UAC {
 function Install-Programs {
     Install-Choco
 
-
+    choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
 }
 
 # IE registry gamers
