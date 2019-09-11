@@ -46,3 +46,7 @@ Delete-AppLocker
 Enable-UAC
 Install-Programs
 Import-IERegistry
+Update-Programs
+Find-ProhibitedFiles
+Run-Sysinternals
+Run-CatLite
