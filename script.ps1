@@ -22,7 +22,10 @@ function Set-Variables {
     $global:cmderbin = "$compfiles\cmder\bin";
     $global:autousers = $false;
     $global:pass = ConvertTo-SecureString "abc123ABC123@@"
-    [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine);
+    [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
+    %systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
+    %programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%", `
+    [System.EnvironmentVariableTarget]::Machine);
 }
 
 # Install chocolatey
@@ -91,7 +94,8 @@ function Get-UserList {
 
 # Get program list
 function List-Programs {
-    $program_list = Get-WmiObject -Class Win32_Product | select name, installsource, installlocation, version, installdate, vendor | format-table -AutoSize
+    $program_list = Get-WmiObject -Class Win32_Product | select name, installsource, installlocation, version, `
+    installdate, vendor | format-table -AutoSize
     $program_list > C:\program_list.txt
     Start-Process C:\program_list.txt
 }
@@ -107,19 +111,23 @@ function Set-LogonMessage {
     New-LocalUser $env:username -Password $pass
 
     # Set logon message
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticecaption -PropertyType String -Value "Username: $env:username" -Force -InformationAction SilentlyContinue
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticetext -PropertyType String -Value "Password: abc123ABC123@@" -Force -InformationAction SilentlyContinue
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticecaption `
+    PropertyType String -Value "Username: $env:username" -Force -InformationAction SilentlyContinue
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticetext `
+    PropertyType String -Value "Password: abc123ABC123@@" -Force -InformationAction SilentlyContinue
 }
 
 # Delete leftover text files
 function Remove-TempTxt {
     cd C:\
-    Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt,userdiff.txt -Force -ErrorAction SilentlyContinue;
+    Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt, `
+    userdiff.txt -Force -ErrorAction SilentlyContinue;
 }
 
 # List services
 function List-Service {
-    $get_service = Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, InstallDate, PathName;
+    $get_service = Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, `
+    InstallDate, PathName;
 
     if ($args -in "running","stopped") {
         $get_service | where state -match "$args";
@@ -167,10 +175,14 @@ function Update-Windows {
     Start-Service wuauserv;
 
     # Enable automatic updates
-    New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" -Name NoAutoUpdate -PropertyType DWord -Value "0" -Force;
-    New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" -Name AUOptions -PropertyType DWord -Value "4" -Force;
-    New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate -PropertyType DWord -Value "0" -Force;
-    New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name AUOptions -PropertyType DWord -Value "4" -Force;
+    New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" `
+    -Name NoAutoUpdate -PropertyType DWord -Value "0" -Force;
+    New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" `
+    -Name AUOptions -PropertyType DWord -Value "4" -Force;
+    New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate `
+    -PropertyType DWord -Value "0" -Force;
+    New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name AUOptions `
+    -PropertyType DWord -Value "4" -Force;
 
     # Completed message
     echo "`n";
@@ -204,14 +216,20 @@ function Clear-Hosts {
 # Firefox config
 function Set-FirefoxConfig {
     # 64-bit
-    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles\Mozilla Firefox\browser\override.ini" -Force -ErrorAction SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles\Mozilla Firefox\mozilla.cfg" -Force -ErrorAction SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\local-settings.js" "$env:programfiles\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles\Mozilla Firefox\browser\override.ini" `
+    -Force -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles\Mozilla Firefox\mozilla.cfg" -Force `
+    -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\local-settings.js" `
+    "$env:programfiles\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction SilentlyContinue
 
     # 32-bit
-    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles(x86)\Mozilla Firefox\browser\override.ini" -Force -ErrorAction SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles(x86)\Mozilla Firefox\mozilla.cfg" -Force -ErrorAction SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\local-settings.js" "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles(x86)\Mozilla Firefox\browser\override.ini" `
+    -Force -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles(x86)\Mozilla Firefox\mozilla.cfg" -Force `
+    -ErrorAction SilentlyContinue
+    Copy-Item "$compfiles\firefox_config\local-settings.js" `
+    "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction SilentlyContinue
 
     Add-Progress "Firefox config files copied"
 }
@@ -358,9 +376,10 @@ function Import-Audit {
 
 # Get IP address
 function Get-Ip {
-    $ip = Get-NetIPAddress | where AddressFamily -match "IPv4" | where AddressState -match "Preferred" | where InterfaceAlias -notmatch "Loopback" | select IPAddress;
+    $ip = Get-NetIPAddress | where AddressFamily -match "IPv4" | where AddressState -match "Preferred" | `
+    where InterfaceAlias -notmatch "Loopback" | select IPAddress
 
-    $ip;
+    $ip
 
     Add-Progress "Nessus scan theoretically run?"
 }
@@ -555,8 +574,10 @@ function Remove-Admins {
 # Enable internet explorer
 function Enable-InternetExplorer {
     # Enable IE
-    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue
-    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue
+    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all `
+    -ErrorAction SilentlyContinue
+    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all `
+    -ErrorAction SilentlyContinue
 
     Add-Progress "Enabled Internet Explorer"
 }
@@ -653,18 +674,21 @@ function View-Shares {
 function Secure-Screensaver {
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Control Panel" -Force
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control Panel" -Name "Desktop" -Force
-    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" `
+    -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
 
     New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "Control Panel"
     New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Control Panel" -Name "Desktop" -Force
-    New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop" -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
+    New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop" `
+    -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
 
     Add-Progress "Screensaver secured with password"
 }
 
 # Disable remote desktop
 function Disable-RemoteDesktop {
-    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -PropertyType DWord -Value "1" -Force
+    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" `
+    -PropertyType DWord -Value "1" -Force
 
     Add-Progress "Remote Desktop disabled"
 }
@@ -684,7 +708,8 @@ function Delete-AppLocker {
 
 # enable uac because that would be a good idea though its already enabled by default but whatever frick off
 function Enable-UAC {
-    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -PropertyType DWord -Value "1" -Force
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" `
+    -PropertyType DWord -Value "1" -Force
 
     Add-Progress "UAC Enabled"
 }
@@ -743,6 +768,12 @@ function Run-CatLite {
         cls
         echo "Sorry mate, you can't use the Cat-Lite scanner. Cause it aint Windows 10."
     }
+}
+
+# Copy script to profile
+function Copy-ToProfile {
+    Copy-Item "$env:userprofile\Desktop\Script\script.ps1" `
+    "$env:systemroot\System32\WindowsPowershell\v1.0\profile.ps1"
 }
 
 # Check locked users or something
