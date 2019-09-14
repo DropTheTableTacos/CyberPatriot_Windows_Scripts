@@ -2,7 +2,6 @@
 
 # List of things that need to happen:
 #   - Get-UserList
-#   - List-Functions
 #   - Finish all the rest of the stuff
 
 # Make transcript file
@@ -11,8 +10,9 @@ Start-Transcript "C:\log.txt"
 # Turn off command spam
 Set-PSDebug -Trace 0
 
-# Import applocker
+# Import modules (posh-git only to get rid of the annoying text lol)
 Import-Module AppLocker
+Import-Module posh-git
 
 # Setup all variables
 function Set-Variables {
