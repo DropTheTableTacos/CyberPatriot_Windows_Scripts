@@ -51,4 +51,4 @@ Find-ProhibitedFiles
 Run-Sysinternals
 Run-CatLite
 Copy-ToProfile
-Import-Alias
+Import-Aliases

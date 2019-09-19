@@ -720,6 +720,7 @@ function Enable-UAC {
 # Install gucci programs
 function Install-Programs {
     Install-Choco
+    Check-Powershell5
 
     choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
 
@@ -808,8 +809,13 @@ echo "`n"
 pause
 
 # Actually start the script UwU
-Set-Variables
 
+# Setup Functions
+Set-Variables
+Import-Aliases
+Copy-ToProfile
+
+# List functions gamer
 cls
 List-Functions
 
