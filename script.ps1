@@ -696,7 +696,10 @@ function Disable-RemoteDesktop {
 # List functions
 function List-Functions {
     Import-Lists functions
-    $lists
+    $lists.foreach{
+        $alias = (Get-Alias -Definition $_).Name
+        echo "$_ ($alias)"
+    }
 }
 
 # Delete applocker rules
@@ -773,10 +776,13 @@ function Run-CatLite {
 # Copy script to profile
 function Copy-ToProfile {
     Copy-Item "$env:userprofile\Desktop\Script\script.ps1" `
-    "$env:systemroot\System32\WindowsPowershell\v1.0\profile.ps1"
+    "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 }
 
-# Check locked users or something
+# Aliases for functions
+function Import-Aliases {
+    Import-Alias "$compfiles\lists\aliases.csv"
+}
 
 # Intro screen bois
 cls
