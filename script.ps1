@@ -10,10 +10,6 @@ Start-Transcript "C:\log.txt"
 # Turn off command spam
 Set-PSDebug -Trace 0
 
-# Import modules (posh-git only to get rid of the annoying text lol)
-Import-Module AppLocker
-Import-Module posh-git
-
 # Setup all variables
 function Set-Variables {
     $global:desktop = "$env:userprofile\Desktop";
@@ -21,7 +17,7 @@ function Set-Variables {
     $global:scm = "$compfiles\scmbaselines";
     $global:cmderbin = "$compfiles\cmder\bin";
     $global:autousers = $false;
-    $global:pass = ConvertTo-SecureString "abc123ABC123@@"
+    $global:pass = ConvertTo-SecureString "abc123ABC123@@" -AsPlainText -Force
     [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
     %systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
     %programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%", `
@@ -780,9 +776,10 @@ function Copy-ToProfile {
     "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 }
 
-# Aliases for functions
-function Import-Aliases {
-    Import-Alias "$compfiles\lists\aliases.csv"
+# Run script easily function
+function Run-Script {
+    Copy-ToProfile
+    . $profile
 }
 
 # Intro screen bois
@@ -812,7 +809,7 @@ pause
 
 # Setup Functions
 Set-Variables
-Import-Aliases
+Import-Alias "$compfiles\lists\aliases.csv" -Force
 Copy-ToProfile
 
 # List functions gamer
