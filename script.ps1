@@ -114,7 +114,7 @@ function Set-LogonMessage {
 }
 
 # Delete leftover text files
-function Remove-TempTxt {
+function Delete-TempTxt {
     cd C:\
     Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt, `
     userdiff.txt -Force -ErrorAction SilentlyContinue;
@@ -501,7 +501,7 @@ function Add-Users {
 }
 
 # Delete users
-function Remove-Users {
+function Delete-Users {
     if ($args -in "m","man","manual") {
         while ($true) {
             cls;
@@ -549,7 +549,7 @@ function Add-Admins {
 }
 
 # Delete Admins
-function Remove-Admins {
+function Delete-Admins {
     while ($true) {
         cls;
 
@@ -590,7 +590,7 @@ function Disable-Features {
 }
 
 # Remove programs
-function Remove-Program {
+function Delete-Program {
     Add-Progress "Sketchy programs removed"
 }
 
@@ -604,7 +604,7 @@ function Open-Forensics {
 }
 
 # Delete Media files
-function Remove-MediaFiles {
+function Delete-MediaFiles {
     Import-Lists media_extensions
 
     $lists.foreach{
@@ -629,7 +629,7 @@ function Find-MediaFiles {
 }
 
 # Delete shares
-function Remove-Shares {
+function Delete-Shares {
     while ($true) {
         cls;
 
