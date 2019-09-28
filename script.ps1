@@ -10,38 +10,6 @@ Start-Transcript "C:\log.txt"
 # Turn off command spam
 Set-PSDebug -Trace 0
 
-# Setup all variables
-function Set-Variables {
-    $global:desktop = "$env:userprofile\Desktop";
-    $global:compfiles = "$desktop\Script";
-    $global:scm = "$compfiles\scmbaselines";
-    $global:cmderbin = "$compfiles\cmder\bin";
-    $global:autousers = $false;
-    $global:pass = ConvertTo-SecureString "abc123ABC123@@" -AsPlainText -Force
-    [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
-    %systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
-    %programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%", `
-    [System.EnvironmentVariableTarget]::Machine);
-}
-
-# Install chocolatey
-function Install-Choco {
-    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
-    choco feature enable -n allowGlobalConfirmation
-    choco feature enable -n useFipsCompliantChecksums
-}
-
-# Powershell 5 check
-function Check-Powershell5 {
-    if (($PSVersionTable.PSVersion).Major -ne "5") {
-        Install-Choco
-        choco install powershell dotnet4.5
-
-        Restart-Computer -Force
-    }
-}
-
 # Get OS name
 function Get-OS {
     $os_name = (Get-CimInstance -ClassName CIM_OperatingSystem).Name;
@@ -56,16 +24,34 @@ function Get-OS {
 
     # Change name to shorter, gooder version
     if ($os -in "Windows 7","Windows 8","Windows 10") {
-        $global:os = $os.Remove(3,5)
+        return $os.Remove(3,5)
     }
     if ($os -in "Server 2008","Server 2016") {
-        $global:os = $os.Remove(6,1)
+        return $os.Remove(6,1)
     }
 }
 
-# Get version
-function Get-Ver {
-    $global:ver = (Get-WmiObject -Class Win32_OperatingSystem).Version
+
+$global:desktop = "$env:userprofile\Desktop";
+$global:compfiles = "$desktop\Script";
+$global:scm = "$compfiles\scmbaselines";
+$global:cmderbin = "$compfiles\cmder\bin";
+$global:autousers = $false;
+$global:pass = ConvertTo-SecureString "abc123ABC123@@" -AsPlainText -Force
+[System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
+%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
+%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%", `
+[System.EnvironmentVariableTarget]::Machine);
+
+$global:ver = (Get-WmiObject -Class Win32_OperatingSystem).Version
+$global:os = Get-OS
+
+# Install chocolatey
+function Install-Choco {
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+    choco feature enable -n allowGlobalConfirmation
+    choco feature enable -n useFipsCompliantChecksums
 }
 
 # Get user list
@@ -96,11 +82,6 @@ function List-Programs {
     Start-Process C:\program_list.txt
 }
 
-# User prompt
-function Ask-Prompt {
-    $global:answer = Read-Host $args
-}
-
 # Set logon message to username and password
 function Set-LogonMessage {
     # Change password
@@ -122,19 +103,19 @@ function Delete-TempTxt {
 
 # List services
 function List-Service {
-    $get_service = Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, `
+    $services = Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, `
     InstallDate, PathName;
 
     if ($args -in "running","stopped") {
-        $get_service | where state -match "$args";
+        $services | where state -match "$args";
         break;
     }
 
     if ($args -eq "auto","disabled","manual") {
-        $get_service | where startmode -match "$args";
+        $services | where startmode -match "$args";
         break;
     } else {
-        $get_service;
+        $services;
     }
 }
 
@@ -150,13 +131,12 @@ function List-Admin {
 
 # Add to progress log
 function Add-Progress {
-    echo "$args" >> "$desktop\progress.txt";
-    echo "`n" >> "$desktop\progress.txt";
+    Write-Output "$args`n" >> "$desktop\progress.txt";
 }
 
 # Import lists
 function Import-Lists {
-    $global:lists = Get-Content "$compfiles\lists\$args.txt"
+   return Get-Content "$compfiles\lists\$args.txt"
 }
 
 # README
@@ -232,7 +212,6 @@ function Set-FirefoxConfig {
 
 # SCM Baselines
 function Import-SCM {
-    Get-Ver
     Get-OS
 
     cd "$cmderbin"
@@ -267,9 +246,9 @@ function Import-SCM {
 
 # CISCAT Registry batch file
 function Run-CiscatRegistry {
-    Import-Lists ciscat_registry
+    $list = Import-Lists ciscat_registry
 
-    $lists.foreach{
+    $list.foreach{
         $_;
     }
 
@@ -282,7 +261,7 @@ function Disable-Services {
     while ($true) {
         cls
 
-        Ask-Prompt "Enter a service to exclude (use 'remote' for Remote Desktop)";
+        $answer = Read-Host "Enter a service to exclude (use 'remote' for Remote Desktop)";
 
         if ($answer -eq "n") {
             break;
@@ -296,9 +275,9 @@ function Disable-Services {
     }
 
     # Disable list of services
-    Import-Lists services
+    $services = Import-Lists services
 
-    $lists.foreach{
+    $services.foreach{
         Stop-Service $_;
         Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
     }
@@ -390,7 +369,7 @@ function Enable-Users {
 
             List-User
             echo "`n"
-            Ask-Prompt "Enter username to enable"
+            $answer = Read-Host "Enter username to enable"
 
             if ($answer -eq "n") {
                 break;
@@ -422,7 +401,7 @@ function Disable-Users {
 
             List-User
             echo "`n"
-            Ask-Prompt "Enter username to disable"
+            $answer = Read-Host "Enter username to disable"
 
             if ($answer -eq "n") {
                 break;
@@ -451,7 +430,7 @@ function Change-Passwords {
 
             echo "NOTE: Passwords are set to: abc123ABC123@@"
             echo "`n"
-            Ask-Prompt "Enter username to change password"
+            $answer = Read-Host "Enter username to change password"
 
             if ($answer -eq "n") {
                 break
@@ -488,7 +467,7 @@ function Add-Users {
 
         List-User;
         echo "`n"
-        Ask-Prompt "Enter a username to add"
+        $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
             break;
@@ -508,7 +487,7 @@ function Delete-Users {
 
             List-User;
             echo "`n"
-            Ask-Prompt "Enter a username to delete"
+            $answer = Read-Host "Enter a username to delete"
 
             if ($answer -eq "n") {
                 break;
@@ -536,7 +515,7 @@ function Add-Admins {
 
         List-Admin;
         echo "`n"
-        Ask-Prompt "Enter a username to add"
+        $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
             break;
@@ -555,7 +534,7 @@ function Delete-Admins {
 
         List-Admin;
         echo "`n"
-        Ask-Prompt "Enter a username to delete"
+        $answer = Read-Host "Enter a username to delete"
 
         if ($answer -eq "n") {
             break;
@@ -636,7 +615,7 @@ function Delete-Shares {
         Get-FileShare
         echo "`n"
 
-        Ask-Prompt "Choose a sketchy share to delete"
+        $answer = Read-Host "Choose a sketchy share to delete"
 
         if ($answer -eq "n") {
             Add-Progress "Sketchy shares deleted"
@@ -655,7 +634,7 @@ function View-Shares {
         Get-FileShare
         echo "`n"
 
-        Ask-Prompt "Choose a sketchy share to view"
+        $answer = Read-Host "Choose a sketchy share to view"
 
         if ($answer -eq "n") {
             Add-Progress "Sketchy shares viewed"
@@ -716,7 +695,10 @@ function Enable-UAC {
 # Install gucci programs
 function Install-Programs {
     Install-Choco
-    Check-Powershell5
+    if (($PSVersionTable.PSVersion).Major -ne "5") {
+        choco install powershell dotnet4.5
+        Restart-Computer -Force
+    }
 
     choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
 
@@ -808,7 +790,6 @@ pause
 # Actually start the script UwU
 
 # Setup Functions
-Set-Variables
 Import-Alias "$compfiles\lists\aliases.csv" -Force
 Copy-ToProfile
 
