@@ -31,7 +31,6 @@ function Get-OS {
     }
 }
 
-
 $global:desktop = "$env:userprofile\Desktop";
 $global:compfiles = "$desktop\Script";
 $global:scm = "$compfiles\scmbaselines";
