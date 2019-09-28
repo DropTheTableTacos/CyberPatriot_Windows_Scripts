@@ -48,20 +48,10 @@ $global:os = Get-OS
 
 # Install chocolatey
 function Install-Choco {
-    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
     choco feature enable -n allowGlobalConfirmation
     choco feature enable -n useFipsCompliantChecksums
-}
-
-# Powershell 5 check
-function Check-Powershell5 {
-    if (($PSVersionTable.PSVersion).Major -ne "5") {
-        Install-Choco
-        choco install powershell dotnet4.5
-
-        Restart-Computer -Force
-    }
 }
 
 # Get user list
@@ -92,11 +82,6 @@ function List-Programs {
     Start-Process C:\program_list.txt
 }
 
-# User prompt
-function Ask-Prompt {
-    return Read-Host $args
-}
-
 # Set logon message to username and password
 function Set-LogonMessage {
     # Change password
@@ -118,19 +103,19 @@ function Delete-TempTxt {
 
 # List services
 function List-Service {
-    $get_service = Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, `
+    $services = Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, `
     InstallDate, PathName;
 
     if ($args -in "running","stopped") {
-        $get_service | where state -match "$args";
+        $services | where state -match "$args";
         break;
     }
 
     if ($args -eq "auto","disabled","manual") {
-        $get_service | where startmode -match "$args";
+        $services | where startmode -match "$args";
         break;
     } else {
-        $get_service;
+        $services;
     }
 }
 
@@ -146,13 +131,12 @@ function List-Admin {
 
 # Add to progress log
 function Add-Progress {
-    echo "$args" >> "$desktop\progress.txt";
-    echo "`n" >> "$desktop\progress.txt";
+    Write-Output "$args`n" >> "$desktop\progress.txt";
 }
 
 # Import lists
 function Import-Lists {
-    $global:lists = Get-Content "$compfiles\lists\$args.txt"
+   return Get-Content "$compfiles\lists\$args.txt"
 }
 
 # README
@@ -262,9 +246,9 @@ function Import-SCM {
 
 # CISCAT Registry batch file
 function Run-CiscatRegistry {
-    Import-Lists ciscat_registry
+    $list = Import-Lists ciscat_registry
 
-    $lists.foreach{
+    $list.foreach{
         $_;
     }
 
@@ -277,7 +261,7 @@ function Disable-Services {
     while ($true) {
         cls
 
-        $answer = Ask-Prompt "Enter a service to exclude (use 'remote' for Remote Desktop)";
+        $answer = Read-Host "Enter a service to exclude (use 'remote' for Remote Desktop)";
 
         if ($answer -eq "n") {
             break;
@@ -291,9 +275,9 @@ function Disable-Services {
     }
 
     # Disable list of services
-    Import-Lists services
+    $services = Import-Lists services
 
-    $lists.foreach{
+    $services.foreach{
         Stop-Service $_;
         Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
     }
@@ -385,7 +369,7 @@ function Enable-Users {
 
             List-User
             echo "`n"
-            $answer = Ask-Prompt "Enter username to enable"
+            $answer = Read-Host "Enter username to enable"
 
             if ($answer -eq "n") {
                 break;
@@ -417,7 +401,7 @@ function Disable-Users {
 
             List-User
             echo "`n"
-            $answer = Ask-Prompt "Enter username to disable"
+            $answer = Read-Host "Enter username to disable"
 
             if ($answer -eq "n") {
                 break;
@@ -446,7 +430,7 @@ function Change-Passwords {
 
             echo "NOTE: Passwords are set to: abc123ABC123@@"
             echo "`n"
-            $answer = Ask-Prompt "Enter username to change password"
+            $answer = Read-Host "Enter username to change password"
 
             if ($answer -eq "n") {
                 break
@@ -483,7 +467,7 @@ function Add-Users {
 
         List-User;
         echo "`n"
-        $answer = Ask-Prompt "Enter a username to add"
+        $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
             break;
@@ -503,7 +487,7 @@ function Delete-Users {
 
             List-User;
             echo "`n"
-            $answer = Ask-Prompt "Enter a username to delete"
+            $answer = Read-Host "Enter a username to delete"
 
             if ($answer -eq "n") {
                 break;
@@ -531,7 +515,7 @@ function Add-Admins {
 
         List-Admin;
         echo "`n"
-        $answer = Ask-Prompt "Enter a username to add"
+        $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
             break;
@@ -550,7 +534,7 @@ function Delete-Admins {
 
         List-Admin;
         echo "`n"
-        $answer = Ask-Prompt "Enter a username to delete"
+        $answer = Read-Host "Enter a username to delete"
 
         if ($answer -eq "n") {
             break;
@@ -631,7 +615,7 @@ function Delete-Shares {
         Get-FileShare
         echo "`n"
 
-        $answer = Ask-Prompt "Choose a sketchy share to delete"
+        $answer = Read-Host "Choose a sketchy share to delete"
 
         if ($answer -eq "n") {
             Add-Progress "Sketchy shares deleted"
@@ -650,7 +634,7 @@ function View-Shares {
         Get-FileShare
         echo "`n"
 
-        $answer = Ask-Prompt "Choose a sketchy share to view"
+        $answer = Read-Host "Choose a sketchy share to view"
 
         if ($answer -eq "n") {
             Add-Progress "Sketchy shares viewed"
@@ -711,7 +695,10 @@ function Enable-UAC {
 # Install gucci programs
 function Install-Programs {
     Install-Choco
-    Check-Powershell5
+    if (($PSVersionTable.PSVersion).Major -ne "5") {
+        choco install powershell dotnet4.5
+        Restart-Computer -Force
+    }
 
     choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
 
