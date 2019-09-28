@@ -10,19 +10,41 @@ Start-Transcript "C:\log.txt"
 # Turn off command spam
 Set-PSDebug -Trace 0
 
-# Setup all variables
-function Set-Variables {
-    $global:desktop = "$env:userprofile\Desktop";
-    $global:compfiles = "$desktop\Script";
-    $global:scm = "$compfiles\scmbaselines";
-    $global:cmderbin = "$compfiles\cmder\bin";
-    $global:autousers = $false;
-    $global:pass = ConvertTo-SecureString "abc123ABC123@@" -AsPlainText -Force
-    [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
-    %systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
-    %programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%", `
-    [System.EnvironmentVariableTarget]::Machine);
+# Get OS name
+function Get-OS {
+    $os_name = (Get-CimInstance -ClassName CIM_OperatingSystem).Name;
+    $os_list = "Windows 7","Windows 8","Windows 10","Server 2008","Server 2016";
+    $os = "Unknown";
+
+    $os_list.foreach{
+        if ($os_name -match $_) {
+            $os = $_
+        }
+    }
+
+    # Change name to shorter, gooder version
+    if ($os -in "Windows 7","Windows 8","Windows 10") {
+        return $os.Remove(3,5)
+    }
+    if ($os -in "Server 2008","Server 2016") {
+        return $os.Remove(6,1)
+    }
 }
+
+
+$global:desktop = "$env:userprofile\Desktop";
+$global:compfiles = "$desktop\Script";
+$global:scm = "$compfiles\scmbaselines";
+$global:cmderbin = "$compfiles\cmder\bin";
+$global:autousers = $false;
+$global:pass = ConvertTo-SecureString "abc123ABC123@@" -AsPlainText -Force
+[System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
+%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
+%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%", `
+[System.EnvironmentVariableTarget]::Machine);
+
+$global:ver = (Get-WmiObject -Class Win32_OperatingSystem).Version
+$global:os = Get-OS
 
 # Install chocolatey
 function Install-Choco {
@@ -40,32 +62,6 @@ function Check-Powershell5 {
 
         Restart-Computer -Force
     }
-}
-
-# Get OS name
-function Get-OS {
-    $os_name = (Get-CimInstance -ClassName CIM_OperatingSystem).Name;
-    $os_list = "Windows 7","Windows 8","Windows 10","Server 2008","Server 2016";
-    $os = "Unknown";
-
-    $os_list.foreach{
-        if ($os_name -match $_) {
-            $os = $_
-        }
-    }
-
-    # Change name to shorter, gooder version
-    if ($os -in "Windows 7","Windows 8","Windows 10") {
-        $global:os = $os.Remove(3,5)
-    }
-    if ($os -in "Server 2008","Server 2016") {
-        $global:os = $os.Remove(6,1)
-    }
-}
-
-# Get version
-function Get-Ver {
-    $global:ver = (Get-WmiObject -Class Win32_OperatingSystem).Version
 }
 
 # Get user list
@@ -98,7 +94,7 @@ function List-Programs {
 
 # User prompt
 function Ask-Prompt {
-    $global:answer = Read-Host $args
+    return Read-Host $args
 }
 
 # Set logon message to username and password
@@ -232,7 +228,6 @@ function Set-FirefoxConfig {
 
 # SCM Baselines
 function Import-SCM {
-    Get-Ver
     Get-OS
 
     cd "$cmderbin"
@@ -282,7 +277,7 @@ function Disable-Services {
     while ($true) {
         cls
 
-        Ask-Prompt "Enter a service to exclude (use 'remote' for Remote Desktop)";
+        $answer = Ask-Prompt "Enter a service to exclude (use 'remote' for Remote Desktop)";
 
         if ($answer -eq "n") {
             break;
@@ -390,7 +385,7 @@ function Enable-Users {
 
             List-User
             echo "`n"
-            Ask-Prompt "Enter username to enable"
+            $answer = Ask-Prompt "Enter username to enable"
 
             if ($answer -eq "n") {
                 break;
@@ -422,7 +417,7 @@ function Disable-Users {
 
             List-User
             echo "`n"
-            Ask-Prompt "Enter username to disable"
+            $answer = Ask-Prompt "Enter username to disable"
 
             if ($answer -eq "n") {
                 break;
@@ -451,7 +446,7 @@ function Change-Passwords {
 
             echo "NOTE: Passwords are set to: abc123ABC123@@"
             echo "`n"
-            Ask-Prompt "Enter username to change password"
+            $answer = Ask-Prompt "Enter username to change password"
 
             if ($answer -eq "n") {
                 break
@@ -488,7 +483,7 @@ function Add-Users {
 
         List-User;
         echo "`n"
-        Ask-Prompt "Enter a username to add"
+        $answer = Ask-Prompt "Enter a username to add"
 
         if ($answer -eq "n") {
             break;
@@ -508,7 +503,7 @@ function Delete-Users {
 
             List-User;
             echo "`n"
-            Ask-Prompt "Enter a username to delete"
+            $answer = Ask-Prompt "Enter a username to delete"
 
             if ($answer -eq "n") {
                 break;
@@ -536,7 +531,7 @@ function Add-Admins {
 
         List-Admin;
         echo "`n"
-        Ask-Prompt "Enter a username to add"
+        $answer = Ask-Prompt "Enter a username to add"
 
         if ($answer -eq "n") {
             break;
@@ -555,7 +550,7 @@ function Delete-Admins {
 
         List-Admin;
         echo "`n"
-        Ask-Prompt "Enter a username to delete"
+        $answer = Ask-Prompt "Enter a username to delete"
 
         if ($answer -eq "n") {
             break;
@@ -636,7 +631,7 @@ function Delete-Shares {
         Get-FileShare
         echo "`n"
 
-        Ask-Prompt "Choose a sketchy share to delete"
+        $answer = Ask-Prompt "Choose a sketchy share to delete"
 
         if ($answer -eq "n") {
             Add-Progress "Sketchy shares deleted"
@@ -655,7 +650,7 @@ function View-Shares {
         Get-FileShare
         echo "`n"
 
-        Ask-Prompt "Choose a sketchy share to view"
+        $answer = Ask-Prompt "Choose a sketchy share to view"
 
         if ($answer -eq "n") {
             Add-Progress "Sketchy shares viewed"
@@ -808,7 +803,6 @@ pause
 # Actually start the script UwU
 
 # Setup Functions
-Set-Variables
 Import-Alias "$compfiles\lists\aliases.csv" -Force
 Copy-ToProfile
 
