@@ -14,7 +14,7 @@ Set-PSDebug -Trace 0
 Install-Module Carbon
 
 # Get windows version
-function Get-Ver {
+function Get-SOVer {
     $ver = (Get-WmiObject -Class Win32_OperatingSystem).Version
 
     if ($ver -eq "10.0.10240") {return "1507"}
@@ -28,7 +28,7 @@ function Get-Ver {
 }
 
 # Get OS name
-function Get-OS {
+function Get-SOOS {
     $os_name = (Get-CimInstance -ClassName CIM_OperatingSystem).Name;
     $os_list = "Windows 7","Windows 8","Windows 10","Server 2008","Server 2016";
 
@@ -48,12 +48,12 @@ function Get-OS {
 }
 
 # Import lists
-function Import-Lists {
-   return Get-Content "$compfiles\lists\$args.txt"
+function Import-SOLists {
+    return Get-Content "$compfiles\lists\$args.txt"
 }
 
 # Get user list
-function Get-BadUsers {
+function Get-SOBadUsers {
     $goodusers = Get-Content "$compfiles\lists\good_users.txt"
 
     # Add readme users to file if needed
@@ -69,6 +69,39 @@ function Get-BadUsers {
     }
 }
 
+# Set logon message to username and password
+function Set-SOLogonMessage {
+    # Change password
+    Set-LocalUser $env:username -Password $pass
+
+    # Set logon message
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticecaption `
+    PropertyType String -Value "Username: $env:username" -Force -InformationAction SilentlyContinue
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticetext `
+    PropertyType String -Value "Password: abc123ABC123@@" -Force -InformationAction SilentlyContinue
+}
+
+# Add to progress log
+function Add-SOProgress {
+    Write-Output "$args`n" >> "$desktop\progress.txt";
+}
+
+# Delete leftover text files
+function Delete-SOTempTxt {
+    cd C:\
+    Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt, `
+    userdiff.txt -Force -ErrorAction SilentlyContinue;
+}
+
+# Import aliases
+function Import-SOAlias {
+    $functions = Import-SOLists functions
+
+    $functions.foreach{
+        Set-Alias -Name ($_.split("(")[1]).split(")")[0] -Value $_.split(" ")[0] -Force
+    }
+}
+
 # Variables lol
 $global:desktop = "$env:userprofile\Desktop";
 $global:compfiles = "$desktop\Script";
@@ -79,11 +112,11 @@ $global:pass = ConvertTo-SecureString "abc123ABC123@@" -AsPlainText -Force
 %systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
 %programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%", `
 [System.EnvironmentVariableTarget]::Machine);
-$global:ver = Get-Ver
-$global:os = Get-OS
-$global:users_admins = Get-CUser
-$global:users = $users_admins | where {$_.Name -notin (Import-Lists builtin_users)}
-$global:badusers = Get-BadUsers
+$global:ver = Get-SOVer
+$global:os = Get-SOOS
+$global:users = Get-CUser
+$global:users_nobuiltin = $users | where {$_.Name -notin (Import-SOLists builtin_users)}
+$global:badusers = Get-SOBadUsers
 $global:ip = Get-CIPAddress | where {$_.IPAddressToString -match "192.168"} | select IPAddressToString `
 | Format-Table -HideTableHeaders
 
@@ -105,7 +138,7 @@ function Import-SCT {
         .\LGPO /g "$sct\$os"
     }
 
-    Add-Progress "SCT Baselines imported";
+    Add-SOProgress "SCT Baselines imported";
 }
 
 # README
@@ -119,7 +152,7 @@ function Delete-Users {
         while ($true) {
             cls;
 
-            $users_admins;
+            List-Users nobuiltin
             echo "`n"
             $answer = Read-Host "Enter a username to delete"
 
@@ -130,13 +163,13 @@ function Delete-Users {
             Remove-LocalUser $answer
         }
 
-        Add-Progress "User(s) have been deleted"
+        Add-SOProgress "User(s) have been deleted"
     } else {
         $badusers.foreach{
             Remove-LocalUser $_
         }
 
-        Add-Progress "Unauthorized user(s) have been deleted"
+        Add-SOProgress "Unauthorized user(s) have been deleted"
     }
 }
 
@@ -145,7 +178,7 @@ function Delete-Admins {
     while ($true) {
         cls;
 
-        List-Admin;
+        List-Admins;
         echo "`n"
         $answer = Read-Host "Enter a username to delete"
 
@@ -156,7 +189,7 @@ function Delete-Admins {
         Remove-LocalGroupMember Administrators $answer
     }
 
-    Add-Progress "Admin(s) have been deleted"
+    Add-SOProgress "Admin(s) have been deleted"
 }
 
 # Disable services
@@ -179,7 +212,7 @@ function Disable-Services {
     }
 
     # Disable list of services
-    $services = Import-Lists services
+    $services = Import-SOLists services
 
     $services.foreach{
         Stop-Service $_;
@@ -202,52 +235,27 @@ function Disable-Services {
 	Set-Service wscsvc -startuptype Automatic;
     Start-Service wscsvc;
 
-    Add-Progress "Lame services disabled";
+    Add-SOProgress "Lame services disabled";
 }
 
-# Add Admins
-function Add-Admins {
-    while ($true) {
-        cls;
-
-        List-Admin;
-        echo "`n"
-        $answer = Read-Host "Enter a username to add"
-
-        if ($answer -eq "n") {
-            break;
-        }
-
-        Add-CGroupMember Administrators $answer
+# Check forensics questions
+function Open-Forensics {
+    (Get-ChildItem "$desktop\Forensics Question *.txt").foreach{
+        Start-Process $_;
     }
 
-    Add-Progress "Admin(s) have been added"
+    Add-SOProgress "Forensics Questions checked out"
 }
 
-# Add to progress log
-function Add-Progress {
-    Write-Output "$args`n" >> "$desktop\progress.txt";
-}
+# Delete Media files
+function Delete-MediaFiles {
+    Import-SOLists media_extensions
 
-# Add users
-function Add-Users {
-    Open-Readme
-
-    while ($true) {
-        cls;
-
-        $users_admins;
-        echo "`n"
-        $answer = Read-Host "Enter a username to add"
-
-        if ($answer -eq "n") {
-            break;
-        }
-
-        New-LocalUser $answer -Password $pass
+    $lists.foreach{
+        Remove-Item "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
     }
 
-    Add-Progress "User(s) have been added"
+    Add-SOProgress "Media files deleted"
 }
 
 # Change passwords
@@ -256,7 +264,7 @@ function Change-Passwords {
         while ($true) {
             cls
 
-            $users_admins
+            List-Users
             echo "`n"
 
             echo "NOTE: Passwords are set to: abc123ABC123@@"
@@ -270,95 +278,22 @@ function Change-Passwords {
             Set-LocalUser $answer -Password $pass
         }
     } else {
-        $users_admins.foreach{
+        $users.foreach{
             Set-LocalUser $_ -Password $pass
         }
 
-        Add-Progress "All passwords changed to a gamer secure password"
+        Add-SOProgress "All passwords changed to a gamer secure password"
 
         echo "All passwords changed to: abc123ABC123@@"
     }
 }
 
-# Hosts file
-function Clear-Hosts {
-    Copy-Item "$compfiles\hosts" "$env:systemroot\system32\drivers\etc\hosts" -Force
+# Enable Firewall and template
+function Enable-Firewall {
+    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True;
+    # Put command to import firewall template here
 
-    Add-Progress "Hosts file replaced"
-}
-
-# Copy script to profile
-function Copy-ToProfile {
-    Copy-Item "$env:userprofile\Desktop\Script\script.ps1" `
-    "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
-}
-
-# Delete applocker rules
-function Delete-AppLocker {
-    Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
-
-    Add-Progress "AppLocker policies cleared"
-}
-
-# Delete Media files
-function Delete-MediaFiles {
-    Import-Lists media_extensions
-
-    $lists.foreach{
-        Remove-Item "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
-    }
-
-    Add-Progress "Media files deleted"
-}
-
-# Remove programs
-function Delete-Program {
-    Add-Progress "Sketchy programs removed"
-}
-
-# Delete shares
-function Delete-Shares {
-    while ($true) {
-        cls;
-
-        Get-FileShare
-        echo "`n"
-
-        $answer = Read-Host "Choose a sketchy share to delete"
-
-        if ($answer -eq "n") {
-            Add-Progress "Sketchy shares deleted"
-            break;
-        }
-
-        Remove-FileShare $_;
-    }
-}
-
-# Delete leftover text files
-function Delete-TempTxt {
-    cd C:\
-    Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt, `
-    userdiff.txt -Force -ErrorAction SilentlyContinue;
-}
-
-# Disable features
-function Disable-Features {
-    $feature_list = Get-Content
-
-    $feature_list.foreach{
-        Disable-WindowsOptionalFeature -Online -FeatureName $_;
-    }
-
-    Add-Progress "Disabled lame features"
-}
-
-# Disable remote desktop
-function Disable-RemoteDesktop {
-    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" `
-    -PropertyType DWord -Value "1" -Force
-
-    Add-Progress "Remote Desktop disabled"
+    Add-SOProgress "Firewall enabled and template applied"
 }
 
 # Disable Users
@@ -369,7 +304,7 @@ function Disable-Users {
         while ($true) {
             cls
 
-            $users_admins
+            List-Users
             echo "`n"
             $answer = Read-Host "Enter username to disable"
 
@@ -386,156 +321,10 @@ function Disable-Users {
             Disable-LocalUser $_ -ErrorAction SilentlyContinue
         }
 
-        Add-Progress "Built-in Admin and Guest disabled"
+        Add-SOProgress "Built-in Admin and Guest disabled"
 
         echo "Built-in Admin and Guest disabled."
     }
-}
-
-# Enable Firewall and template
-function Enable-Firewall {
-    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True;
-    # Put command to import firewall template here
-
-    Add-Progress "Firewall enabled and template applied"
-}
-
-# Enable internet explorer
-function Enable-InternetExplorer {
-    # Enable IE
-    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all `
-    -ErrorAction SilentlyContinue
-    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all `
-    -ErrorAction SilentlyContinue
-
-    Add-Progress "Enabled Internet Explorer"
-}
-
-# enable uac because that would be a good idea though its already enabled by default but whatever frick off
-function Enable-UAC {
-    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" `
-    -PropertyType DWord -Value "1" -Force
-
-    Add-Progress "UAC Enabled"
-}
-
-# Activate/Disable users
-function Enable-Users {
-    if ($args -in "man","manual","m") {
-        Open-Readme
-
-        while ($true) {
-            cls
-
-            $users_admins
-            echo "`n"
-            $answer = Read-Host "Enter username to enable"
-
-            if ($answer -eq "n") {
-                break;
-            }
-
-            Enable-LocalUser $answer
-        }
-    } else {
-        $users.foreach{
-            Enable-LocalUser $_;
-        }
-
-        Add-Progress "All users (except built-in Admin and Guest) enabled"
-
-        echo "All users (except built-in Admin and Guest) enabled."
-    }
-}
-
-# Find media files
-function Find-MediaFiles {
-    Import-Lists media_extensions
-
-    $lists.foreach{
-        $mediafiles = Get-ChildItem "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
-    }
-
-    $mediafiles >> "C:\mediafiles.txt"
-    Start-Process "C:\mediafiles.txt"
-
-    Add-Progress "Searched for media files"
-}
-
-# Find prohibited files
-function Find-ProhibitedFiles {
-       # Put stuff here eventually
-}
-
-# Prohibited users' files
-function Find-ProhibitedUserFiles {
-    $bad_users.foreach{
-        $f = Get-ChildItem C:\* -Recurse | Get-Acl
-
-        if ($f.Owner -eq "$_") {
-            echo $f.Path
-        }
-    }
-}
-
-# Run Nessus scans
-function Run-Nessus {
-    $ip
-    echo "Run Nessus scans, ya brainlet"
-    pause
-
-    Add-Progress "Nessus scan theoretically run?"
-}
-
-# Install chocolatey
-function Install-Choco {
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
-    choco feature enable -n allowGlobalConfirmation
-    choco feature enable -n useFipsCompliantChecksums
-}
-
-# Get program list
-function List-Programs {
-    $program_list = Get-WmiObject -Class Win32_Product | select name, installsource, installlocation, version, `
-    installdate, vendor | format-table -AutoSize
-    $program_list > C:\program_list.txt
-    Start-Process C:\program_list.txt
-}
-
-# Set logon message to username and password
-function Set-LogonMessage {
-    # Change password
-    Set-LocalUser $env:username -Password $pass
-
-    # Set logon message
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticecaption `
-    PropertyType String -Value "Username: $env:username" -Force -InformationAction SilentlyContinue
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticetext `
-    PropertyType String -Value "Password: abc123ABC123@@" -Force -InformationAction SilentlyContinue
-}
-
-# List services
-function List-Service {
-    $services = Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, `
-    InstallDate, PathName;
-
-    if ($args -in "running","stopped") {
-        $services | where state -match "$args";
-        break;
-    }
-
-    if ($args -eq "auto","disabled","manual") {
-        $services | where startmode -match "$args";
-        break;
-    } else {
-        $services;
-    }
-}
-
-# List admins
-function List-Admin {
-    Get-LocalGroupMember -Group Administrators | select Name | format-wide;
 }
 
 # Windows Update
@@ -565,60 +354,41 @@ function Update-Windows {
 
     pause
 
-    Add-Progress "Windows Update configured and started";
+    Add-SOProgress "Windows Update configured and started";
 }
 
-# Firefox config
-function Set-FirefoxConfig {
-    # 64-bit
-    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles\Mozilla Firefox\browser\override.ini" `
-    -Force -ErrorAction SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles\Mozilla Firefox\mozilla.cfg" -Force `
-    -ErrorAction SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\local-settings.js" `
-    "$env:programfiles\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction SilentlyContinue
+# Install gucci programs
+function Install-Programs {
+    if ((Test-Path $env:programdata\chocolatey) -eq $False) {
+        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-    # 32-bit
-    Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles(x86)\Mozilla Firefox\browser\override.ini" `
-    -Force -ErrorAction SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles(x86)\Mozilla Firefox\mozilla.cfg" -Force `
-    -ErrorAction SilentlyContinue
-    Copy-Item "$compfiles\firefox_config\local-settings.js" `
-    "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction SilentlyContinue
-
-    Add-Progress "Firefox config files copied"
-}
-
-# CISCAT Registry batch file
-function Run-CiscatRegistry {
-    $list = Import-Lists ciscat_registry
-
-    $list.foreach{
-        $_;
+        choco feature enable -n allowGlobalConfirmation
+        choco feature enable -n useFipsCompliantChecksums
     }
 
-    Add-Progress "CISCAT Registry batch file run";
+    choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
+
+    Add-SOProgress "Good security programs installed"
 }
 
 # Import INF file
 function Import-Inf {
-    Get-OS
     cd "$cmderbin"
 
     # Good inf
     if ($args -eq "good") {
         .\LGPO /s "$compfiles\infs\${os}GoodInf.inf";
-        Set-LogonMessage
+        Set-SOLogonMessage
 
-        Add-Progress "Good INF applied"
+        Add-SOProgress "Good INF applied"
     }
 
     # Bad inf
     if ($args -eq "bad") {
         .\LGPO /s "$compfiles\infs\${os}BadInf.inf";
-        Set-LogonMessage
+        Set-SOLogonMessage
 
-        Add-Progress "Bad INF applied"
+        Add-SOProgress "Bad INF applied"
     } else {
         echo "Please specify 'good' or 'bad' INF.";
         break;
@@ -627,34 +397,35 @@ function Import-Inf {
 
 # Import Audit policy
 function Import-Audit {
-    Get-OS
     cd "$cmderbin"
 
     # Good
     if ($args -eq "good") {
         .\LGPO /a "$compfiles\audit_templates\${os}AllAudit.csv"
 
-        Add-Progress "Good audit policy applied";
+        Add-SOProgress "Good audit policy applied";
     }
 
     # Bad inf
     if ($args -eq "bad") {
         .\LGPO /a "$compfiles\audit_templates\${os}NoAudit.csv"
 
-        Add-Progress "Bad audit policy applied";
+        Add-SOProgress "Bad audit policy applied";
     } else {
         echo "Please specify 'good' or 'bad' template.";
         break;
     }
 }
 
-# Check forensics questions
-function Open-Forensics {
-    (Get-ChildItem "$desktop\Forensics Question *.txt").foreach{
-        Start-Process $_;
+# Disable features
+function Disable-Features {
+    $feature_list = Get-Content
+
+    $feature_list.foreach{
+        Disable-WindowsOptionalFeature -Online -FeatureName $_;
     }
 
-    Add-Progress "Forensics Questions checked out"
+    Add-SOProgress "Disabled lame features"
 }
 
 # View file shares
@@ -668,12 +439,44 @@ function View-Shares {
         $answer = Read-Host "Choose a sketchy share to view"
 
         if ($answer -eq "n") {
-            Add-Progress "Sketchy shares viewed"
+            Add-SOProgress "Sketchy shares viewed"
             break;
         }
 
         explorer "\\$env:computername\$_";
     }
+}
+
+# Delete shares
+function Delete-Shares {
+    while ($true) {
+        cls;
+
+        Get-FileShare
+        echo "`n"
+
+        $answer = Read-Host "Choose a sketchy share to delete"
+
+        if ($answer -eq "n") {
+            Add-SOProgress "Sketchy shares deleted"
+            break;
+        }
+
+        Remove-FileShare $_;
+    }
+}
+
+# Remove programs
+function Delete-Program {
+    Add-SOProgress "Sketchy programs removed"
+}
+
+# Disable remote desktop
+function Disable-RemoteDesktop {
+    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" `
+    -PropertyType DWord -Value "1" -Force
+
+    Add-SOProgress "Remote Desktop disabled"
 }
 
 # Secure screensaver with password gamer
@@ -688,37 +491,53 @@ function Secure-Screensaver {
     New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop" `
     -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
 
-    Add-Progress "Screensaver secured with password"
+    Add-SOProgress "Screensaver secured with password"
 }
 
-# List functions
-function List-Functions {
-    Import-Lists functions
-    $lists.foreach{
-        $alias = (Get-Alias -Definition $_).Name
-        echo "$_ ($alias)"
+# Hosts file
+function Clear-Hosts {
+    Reset-CHostsFile
+
+    Add-SOProgress "Hosts file cleared"
+}
+
+# Firefox config
+function Set-FirefoxConfig {
+    # 64-bit
+    if ((Test-Path "$env:programfiles\Mozilla Firefox") -eq $True) {
+        Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles\Mozilla Firefox\browser\override.ini" `
+        -Force
+        Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles\Mozilla Firefox\mozilla.cfg" -Force
+        Copy-Item "$compfiles\firefox_config\local-settings.js" `
+        "$env:programfiles\Mozilla Firefox\defaults\pref\local-settings.js" -Force
+    } else {
+        # 32 bit
+        Copy-Item "$compfiles\firefox_config\override.ini" `
+        "$env:programfiles(x86)\Mozilla Firefox\browser\override.ini" -Force
+        Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles(x86)\Mozilla Firefox\mozilla.cfg" -Force
+        Copy-Item "$compfiles\firefox_config\local-settings.js" `
+        "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\local-settings.js" -Force
+    }
+
+    Add-SOProgress "Firefox config files copied"
+}
+
+# Prohibited users' files
+function Find-ProhibitedUserFiles {
+    $badusers.foreach{
+        $f = Get-ChildItem C:\* -Recurse | Get-Acl
+
+        if ($f.Owner -eq "$_") {
+            echo $f.Path
+        }
     }
 }
 
-# Install gucci programs
-function Install-Programs {
-    Install-Choco
-
-    choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
-
-    Add-Progress "Good security programs installed"
-}
-
-# IE registry gamers
-function Import-IERegistry {
-    Import-Lists ie_registry
-    $ie_reg = $lists | Select-String -NotMatch "#"
-
-    $ie_reg.foreach{
-        $_
+# Delete user folders of bad users
+function Delete-BadUserFolders {
+    $badusers.foreach{
+        Remove-Item C:\Users\$_ -Recurse -Force
     }
-
-    Add-Progress "Set CISCAT Internet Explorer registry settings"
 }
 
 # Update programs
@@ -730,6 +549,20 @@ function Update-Programs {
     pause
 }
 
+# Run Nessus scans
+function Run-Nessus {
+    $ip
+    echo "Run Nessus scans, ya brainlet"
+    pause
+
+    Add-SOProgress "Nessus scan theoretically run?"
+}
+
+# Find prohibited files
+function Find-ProhibitedFiles {
+       # Put stuff here eventually
+}
+
 # Run Sysinternals
 function Run-Sysinternals {
     $sysinternals = "autoruns","procexp","tcpview"
@@ -739,10 +572,86 @@ function Run-Sysinternals {
     }
 }
 
+# CISCAT Registry batch file
+function Run-CiscatRegistry {
+    $list = Import-SOLists ciscat_registry
+
+    $list.foreach{
+        $_;
+    }
+
+    Add-SOProgress "CISCAT Registry batch file run";
+}
+
+# IE registry gamers
+function Import-IERegistry {
+    Import-SOLists ie_registry
+    $ie_reg = $lists | Select-String -NotMatch "#"
+
+    $ie_reg.foreach{
+        $_
+    }
+
+    Add-SOProgress "Set CISCAT Internet Explorer registry settings"
+}
+
+# Enable internet explorer
+function Enable-InternetExplorer {
+    # Enable IE
+    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all `
+    -ErrorAction SilentlyContinue
+    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all `
+    -ErrorAction SilentlyContinue
+
+    Add-SOProgress "Enabled Internet Explorer"
+}
+
+# Delete applocker rules
+function Delete-AppLocker {
+    Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
+
+    Add-SOProgress "AppLocker policies cleared"
+}
+
+# Activate/Disable users
+function Enable-Users {
+    if ($args -in "man","manual","m") {
+        Open-Readme
+
+        while ($true) {
+            cls
+
+            List-Users nobuiltin
+            echo "`n"
+            $answer = Read-Host "Enter username to enable"
+
+            if ($answer -eq "n") {
+                break;
+            }
+
+            Enable-LocalUser $answer
+        }
+    } else {
+        $users_nobuiltin.foreach{
+            Enable-LocalUser $_;
+        }
+
+        Add-SOProgress "All users (except built-in Admin and Guest) enabled"
+
+        echo "All users (except built-in Admin and Guest) enabled."
+    }
+}
+
+# enable uac because that would be a good idea though its already enabled by default but whatever frick off
+function Enable-UAC {
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" `
+    -PropertyType DWord -Value "1" -Force
+
+    Add-SOProgress "UAC Enabled"
+}
+
 # Cat-Lite scanner
 function Run-CatLite {
-    Get-OS
-
     if ($os -in "Win10") {
         Start-Process "$cmderbin\cis-cat-lite\CISCAT.jar"
     } else {
@@ -751,17 +660,115 @@ function Run-CatLite {
     }
 }
 
+# Add Admins
+function Add-Admins {
+    while ($true) {
+        cls;
+
+        List-Admins;
+        echo "`n"
+        $answer = Read-Host "Enter a username to add"
+
+        if ($answer -eq "n") {
+            break;
+        }
+
+        Add-CGroupMember Administrators $answer
+    }
+
+    Add-SOProgress "Admin(s) have been added"
+}
+
+# Add users
+function Add-Users {
+    Open-Readme
+
+    while ($true) {
+        cls;
+
+        List-Users
+        echo "`n"
+        $answer = Read-Host "Enter a username to add"
+
+        if ($answer -eq "n") {
+            break;
+        }
+
+        New-LocalUser $answer -Password $pass
+    }
+
+    Add-SOProgress "User(s) have been added"
+}
+
+# Copy script to profile
+function Copy-ToProfile {
+    Copy-Item "$env:userprofile\Desktop\Script\script.ps1" `
+    "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+}
+
+# Find media files
+function Find-MediaFiles {
+    Import-SOLists media_extensions
+
+    $lists.foreach{
+        $mediafiles = Get-ChildItem "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
+    }
+
+    $mediafiles >> "C:\mediafiles.txt"
+    Start-Process "C:\mediafiles.txt"
+
+    Add-SOProgress "Searched for media files"
+}
+
+# Get program list
+function List-Programs {
+    Get-CProgramInstallInfo
+}
+
+# List services
+function List-Service {
+    $services = Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, `
+    InstallDate, PathName;
+
+    if ($args -in "running","stopped") {
+        $services | where state -match "$args";
+        break;
+    }
+
+    if ($args -eq "auto","disabled","manual") {
+        $services | where startmode -match "$args";
+        break;
+    } else {
+        $services;
+    }
+}
+
+# List admins
+function List-Admins {
+    $users | where {(test-groupmember Administrators $_) -eq $true} | select name
+}
+
+# List users
+function List-Users {
+    if ($args -eq "nobuiltin") {
+        $users_nobuiltin | select name | format-wide
+        break
+    } else {
+        $users | select name | format-wide
+    }
+}
+
+# List functions
+function List-Functions {
+    $functions = Import-SOLists functions
+
+    $functions | where {$_ -notmatch "-SO"} | Format-Wide
+}
+
 # Run script easily function
 function Run-Script {
     Copy-ToProfile
     . $profile
-}
-
-# Delete user folders of bad users
-function Delete-BadUserFolders {
-    $badusers.foreach{
-        Remove-Item C:\Users\$_ -Recurse -Force
-    }
 }
 
 # Intro screen bois
@@ -790,7 +797,6 @@ pause
 # Actually start the script UwU
 
 # Setup Functions
-Import-Alias "$compfiles\lists\aliases.csv" -Force
 Copy-ToProfile
 
 # List functions gamer

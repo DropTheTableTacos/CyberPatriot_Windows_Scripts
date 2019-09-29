@@ -1,54 +1,53 @@
-Set-Variables
-Install-Choco
-Check-Powershell5
-Get-OS
-Get-Ver
-Get-UserList
-List-Programs
-Ask-Prompt
-Set-LogonMessage
-Remove-TempTxt
-List-Service
-List-User
-List-Admin
-Add-Progress
-Import-Lists
-Open-Readme
-Update-Windows
-Enable-Firewall
-Clear-Hosts
-Set-FirefoxConfig
-Import-SCM
-Run-CiscatRegistry
-Disable-Services
-Import-Inf
-Import-Audit
-Get-Ip
-Enable-Users
-Disable-Users
-Change-Passwords
-Find-ProhibitedUserFiles
-Add-Users
-Remove-Users
-Add-Admins
-Remove-Admins
-Enable-InternetExplorer
-Disable-Features
-Remove-Program
-Open-Forensics
-Remove-MediaFiles
-Find-MediaFiles
-Remove-Shares
-View-Shares
-Secure-Screensaver
-Disable-RemoteDesktop
-Delete-AppLocker
-Enable-UAC
-Install-Programs
-Import-IERegistry
-Update-Programs
-Find-ProhibitedFiles
-Run-Sysinternals
-Run-CatLite
-Copy-ToProfile
-Import-Aliases
+Get-SOVer (gv)
+Get-SOOS (gos)
+Import-SOLists (il)
+Get-SOBadUsers (gbu)
+Set-SOLogonMessage (slm)
+Add-SOProgress (ap)
+Delete-SOTempTxt (dtt)
+Import-SOAlias (ialias)
+Import-SCT (isct)
+Open-Readme (or)
+Delete-Users (delu)
+Delete-Admins (da)
+Disable-Services (dserv)
+Open-Forensics (of)
+Delete-MediaFiles (dmf)
+Change-Passwords (cp)
+Enable-Firewall (ef)
+Disable-Users (disu)
+Update-Windows (uw)
+Install-Programs (ip)
+Import-Inf (iinf)
+Import-Audit (iaud)
+Disable-Features (df)
+View-Shares (vs)
+Delete-Shares (dshare)
+Delete-Program (dp)
+Disable-RemoteDesktop (drd)
+Secure-Screensaver (ss)
+Clear-Hosts (ch)
+Set-FirefoxConfig (sffc)
+Find-ProhibitedUserFiles (fpuf)
+Delete-BadUserFolders (dbuf)
+Update-Programs (up)
+Run-Nessus (rn)
+Find-ProhibitedFiles (fpf)
+Run-Sysinternals (rsys)
+Run-CiscatRegistry (rccr)
+Import-IERegistry (iier)
+Enable-InternetExplorer (eie)
+Delete-AppLocker (dapp)
+Enable-Users (eu)
+Enable-UAC (euac)
+Run-CatLite (rcl)
+Add-Admins (aa)
+Add-Users (au)
+Copy-ToProfile (ctp)
+Find-MediaFiles (fmf)
+List-Programs (lp)
+List-Service (ls)
+List-Admins (la)
+List-Users (lu)
+List-Functions (lf)
+Run-Script (rs)
