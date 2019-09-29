@@ -10,104 +10,134 @@ Start-Transcript "C:\log.txt"
 # Turn off command spam
 Set-PSDebug -Trace 0
 
+# Install epic carbon module
+Install-Module Carbon
+
+# Get windows version
+function Get-Ver {
+    $ver = (Get-WmiObject -Class Win32_OperatingSystem).Version
+
+    if ($ver -eq "10.0.10240") {return "1507"}
+    if ($ver -eq "10.0.10586") {return "1511"}
+    if ($ver -eq "10.0.14393") {return "1607"}
+    if ($ver -eq "10.0.15063") {return "1703"}
+    if ($ver -eq "10.0.16299") {return "1709"}
+    if ($ver -eq "10.0.17134") {return "1803"}
+    if ($ver -eq "10.0.17763") {return "1809"}
+    if ($ver -eq "10.0.18362") {return "1903"}
+}
+
+# Get OS name
+function Get-OS {
+    $os_name = (Get-CimInstance -ClassName CIM_OperatingSystem).Name;
+    $os_list = "Windows 7","Windows 8","Windows 10","Server 2008","Server 2016";
+
+    $os_list.foreach{
+        if ($os_name -match $_) {
+            $os = $_
+        }
+    }
+
+    # Change name to shorter, gooder version
+    if ($os -in "Windows 7","Windows 8","Windows 10") {
+        return $os.Remove(3,5)
+    }
+    if ($os -in "Server 2008","Server 2016") {
+        return $os.Remove(6,1)
+    }
+}
+
+# Import lists
+function Import-Lists {
+   return Get-Content "$compfiles\lists\$args.txt"
+}
+
+# Get user list
+function Get-BadUsers {
+    $goodusers = Get-Content "$compfiles\lists\good_users.txt"
+
+    # Add readme users to file if needed
+    if ($goodusers -eq $null) {
+        echo "Put readme users in this text file" >> "$compfiles\lists\good_users.txt"
+        start-process "$compfiles\lists\good_users.txt"
+        pause
+    }
+
+    # Compare and get bad users
+    (Compare-Object $goodusers $users).foreach{
+        return $_.InputObject
+    }
+}
+
 # Variables lol
 $global:desktop = "$env:userprofile\Desktop";
 $global:compfiles = "$desktop\Script";
-$global:scm = "$compfiles\scmbaselines";
+$global:sct = "$compfiles\sctbaselines";
 $global:cmderbin = "$compfiles\cmder\bin";
-$global:autousers = $false;
 $global:pass = ConvertTo-SecureString "abc123ABC123@@" -AsPlainText -Force
 [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
 %systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
-%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%scm%;%desktop%;%cmderbin%", `
+%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%", `
 [System.EnvironmentVariableTarget]::Machine);
-$global:ver = (Get-WmiObject -Class Win32_OperatingSystem).Version
+$global:ver = Get-Ver
 $global:os = Get-OS
+$global:users_admins = Get-CUser
+$global:users = $users_admins | where {$_.Name -notin (Import-Lists builtin_users)}
+$global:badusers = Get-BadUsers
+$global:ip = Get-CIPAddress | where {$_.IPAddressToString -match "192.168"} | select IPAddressToString `
+| Format-Table -HideTableHeaders
 
-# Add Admins
-function Add-Admins {
-    while ($true) {
-        cls;
+# SCT Baselines
+function Import-SCT {
+    cd "$cmderbin"
 
-        List-Admin;
-        echo "`n"
-        $answer = Read-Host "Enter a username to add"
+    # IE Baselines
+    .\LGPO /g "$sct\IE11"
 
-        if ($answer -eq "n") {
-            break;
-        }
-
-        Add-LocalGroupMember Administrators $answer
+    if ($os -eq "Server2008") {
+        .\LGPO /g "$sct\IE9"
     }
 
-    Add-Progress "Admin(s) have been added"
-}
-
-# Add to progress log
-function Add-Progress {
-    Write-Output "$args`n" >> "$desktop\progress.txt";
-}
-
-# Add users
-function Add-Users {
-    while ($true) {
-        cls;
-
-        List-User;
-        echo "`n"
-        $answer = Read-Host "Enter a username to add"
-
-        if ($answer -eq "n") {
-            break;
-        }
-
-        New-LocalUser $answer -Password $pass
+    # OS baselines
+    if ($os -eq "Win10") {
+        .\LGPO /g "$sct\Win10_$ver"
+    } else {
+        .\LGPO /g "$sct\$os"
     }
 
-    Add-Progress "User(s) have been added"
+    Add-Progress "SCT Baselines imported";
 }
 
-# Change passwords
-function Change-Passwords {
+# README
+function Open-Readme {
+    Start-Process C:\CyberPatriot\README.url;
+}
+
+# Delete users
+function Delete-Users {
     if ($args -in "m","man","manual") {
         while ($true) {
-            cls
+            cls;
 
-            List-User
+            $users_admins;
             echo "`n"
-
-            echo "NOTE: Passwords are set to: abc123ABC123@@"
-            echo "`n"
-            $answer = Read-Host "Enter username to change password"
+            $answer = Read-Host "Enter a username to delete"
 
             if ($answer -eq "n") {
-                break
+                break;
             }
 
-            New-LocalUser $answer -Password $pass
+            Remove-LocalUser $answer
         }
+
+        Add-Progress "User(s) have been deleted"
     } else {
-        $user_list_admins.foreach{
-            New-LocalUser $_ -Password $pass
+        $badusers.foreach{
+            Remove-LocalUser $_
         }
 
-        Add-Progress "All passwords changed to a gamer secure password"
-
-        echo "All passwords changed to: abc123ABC123@@"
+        Add-Progress "Unauthorized user(s) have been deleted"
     }
-}
-
-# Hosts file
-function Clear-Hosts {
-    Copy-Item "$compfiles\hosts" "$env:systemroot\system32\drivers\etc\hosts" -Force
-
-    Add-Progress "Hosts file replaced"
-}
-
-# Copy script to profile
-function Copy-ToProfile {
-    Copy-Item "$env:userprofile\Desktop\Script\script.ps1" `
-    "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 }
 
 # Delete Admins
@@ -127,6 +157,140 @@ function Delete-Admins {
     }
 
     Add-Progress "Admin(s) have been deleted"
+}
+
+# Disable services
+function Disable-Services {
+    # Service exclusions
+    while ($true) {
+        cls
+
+        $answer = Read-Host "Enter a service to exclude (use 'remote' for Remote Desktop)";
+
+        if ($answer -eq "n") {
+            break;
+        }
+
+        if ($answer -eq "remote") {
+            $serv_exclusions = "termservice","sessionenv";
+        } else {
+            $serv_exclusions += $answer;
+        }
+    }
+
+    # Disable list of services
+    $services = Import-Lists services
+
+    $services.foreach{
+        Stop-Service $_;
+        Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
+    }
+
+    # Enable exlusions
+    $serv_exclusions.foreach{
+        Set-Service $_ -startuptype Automatic;
+        Start-Service $_;
+    }
+
+	# Enable good services
+	Set-Service wuauserv -startuptype Automatic;
+    Start-Service wuauserv;
+    Set-Service eventlog -startuptype Automatic;
+    Start-Service eventlog;
+	Set-Service windefend -startuptype Automatic;
+    Start-Service windefend;
+	Set-Service wscsvc -startuptype Automatic;
+    Start-Service wscsvc;
+
+    Add-Progress "Lame services disabled";
+}
+
+# Add Admins
+function Add-Admins {
+    while ($true) {
+        cls;
+
+        List-Admin;
+        echo "`n"
+        $answer = Read-Host "Enter a username to add"
+
+        if ($answer -eq "n") {
+            break;
+        }
+
+        Add-CGroupMember Administrators $answer
+    }
+
+    Add-Progress "Admin(s) have been added"
+}
+
+# Add to progress log
+function Add-Progress {
+    Write-Output "$args`n" >> "$desktop\progress.txt";
+}
+
+# Add users
+function Add-Users {
+    Open-Readme
+
+    while ($true) {
+        cls;
+
+        $users_admins;
+        echo "`n"
+        $answer = Read-Host "Enter a username to add"
+
+        if ($answer -eq "n") {
+            break;
+        }
+
+        New-LocalUser $answer -Password $pass
+    }
+
+    Add-Progress "User(s) have been added"
+}
+
+# Change passwords
+function Change-Passwords {
+    if ($args -in "m","man","manual") {
+        while ($true) {
+            cls
+
+            $users_admins
+            echo "`n"
+
+            echo "NOTE: Passwords are set to: abc123ABC123@@"
+            echo "`n"
+            $answer = Read-Host "Enter username to change password"
+
+            if ($answer -eq "n") {
+                break
+            }
+
+            Set-LocalUser $answer -Password $pass
+        }
+    } else {
+        $users_admins.foreach{
+            Set-LocalUser $_ -Password $pass
+        }
+
+        Add-Progress "All passwords changed to a gamer secure password"
+
+        echo "All passwords changed to: abc123ABC123@@"
+    }
+}
+
+# Hosts file
+function Clear-Hosts {
+    Copy-Item "$compfiles\hosts" "$env:systemroot\system32\drivers\etc\hosts" -Force
+
+    Add-Progress "Hosts file replaced"
+}
+
+# Copy script to profile
+function Copy-ToProfile {
+    Copy-Item "$env:userprofile\Desktop\Script\script.ps1" `
+    "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 }
 
 # Delete applocker rules
@@ -178,35 +342,6 @@ function Delete-TempTxt {
     userdiff.txt -Force -ErrorAction SilentlyContinue;
 }
 
-# Delete users
-function Delete-Users {
-    if ($args -in "m","man","manual") {
-        while ($true) {
-            cls;
-
-            List-User;
-            echo "`n"
-            $answer = Read-Host "Enter a username to delete"
-
-            if ($answer -eq "n") {
-                break;
-            }
-
-            Remove-LocalUser $answer
-        }
-
-        Add-Progress "User(s) have been deleted"
-    }
-
-    else {
-        $bad_users.foreach{
-            Remove-LocalUser $_
-        }
-
-        Add-Progress "Unauthorized user(s) have been deleted"
-    }
-}
-
 # Disable features
 function Disable-Features {
     $feature_list = Get-Content
@@ -226,52 +361,6 @@ function Disable-RemoteDesktop {
     Add-Progress "Remote Desktop disabled"
 }
 
-# Disable services
-function Disable-Services {
-    # Service exclusions
-    while ($true) {
-        cls
-
-        $answer = Read-Host "Enter a service to exclude (use 'remote' for Remote Desktop)";
-
-        if ($answer -eq "n") {
-            break;
-        }
-
-        if ($answer -eq "remote") {
-            $global:serv_exclusions = "termservice","sessionenv";
-        } else {
-            $serv_exclusions += $answer;
-        }
-    }
-
-    # Disable list of services
-    $services = Import-Lists services
-
-    $services.foreach{
-        Stop-Service $_;
-        Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
-    }
-
-    # Enable exlusions
-    $serv_exclusions.foreach{
-        Set-Service $_ -startuptype Automatic;
-        Start-Service $_;
-    }
-
-	# Enable good services
-	Set-Service wuauserv -startuptype Automatic;
-    Start-Service wuauserv;
-    Set-Service eventlog -startuptype Automatic;
-    Start-Service eventlog;
-	Set-Service windefend -startuptype Automatic;
-    Start-Service windefend;
-	Set-Service wscsvc -startuptype Automatic;
-    Start-Service wscsvc;
-
-    Add-Progress "Lame services disabled";
-}
-
 # Disable Users
 function Disable-Users {
     if ($args -in "m","man","manual") {
@@ -280,7 +369,7 @@ function Disable-Users {
         while ($true) {
             cls
 
-            List-User
+            $users_admins
             echo "`n"
             $answer = Read-Host "Enter username to disable"
 
@@ -291,8 +380,11 @@ function Disable-Users {
             Disable-LocalUser $answer
         }
     } else {
-        Disable-LocalUser BroShirt;
-        Disable-LocalUser BroPants;
+        $dumbusers = "BroShirt","BroPants","Administrator","Guest"
+
+        $dumbusers.foreach{
+            Disable-LocalUser $_ -ErrorAction SilentlyContinue
+        }
 
         Add-Progress "Built-in Admin and Guest disabled"
 
@@ -335,7 +427,7 @@ function Enable-Users {
         while ($true) {
             cls
 
-            List-User
+            $users_admins
             echo "`n"
             $answer = Read-Host "Enter username to enable"
 
@@ -346,12 +438,9 @@ function Enable-Users {
             Enable-LocalUser $answer
         }
     } else {
-        $user_list_admins.foreach{
+        $users.foreach{
             Enable-LocalUser $_;
         }
-
-        Disable-LocalUser BroShirt;
-        Disable-LocalUser BroPants;
 
         Add-Progress "All users (except built-in Admin and Guest) enabled"
 
@@ -389,35 +478,13 @@ function Find-ProhibitedUserFiles {
     }
 }
 
-# Get IP address
-function Get-Ip {
-    $ip = Get-NetIPAddress | where AddressFamily -match "IPv4" | where AddressState -match "Preferred" | `
-    where InterfaceAlias -notmatch "Loopback" | select IPAddress
-
+# Run Nessus scans
+function Run-Nessus {
     $ip
+    echo "Run Nessus scans, ya brainlet"
+    pause
 
     Add-Progress "Nessus scan theoretically run?"
-}
-
-# Get OS name
-function Get-OS {
-    $os_name = (Get-CimInstance -ClassName CIM_OperatingSystem).Name;
-    $os_list = "Windows 7","Windows 8","Windows 10","Server 2008","Server 2016";
-    $os = "Unknown";
-
-    $os_list.foreach{
-        if ($os_name -match $_) {
-            $os = $_
-        }
-    }
-
-    # Change name to shorter, gooder version
-    if ($os -in "Windows 7","Windows 8","Windows 10") {
-        return $os.Remove(3,5)
-    }
-    if ($os -in "Server 2008","Server 2016") {
-        return $os.Remove(6,1)
-    }
 }
 
 # Install chocolatey
@@ -426,26 +493,6 @@ function Install-Choco {
 
     choco feature enable -n allowGlobalConfirmation
     choco feature enable -n useFipsCompliantChecksums
-}
-
-# Get user list
-function Get-UserList {
-    $global:user_list_admins = Get-LocalUser | select name
-
-    Import-Lists builtin_users
-    $global:user_list = Get-LocalUser | select name | where name -notin $lists
-
-    # Add readme users to file
-    cls
-    echo "Please put all the users from README in this text file"
-    start-process "$compfiles\lists\good_users.txt"
-    pause
-
-    # Get good user and bad user list
-    Import-Lists good_users
-    $global:bad_users = (Compare-Object $user_list $lists -PassThru).Name
-
-    $bad_users
 }
 
 # Get program list
@@ -459,7 +506,7 @@ function List-Programs {
 # Set logon message to username and password
 function Set-LogonMessage {
     # Change password
-    New-LocalUser $env:username -Password $pass
+    Set-LocalUser $env:username -Password $pass
 
     # Set logon message
     New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticecaption `
@@ -486,24 +533,9 @@ function List-Service {
     }
 }
 
-# List users
-function List-User {
-    Get-LocalUser | select Name, Enabled | format-wide;
-}
-
 # List admins
 function List-Admin {
     Get-LocalGroupMember -Group Administrators | select Name | format-wide;
-}
-
-# Import lists
-function Import-Lists {
-   return Get-Content "$compfiles\lists\$args.txt"
-}
-
-# README
-function Open-Readme {
-    Start-Process C:\CyberPatriot\README.url;
 }
 
 # Windows Update
@@ -555,40 +587,6 @@ function Set-FirefoxConfig {
     "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\local-settings.js" -Force -ErrorAction SilentlyContinue
 
     Add-Progress "Firefox config files copied"
-}
-
-# SCM Baselines
-function Import-SCM {
-    Get-OS
-
-    cd "$cmderbin"
-
-    # IE Baselines
-    .\LGPO /g "$scm\IE11_Com_Sec";
-    .\LGPO /g "$scm\IE11_User_Sec";
-
-    if ($os -eq "Server2008") {
-        .\LGPO /g "$scm\IE9_User_Sec";
-	    .\LGPO /g "$scm\IE9_Com_Sec";
-    }
-
-    # OS baselines
-    if ($os -eq "Win10") {
-        if ($ver -eq "10.0.10240") {.\LGPO /g "$scm\Win10_1507"};
-        if ($ver -eq "10.0.10586") {.\LGPO /g "$scm\Win10_1511"};
-        if ($ver -eq "10.0.14393") {.\LGPO /g "$scm\Win10_1607_Server2016"};
-        if ($ver -eq "10.0.15063") {.\LGPO /g "$scm\Win10_1703"};
-        if ($ver -eq "10.0.16299") {.\LGPO /g "$scm\Win10_1709"};
-        if ($ver -eq "10.0.17134") {.\LGPO /g "$scm\Win10_1803"};
-    }
-
-    if ($os -eq "Server2016") {
-        .\LGPO /g "$scm\Win10_1607_Server2016";
-    } else {
-        .\LGPO /g "$scm\$os";
-    }
-
-    Add-Progress "SCM Baselines imported";
 }
 
 # CISCAT Registry batch file
@@ -705,10 +703,6 @@ function List-Functions {
 # Install gucci programs
 function Install-Programs {
     Install-Choco
-    if (($PSVersionTable.PSVersion).Major -ne "5") {
-        choco install powershell dotnet4.5
-        Restart-Computer -Force
-    }
 
     choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
 
@@ -761,6 +755,13 @@ function Run-CatLite {
 function Run-Script {
     Copy-ToProfile
     . $profile
+}
+
+# Delete user folders of bad users
+function Delete-BadUserFolders {
+    $badusers.foreach{
+        Remove-Item C:\Users\$_ -Recurse -Force
+    }
 }
 
 # Intro screen bois
