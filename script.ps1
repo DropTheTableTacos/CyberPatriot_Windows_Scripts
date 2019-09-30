@@ -11,6 +11,7 @@ Start-Transcript "C:\log.txt"
 Set-PSDebug -Trace 0
 
 # Install epic carbon module
+Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 Install-Module Carbon
 
 # Get windows version
@@ -58,6 +59,8 @@ function Get-SOBadUsers {
 
     # Add readme users to file if needed
     if ($goodusers -eq $null) {
+        Open-Readme
+
         echo "Put readme users in this text file" >> "$compfiles\lists\good_users.txt"
         start-process "$compfiles\lists\good_users.txt"
         pause
