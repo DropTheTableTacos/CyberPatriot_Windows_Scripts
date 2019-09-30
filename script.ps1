@@ -11,6 +11,7 @@ Start-Transcript "C:\log.txt"
 Set-PSDebug -Trace 0
 
 # Install epic carbon module
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 Install-Module Carbon
 
@@ -53,9 +54,14 @@ function Import-SOLists {
     return Get-Content "$compfiles\lists\$args.txt"
 }
 
+# README
+function Open-Readme {
+    Start-Process C:\CyberPatriot\README.url;
+}
+
 # Get user list
 function Get-SOBadUsers {
-    $goodusers = Get-Content "$compfiles\lists\good_users.txt"
+    $goodusers = Get-Content "$compfiles\lists\good_users.txt" -ErrorAction SilentlyContinue
 
     # Add readme users to file if needed
     if ($goodusers -eq $null) {
@@ -101,7 +107,7 @@ function Import-SOAlias {
     $functions = Import-SOLists functions
 
     $functions.foreach{
-        Set-Alias -Name ($_.split("(")[1]).split(")")[0] -Value $_.split(" ")[0] -Force
+        Set-Alias -Name ($_.split("(")[1]).split(")")[0] -Value $_.split(" ")[0] -Option AllScope -Force
     }
 }
 
@@ -142,11 +148,6 @@ function Import-SCT {
     }
 
     Add-SOProgress "SCT Baselines imported";
-}
-
-# README
-function Open-Readme {
-    Start-Process C:\CyberPatriot\README.url;
 }
 
 # Delete users
@@ -800,7 +801,8 @@ pause
 # Actually start the script UwU
 
 # Setup Functions
-Copy-ToProfile
+Set-SOLogonMessage
+Import-SOAlias
 
 # List functions gamer
 cls
