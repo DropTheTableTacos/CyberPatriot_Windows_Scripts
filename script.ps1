@@ -841,9 +841,12 @@ pause
 Set-SOLogonMessage
 Import-SOAlias
 
-# List functions gamer
+# Excute all functions with pauses inbetween
 cls
-List-Functions
 
-# Actually run all the functions now
-# Put stuff here
+$functions = Import-SOLists functions
+
+    ($functions | where {$_ -notmatch "-SO"}).foreach{
+        $_;
+        pause
+    }
