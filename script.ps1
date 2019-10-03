@@ -57,6 +57,8 @@ function Import-SOLists {
 # README
 function Open-Readme {
     Start-Process C:\CyberPatriot\README.url;
+
+    echo "README opened."
 }
 
 # Get user list
@@ -116,7 +118,7 @@ $global:desktop = "$env:userprofile\Desktop";
 $global:compfiles = "$desktop\Script";
 $global:sct = "$compfiles\sctbaselines";
 $global:cmderbin = "$compfiles\cmder\bin";
-$global:pass = ConvertTo-SecureString "abc123ABC123@@" -AsPlainText -Force
+$global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
 %systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
 %programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%", `
@@ -140,6 +142,8 @@ function Import-SCT {
         .\LGPO /g "$sct\IE9"
     }
 
+    echo "IE Baselines imported."
+
     # OS baselines
     if ($os -eq "Win10") {
         .\LGPO /g "$sct\Win10_$ver"
@@ -148,6 +152,7 @@ function Import-SCT {
     }
 
     Add-SOProgress "SCT Baselines imported";
+    echo "OS baselines imported."
 }
 
 # Delete users
@@ -174,6 +179,7 @@ function Delete-Users {
         }
 
         Add-SOProgress "Unauthorized user(s) have been deleted"
+        echo "Bad men deleted."
     }
 }
 
@@ -209,7 +215,7 @@ function Disable-Services {
         }
 
         if ($answer -eq "remote") {
-            $serv_exclusions = "termservice","sessionenv";
+            $serv_exclusions += "termservice","sessionenv";
         } else {
             $serv_exclusions += $answer;
         }
@@ -240,6 +246,7 @@ function Disable-Services {
     Start-Service wscsvc;
 
     Add-SOProgress "Lame services disabled";
+    echo "Bad services disabled and good ones enabled."
 }
 
 # Check forensics questions
@@ -249,6 +256,7 @@ function Open-Forensics {
     }
 
     Add-SOProgress "Forensics Questions checked out"
+    echo "Opened the forensics questions, brah."
 }
 
 # Delete Media files
@@ -260,6 +268,7 @@ function Delete-MediaFiles {
     }
 
     Add-SOProgress "Media files deleted"
+    echo "Bad media files deleted."
 }
 
 # Change passwords
@@ -298,6 +307,7 @@ function Enable-Firewall {
     # Put command to import firewall template here
 
     Add-SOProgress "Firewall enabled and template applied"
+    echo "Firewall enabled, brah."
 }
 
 # Disable Users
@@ -373,6 +383,7 @@ function Install-Programs {
     choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
 
     Add-SOProgress "Good security programs installed"
+    echo "Gucci security programs installed."
 }
 
 # Import INF file
@@ -385,6 +396,7 @@ function Import-Inf {
         Set-SOLogonMessage
 
         Add-SOProgress "Good INF applied"
+        echo "Good inf applied mate."
     }
 
     # Bad inf
@@ -393,6 +405,7 @@ function Import-Inf {
         Set-SOLogonMessage
 
         Add-SOProgress "Bad INF applied"
+        echo "Bad inf applied mate."
     } else {
         echo "Please specify 'good' or 'bad' INF.";
         break;
@@ -408,6 +421,7 @@ function Import-Audit {
         .\LGPO /a "$compfiles\audit_templates\${os}AllAudit.csv"
 
         Add-SOProgress "Good audit policy applied";
+        echo "Good audit template applied my dude."
     }
 
     # Bad inf
@@ -415,6 +429,7 @@ function Import-Audit {
         .\LGPO /a "$compfiles\audit_templates\${os}NoAudit.csv"
 
         Add-SOProgress "Bad audit policy applied";
+        echo "Bad audit template applied my dude."
     } else {
         echo "Please specify 'good' or 'bad' template.";
         break;
@@ -423,13 +438,14 @@ function Import-Audit {
 
 # Disable features
 function Disable-Features {
-    $feature_list = Get-Content
+    $feature_list = Import-SOLists features
 
     $feature_list.foreach{
         Disable-WindowsOptionalFeature -Online -FeatureName $_;
     }
 
     Add-SOProgress "Disabled lame features"
+    echo "Lame features disabled, or one could say, clapped"
 }
 
 # View file shares
@@ -481,6 +497,7 @@ function Disable-RemoteDesktop {
     -PropertyType DWord -Value "1" -Force
 
     Add-SOProgress "Remote Desktop disabled"
+    echo "Disable remote desktop."
 }
 
 # Secure screensaver with password gamer
@@ -496,6 +513,7 @@ function Secure-Screensaver {
     -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
 
     Add-SOProgress "Screensaver secured with password"
+    echo "Secured screensaver with a password."
 }
 
 # Hosts file
@@ -503,6 +521,7 @@ function Clear-Hosts {
     Reset-CHostsFile
 
     Add-SOProgress "Hosts file cleared"
+    echo "Hosts file cleared, ez"
 }
 
 # Firefox config
@@ -524,6 +543,7 @@ function Set-FirefoxConfig {
     }
 
     Add-SOProgress "Firefox config files copied"
+    echo "Firefox swole settings copied."
 }
 
 # Prohibited users' files
@@ -535,6 +555,9 @@ function Find-ProhibitedUserFiles {
             echo $f.Path
         }
     }
+
+    Add-SOProgress "Prohibited user files theoretically found maybe idk"
+    echo "Prohibited user files theoretically found maybe idk."
 }
 
 # Delete user folders of bad users
@@ -542,6 +565,9 @@ function Delete-BadUserFolders {
     $badusers.foreach{
         Remove-Item C:\Users\$_ -Recurse -Force
     }
+
+    Add-SOProgress "Bad user folders deleted"
+    echo "Bad user folders deleted."
 }
 
 # Update programs
@@ -551,6 +577,7 @@ function Update-Programs {
     echo "`n"
     echo "IMPORTANT: Check if the programs have auto updates"
     pause
+    Add-SOProgress "Hopefully got those gamer program updates"
 }
 
 # Run Nessus scans
@@ -565,6 +592,8 @@ function Run-Nessus {
 # Find prohibited files
 function Find-ProhibitedFiles {
        # Put stuff here eventually
+       Add-SOProgress "Prohibited files may have been found"
+       echo "Prohibited files may have been found"
 }
 
 # Run Sysinternals
@@ -574,6 +603,8 @@ function Run-Sysinternals {
     $sysinternals.foreach{
         Start-Process "$cmderbin\$_"
     }
+
+    Add-SOProgress "Ran sysinternals stuff"
 }
 
 # CISCAT Registry batch file
@@ -597,6 +628,7 @@ function Import-IERegistry {
     }
 
     Add-SOProgress "Set CISCAT Internet Explorer registry settings"
+    echo "Imported IE Registry settings"
 }
 
 # Enable internet explorer
@@ -608,6 +640,7 @@ function Enable-InternetExplorer {
     -ErrorAction SilentlyContinue
 
     Add-SOProgress "Enabled Internet Explorer"
+    echo "Enabled the gamer internet explorer."
 }
 
 # Delete applocker rules
@@ -615,6 +648,7 @@ function Delete-AppLocker {
     Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
 
     Add-SOProgress "AppLocker policies cleared"
+    echo "Applocker policies cleared."
 }
 
 # Activate/Disable users
@@ -652,11 +686,12 @@ function Enable-UAC {
     -PropertyType DWord -Value "1" -Force
 
     Add-SOProgress "UAC Enabled"
+    echo "Enabled UAC"
 }
 
 # Cat-Lite scanner
 function Run-CatLite {
-    if ($os -in "Win10") {
+    if ($os -eq "Win10") {
         Start-Process "$cmderbin\cis-cat-lite\CISCAT.jar"
     } else {
         cls
@@ -708,6 +743,8 @@ function Add-Users {
 function Copy-ToProfile {
     Copy-Item "$env:userprofile\Desktop\Script\script.ps1" `
     "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+
+    echo "Script copied to pshell profile."
 }
 
 # Find media files
