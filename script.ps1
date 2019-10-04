@@ -382,7 +382,7 @@ function Install-Programs {
         choco feature enable -n useFipsCompliantChecksums
     }
 
-    choco install firefox ie11 malwarebytes mbsa --ignorechecksum --force
+    choco install firefox ie11 malwarebytes mbsa patch-my-pc --ignorechecksum --force
 
     Add-SOProgress "Good security programs installed"
     echo "Gucci security programs installed."
