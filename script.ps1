@@ -1,9 +1,5 @@
 # Jackson's Epic Powershell Script That Has A 100% Guaranteed Chance Of Not Breaking During The Competition
 
-# List of things that need to happen:
-#   - Get-UserList
-#   - Finish all the rest of the stuff
-
 # Make transcript file
 Start-Transcript "C:\log.txt"
 
@@ -222,9 +218,25 @@ function Disable-Services {
     }
 
     # Disable list of services
-    $services = Import-SOLists services
+    $services = Import-Csv "$compfiles\lists\services.csv"
 
-    $services.foreach{
+    ($services | where {$_.State -match "Uninstall"}).foreach{
+        Stop-Service $_;
+        Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
+        Uninstall-Service
+    }
+
+    ($services | where {$_.State -match "Automatic"}).foreach{
+        Set-Service $_ -startuptype Automatic -ErrorAction SilentlyContinue;
+        Start-Service $_;
+    }
+
+    ($services | where {$_.State -match "Manual"}).foreach{
+        Set-Service $_ -startuptype Automatic -ErrorAction SilentlyContinue;
+        Start-Service $_;
+    }
+
+    ($services | where {$_.State -match "Disabled"}).foreach{
         Stop-Service $_;
         Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
     }
@@ -234,16 +246,6 @@ function Disable-Services {
         Set-Service $_ -startuptype Automatic;
         Start-Service $_;
     }
-
-	# Enable good services
-	Set-Service wuauserv -startuptype Automatic;
-    Start-Service wuauserv;
-    Set-Service eventlog -startuptype Automatic;
-    Start-Service eventlog;
-	Set-Service windefend -startuptype Automatic;
-    Start-Service windefend;
-	Set-Service wscsvc -startuptype Automatic;
-    Start-Service wscsvc;
 
     Add-SOProgress "Lame services disabled";
     echo "Bad services disabled and good ones enabled."
@@ -441,7 +443,7 @@ function Disable-Features {
     $feature_list = Import-SOLists features
 
     $feature_list.foreach{
-        Disable-WindowsOptionalFeature -Online -FeatureName $_;
+        Uninstall-WindowsFeature -Name $_;
     }
 
     Add-SOProgress "Disabled lame features"
@@ -482,7 +484,7 @@ function Delete-Shares {
             break;
         }
 
-        Remove-FileShare $_;
+        Uninstall-FileShare $_;
     }
 }
 
