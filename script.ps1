@@ -105,7 +105,7 @@ function Import-SOAlias {
     $functions = Import-SOLists functions
 
     $functions.foreach{
-        Set-Alias -Name $_.Name -Value $_.Definition -Option AllScope -Force
+        Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
     }
 }
 
@@ -804,7 +804,7 @@ function List-Users {
 function List-Functions {
     $functions = Import-SOLists functions
 
-    $functions | where {$_ -notmatch "-SO"} | Format-Wide
+    $functions | where {$_ -notmatch "-SO"}
 }
 
 # Run script easily function
@@ -840,14 +840,9 @@ pause
 
 # Setup Functions
 Set-SOLogonMessage
+Delete-SOTempTxt
 Import-SOAlias
 
 # Excute all functions with pauses inbetween
 cls
-
-$functions = Import-SOLists functions
-
-    ($functions | where {$_ -notmatch "-SO"}).foreach{
-        $_.Definition;
-        pause
-    }
+List-Functions
