@@ -47,7 +47,7 @@ function Get-SOOS {
 
 # Import lists
 function Import-SOLists {
-    return Get-Content "$compfiles\lists\$args.txt"
+    return Import-Csv "$compfiles\lists\$args.csv"
 }
 
 # README
@@ -105,7 +105,7 @@ function Import-SOAlias {
     $functions = Import-SOLists functions
 
     $functions.foreach{
-        Set-Alias -Name ($_.split("(")[1]).split(")")[0] -Value $_.split(" ")[0] -Option AllScope -Force
+        Set-Alias -Name $_.Name -Value $_.Definition -Option AllScope -Force
     }
 }
 
@@ -122,7 +122,7 @@ $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 $global:ver = Get-SOVer
 $global:os = Get-SOOS
 $global:users = Get-CUser
-$global:users_nobuiltin = $users | where {$_.Name -notin (Import-SOLists builtin_users)}
+$global:users_nobuiltin = $users | where {$_.Description -eq $null}
 $global:badusers = Get-SOBadUsers
 $global:ip = Get-CIPAddress | where {$_.IPAddressToString -match "192.168"} | select IPAddressToString `
 | Format-Table -HideTableHeaders
@@ -263,10 +263,10 @@ function Open-Forensics {
 
 # Delete Media files
 function Delete-MediaFiles {
-    Import-SOLists media_extensions
+    $ext = Import-SOLists media_extensions
 
-    $lists.foreach{
-        Remove-Item "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
+    $ext.foreach{
+        Remove-Item "C:\$_.Extension" -Recurse -Exclude "C:\CyberPatriot\*" -Force
     }
 
     Add-SOProgress "Media files deleted"
