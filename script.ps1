@@ -263,10 +263,10 @@ function Open-Forensics {
 
 # Delete Media files
 function Delete-MediaFiles {
-    $ext = Import-SOLists media_extensions
+    $ext = Get-Content "$compfiles\lists\media_extensions.txt"
 
     $ext.foreach{
-        Remove-Item "C:\$_.Extension" -Recurse -Exclude "C:\CyberPatriot\*" -Force
+        Remove-Item "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
     }
 
     Add-SOProgress "Media files deleted"
@@ -611,9 +611,9 @@ function Run-Sysinternals {
 
 # CISCAT Registry batch file
 function Run-CiscatRegistry {
-    $list = Import-SOLists ciscat_registry
+    $cisreg = Get-Content "$compfiles\lists\ciscat_registry.txt"
 
-    $list.foreach{
+    $cisreg.foreach{
         $_;
     }
 
@@ -622,8 +622,7 @@ function Run-CiscatRegistry {
 
 # IE registry gamers
 function Import-IERegistry {
-    Import-SOLists ie_registry
-    $ie_reg = $lists | Select-String -NotMatch "#"
+    $ie_reg = Get-Content "$compfiles\lists\ie_registry.txt" | Select-String -NotMatch "#"
 
     $ie_reg.foreach{
         $_
@@ -751,9 +750,9 @@ function Copy-ToProfile {
 
 # Find media files
 function Find-MediaFiles {
-    Import-SOLists media_extensions
+    $ext = Get-Content "$compfiles\lists\media_extensions.txt"
 
-    $lists.foreach{
+    $ext.foreach{
         $mediafiles = Get-ChildItem "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
     }
 
@@ -849,6 +848,6 @@ cls
 $functions = Import-SOLists functions
 
     ($functions | where {$_ -notmatch "-SO"}).foreach{
-        $_;
+        $_.Definition;
         pause
     }
