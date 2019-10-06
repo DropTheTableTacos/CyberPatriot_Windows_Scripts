@@ -7,7 +7,6 @@ Start-Transcript "C:\log.txt"
 Set-PSDebug -Trace 0
 
 # Install epic carbon module
-Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 Install-Module Carbon
 
@@ -71,7 +70,7 @@ function Get-SOBadUsers {
     }
 
     # Compare and get bad users
-    (Compare-Object $goodusers $users).foreach{
+    (Compare-Object $goodusers $users_nobuiltin).foreach{
         return $_.InputObject
     }
 }
@@ -218,12 +217,12 @@ function Disable-Services {
     }
 
     # Disable list of services
-    $services = Import-Csv "$compfiles\lists\services.csv"
+    $services = Import-SOLists services
 
     ($services | where {$_.State -match "Uninstall"}).foreach{
         Stop-Service $_;
         Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
-        Uninstall-Service
+        Uninstall-Service -Name $_
     }
 
     ($services | where {$_.State -match "Automatic"}).foreach{
@@ -794,7 +793,6 @@ function List-Admins {
 function List-Users {
     if ($args -eq "nobuiltin") {
         $users_nobuiltin | select name | format-wide
-        break
     } else {
         $users | select name | format-wide
     }
