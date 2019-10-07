@@ -24,7 +24,8 @@ Import-Audit,iaud
 Disable-Features,df
 View-Shares,vs
 Delete-Shares,dshare
-Delete-Program,dp
+Delete-Programs,dp
+Delete-Malware,dm
 Disable-RemoteDesktop,drd
 Secure-Screensaver,ss
 Clear-Hosts,ch
