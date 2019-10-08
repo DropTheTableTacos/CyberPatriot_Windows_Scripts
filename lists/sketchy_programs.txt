@@ -1,0 +1,9 @@
+cain
+nmap
+zenmap
+keylogger
+armitage
+wireshark
+metasploit
+netcat
+johntheripper
