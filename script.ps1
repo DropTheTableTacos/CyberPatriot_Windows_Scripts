@@ -488,8 +488,15 @@ function Delete-Shares {
 }
 
 # Remove programs
-function Delete-Program {
+function Delete-Programs {
+    # WIP
     Add-SOProgress "Sketchy programs removed"
+}
+
+# Remove stinky malware
+function Delete-Malware {
+    # WIP
+    Add-SOProgress "Malware absolutely yeeted on"
 }
 
 # Disable remote desktop
