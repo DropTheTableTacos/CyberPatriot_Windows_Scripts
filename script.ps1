@@ -130,24 +130,11 @@ $global:ip = Get-CIPAddress | where {$_.IPAddressToString -match "192.168"} | se
 function Import-SCT {
     cd "$cmderbin"
 
-    # IE Baselines
-    .\LGPO /g "$sct\IE11"
-
-    if ($os -eq "Server2008") {
-        .\LGPO /g "$sct\IE9"
-    }
-
-    echo "IE Baselines imported."
-
-    # OS baselines
-    if ($os -eq "Win10") {
-        .\LGPO /g "$sct\Win10_$ver"
-    } else {
-        .\LGPO /g "$sct\$os"
-    }
+    # Import Microsoft recommended baselines like an absolute chad
+    .\LGPO.exe /g "$sct\${os}_$ver"
 
     Add-SOProgress "SCT Baselines imported";
-    echo "OS baselines imported."
+    echo "SCT baselines imported."
 }
 
 # Delete users
