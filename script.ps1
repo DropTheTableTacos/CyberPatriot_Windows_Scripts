@@ -82,9 +82,9 @@ function Set-SOLogonMessage {
 
     # Set logon message
     New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticecaption `
-    PropertyType String -Value "Username: $env:username" -Force -InformationAction SilentlyContinue
+    -PropertyType String -Value "Username: $env:username" -Force -InformationAction SilentlyContinue
     New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name legalnoticetext `
-    PropertyType String -Value "Password: abc123ABC123@@" -Force -InformationAction SilentlyContinue
+    -PropertyType String -Value "Password: abc123ABC123@@" -Force -InformationAction SilentlyContinue
 }
 
 # Add to progress log
@@ -132,6 +132,12 @@ function Import-SCT {
 
     # Import Microsoft recommended baselines like an absolute chad
     .\LGPO.exe /g "$sct\${os}_$ver"
+
+    # Allow cmder and stop scoring, etc. to actually run lol
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ValidateAdminCodeSignatures `
+    -PropertyType DWord -Value "0" -Force
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableUIADesktopToggle `
+    -PropertyType DWord -Value "0" -Force
 
     Add-SOProgress "SCT Baselines imported";
     echo "SCT baselines imported."
@@ -834,6 +840,10 @@ pause
 Set-SOLogonMessage
 Delete-SOTempTxt
 Import-SOAlias
+$functions = Import-SOLists functions
+$functions.foreach{
+    Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
+}
 
 # Excute all functions with pauses inbetween
 cls
