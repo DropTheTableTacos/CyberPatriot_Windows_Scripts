@@ -7,6 +7,7 @@ Set-SOLogonMessage,slm
 Add-SOProgress,ap
 Delete-SOTempTxt,dtt
 Import-SOAlias,ialias
+Set-SOAutoLogon,sal
 Import-SCT,isct
 Open-Readme,or
 Delete-Users,delu

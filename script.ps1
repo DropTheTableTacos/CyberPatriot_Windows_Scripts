@@ -108,6 +108,16 @@ function Import-SOAlias {
     }
 }
 
+# Setup autologon again for our user for convenience
+function Set-SOAutoLogon {
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon -Name DefaultUserName `
+    -PropertyType String -Value "$env:userprofile" -Force
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon -Name DefaultPassword `
+    -PropertyType String -Value "abc123ABC123@@" -Force
+    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon -Name AutoAdminLogon `
+    -PropertyType String -Value "1" -Force
+}
+
 # Variables lol
 $global:desktop = "$env:userprofile\Desktop";
 $global:compfiles = "$desktop\Script";
@@ -121,7 +131,7 @@ $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 $global:ver = Get-SOVer
 $global:os = Get-SOOS
 $global:users = Get-CUser
-$global:users_nobuiltin = $users | where {$_.Description -eq $null}
+$global:users_nobuiltin = $users | where {$_.Description -eq $null} | where {$_.Name -ne "defaultuser0"}
 $global:badusers = Get-SOBadUsers
 $global:ip = Get-CIPAddress | where {$_.IPAddressToString -match "192.168"} | select IPAddressToString `
 | Format-Table -HideTableHeaders
@@ -173,11 +183,12 @@ function Delete-Users {
 
 # Delete Admins
 function Delete-Admins {
+    Open-Readme
+
     while ($true) {
         cls;
 
         List-Admins;
-        echo "`n"
         $answer = Read-Host "Enter a username to delete"
 
         if ($answer -eq "n") {
@@ -705,7 +716,7 @@ function Add-Admins {
         cls;
 
         List-Admins;
-        echo "`n"
+        List-Users;
         $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
@@ -786,7 +797,11 @@ function List-Service {
 
 # List admins
 function List-Admins {
-    $users | where {(test-groupmember Administrators $_) -eq $true} | select name
+    if ($args -eq "nobuiltin") {
+        $users_nobuiltin | where {(test-groupmember Administrators $_) -eq $true} | select name
+    } else {
+        $users | where {(test-groupmember Administrators $_) -eq $true} | select name
+    }
 }
 
 # List users
@@ -840,6 +855,7 @@ pause
 Set-SOLogonMessage
 Delete-SOTempTxt
 Import-SOAlias
+Set-SOAutoLogon
 $functions = Import-SOLists functions
 $functions.foreach{
     Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
