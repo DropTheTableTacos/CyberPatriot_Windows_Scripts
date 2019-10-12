@@ -860,6 +860,16 @@ function Run-Script {
     . $profile
 }
 
+# Open Scoring report
+function Open-ScoringReport {
+    C:\CyberPatriot\ScoringReport.html
+}
+
+# Open stop scoring thing (to check scoring timer)
+function Open-StopScoring {
+    C:\CyberPatriot\Stop.exe
+}
+
 # Intro screen bois
 cls
 

@@ -54,3 +54,5 @@ List-Admins,la
 List-Users,lu
 List-Functions,lf
 Run-Script,rs
+Open-ScoringReport,osr
+Open-StopScoring,oss
