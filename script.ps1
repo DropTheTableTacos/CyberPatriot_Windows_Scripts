@@ -797,6 +797,9 @@ function List-Service {
 
 # List admins
 function List-Admins {
+    $global:users = Get-CUser
+    $global:users_nobuiltin = $users | where {$_.Description -eq $null} | where {$_.Name -ne "defaultuser0"}
+
     if ($args -eq "nobuiltin") {
         $users_nobuiltin | where {(test-groupmember Administrators $_) -eq $true} | select name
     } else {
@@ -806,6 +809,9 @@ function List-Admins {
 
 # List users
 function List-Users {
+    $global:users = Get-CUser
+    $global:users_nobuiltin = $users | where {$_.Description -eq $null} | where {$_.Name -ne "defaultuser0"}
+
     if ($args -eq "nobuiltin") {
         $users_nobuiltin | select name | format-wide
     } else {
@@ -817,7 +823,7 @@ function List-Users {
 function List-Functions {
     $functions = Import-SOLists functions
 
-    $functions | where {$_ -notmatch "-SO"}
+    $functions | where {$_ -notmatch "-SO"} | format-table
 }
 
 # Run script easily function
