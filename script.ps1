@@ -7,9 +7,25 @@ Start-Transcript "C:\log.txt"
 Set-PSDebug -Trace 0
 
 # Install epic carbon module
-Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name Enabled `
+-PropertyType DWord -Value "0" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control" -Name FIPSAlgorithmPolicy `
+-PropertyType DWord -Value "0" -Force
+
+if ((Get-PackageProvider | ? Name -eq "NuGet") -eq $null) {
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+}
+
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-Install-Module Carbon
+
+if ((Get-Module | ? Name -eq "Carbon") -eq $null) {
+    Install-Module Carbon
+}
+
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name Enabled `
+-PropertyType DWord -Value "1" -Force
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control" -Name FIPSAlgorithmPolicy `
+-PropertyType DWord -Value "1" -Force
 
 # Get windows version
 function Get-SOVer {
@@ -133,7 +149,6 @@ $global:ver = Get-SOVer
 $global:os = Get-SOOS
 $global:users = Get-CUser
 $global:users_nobuiltin = $users | where {$_.Description -eq $null} | where {$_.Name -ne "defaultuser0"}
-$global:badusers = Get-SOBadUsers
 $global:ip = Get-CIPAddress | where {$_.IPAddressToString -match "192.168"} | select IPAddressToString `
 | Format-Table -HideTableHeaders
 
@@ -173,7 +188,9 @@ function Delete-Users {
 
         Add-SOProgress "User(s) have been deleted"
     } else {
-        $global:badusers = Get-SOBadUsers
+        if ($badusers -eq $null) {
+            $global:badusers = Get-SOBadUsers
+        }
 
         $badusers.foreach{
             Remove-LocalUser $_
@@ -563,6 +580,10 @@ function Set-FirefoxConfig {
 
 # Prohibited users' files
 function Find-ProhibitedUserFiles {
+    if ($badusers -eq $null) {
+        $global:badusers = Get-SOBadUsers
+    }
+
     $badusers.foreach{
         $f = Get-ChildItem C:\* -Recurse | Get-Acl
 
@@ -577,6 +598,10 @@ function Find-ProhibitedUserFiles {
 
 # Delete user folders of bad users
 function Delete-BadUserFolders {
+    if ($badusers -eq $null) {
+        $global:badusers = Get-SOBadUsers
+    }
+
     $badusers.foreach{
         Remove-Item C:\Users\$_ -Recurse -Force
     }
