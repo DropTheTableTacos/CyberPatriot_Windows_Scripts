@@ -110,11 +110,11 @@ function Import-SOAlias {
 
 # Setup autologon again for our user for convenience
 function Set-SOAutoLogon {
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon -Name DefaultUserName `
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name DefaultUserName `
     -PropertyType String -Value "$env:userprofile" -Force
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon -Name DefaultPassword `
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name DefaultPassword `
     -PropertyType String -Value "abc123ABC123@@" -Force
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon -Name AutoAdminLogon `
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoAdminLogon `
     -PropertyType String -Value "1" -Force
 }
 
@@ -172,12 +172,14 @@ function Delete-Users {
 
         Add-SOProgress "User(s) have been deleted"
     } else {
+        $global:badusers = Get-SOBadUsers
+
         $badusers.foreach{
             Remove-LocalUser $_
+            echo "$_ was yeeted off the face of the earth."
         }
 
         Add-SOProgress "Unauthorized user(s) have been deleted"
-        echo "Bad men deleted."
     }
 }
 
@@ -224,30 +226,30 @@ function Disable-Services {
     $services = Import-SOLists services
 
     ($services | where {$_.State -match "Uninstall"}).foreach{
-        Stop-Service $_;
-        Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
-        Uninstall-Service -Name $_
+        Stop-Service $_.Name;
+        Set-Service $_.Name -startuptype Disabled -ErrorAction SilentlyContinue;
+        Uninstall-Service -Name $_.Name
     }
 
     ($services | where {$_.State -match "Automatic"}).foreach{
-        Set-Service $_ -startuptype Automatic -ErrorAction SilentlyContinue;
-        Start-Service $_;
+        Set-Service $_.Name -startuptype Automatic -ErrorAction SilentlyContinue;
+        Start-Service $_.Name;
     }
 
     ($services | where {$_.State -match "Manual"}).foreach{
-        Set-Service $_ -startuptype Automatic -ErrorAction SilentlyContinue;
-        Start-Service $_;
+        Set-Service $_.Name -startuptype Automatic -ErrorAction SilentlyContinue;
+        Start-Service $_.Name;
     }
 
     ($services | where {$_.State -match "Disabled"}).foreach{
-        Stop-Service $_;
-        Set-Service $_ -startuptype Disabled -ErrorAction SilentlyContinue;
+        Stop-Service $_.Name;
+        Set-Service $_.Name -startuptype Disabled -ErrorAction SilentlyContinue;
     }
 
     # Enable exlusions
     $serv_exclusions.foreach{
-        Set-Service $_ -startuptype Automatic;
-        Start-Service $_;
+        Set-Service $_.Name -startuptype Automatic;
+        Start-Service $_.Name;
     }
 
     Add-SOProgress "Lame services disabled";
