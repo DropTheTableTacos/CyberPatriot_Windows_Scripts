@@ -7,6 +7,7 @@ Start-Transcript "C:\log.txt"
 Set-PSDebug -Trace 0
 
 # Install epic carbon module
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 Install-Module Carbon
 
@@ -448,7 +449,7 @@ function Disable-Features {
     $feature_list = Import-SOLists features
 
     $feature_list.foreach{
-        Uninstall-WindowsFeature -Name $_;
+        Disable-WindowsOptionalFeature -FeatureName $_ -Online;
     }
 
     Add-SOProgress "Disabled lame features"
