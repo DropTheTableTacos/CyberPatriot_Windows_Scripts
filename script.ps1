@@ -488,7 +488,7 @@ function View-Shares {
             break;
         }
 
-        explorer "\\$env:computername\$_";
+        explorer "\\$env:computername\$answer";
     }
 }
 
@@ -507,7 +507,7 @@ function Delete-Shares {
             break;
         }
 
-        Uninstall-FileShare $_;
+        Uninstall-FileShare $answer;
     }
 }
 
@@ -906,5 +906,7 @@ $functions.foreach{
 }
 
 # Excute all functions with pauses inbetween
-cls
-List-Functions
+($functions | where {$_ -notmatch "-SO"}).foreach{
+    & $_.Name;
+    pause
+}
