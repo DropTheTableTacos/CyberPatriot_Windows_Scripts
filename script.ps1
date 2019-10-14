@@ -149,6 +149,7 @@ $global:ver = Get-SOVer
 $global:os = Get-SOOS
 $global:users = Get-CUser
 $global:users_nobuiltin = $users | where {$_.Description -eq $null} | where {$_.Name -ne "defaultuser0"}
+$global:badusers = Get-SOBadUsers
 $global:ip = Get-CIPAddress | where {$_.IPAddressToString -match "192.168"} | select IPAddressToString `
 | Format-Table -HideTableHeaders
 
@@ -191,9 +192,7 @@ function Delete-Users {
 
         Add-SOProgress "User(s) have been deleted"
     } else {
-        if ($badusers -eq $null) {
-            $global:badusers = Get-SOBadUsers
-        }
+        $global:badusers = Get-SOBadUsers
 
         $badusers.foreach{
             Remove-LocalUser $_
@@ -533,9 +532,7 @@ function Set-FirefoxConfig {
 
 # Prohibited users' files
 function Find-ProhibitedUserFiles {
-    if ($badusers -eq $null) {
-        $global:badusers = Get-SOBadUsers
-    }
+    $global:badusers = Get-SOBadUsers
 
     $badusers.foreach{
         $f = Get-ChildItem C:\* -Recurse | Get-Acl
@@ -551,9 +548,7 @@ function Find-ProhibitedUserFiles {
 
 # Delete user folders of bad users
 function Delete-BadUserFolders {
-    if ($badusers -eq $null) {
-        $global:badusers = Get-SOBadUsers
-    }
+    $global:badusers = Get-SOBadUsers
 
     $badusers.foreach{
         Remove-Item C:\Users\$_ -Recurse -Force
