@@ -157,7 +157,10 @@ function Import-SCT {
     cd "$cmderbin"
 
     # Import Microsoft recommended baselines like an absolute chad
-    .\LGPO.exe /g "$sct\${os}_$ver"
+    .\LGPO.exe /g "$sct\${os}_$ver\MS"
+
+    # Import chad custom baselines too
+    .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver"
 
     # Allow cmder and stop scoring, etc. to actually run lol
     New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ValidateAdminCodeSignatures `
@@ -409,56 +412,6 @@ function Install-Programs {
 
     Add-SOProgress "Good security programs installed"
     echo "Gucci security programs installed."
-}
-
-# Import INF file
-function Import-Inf {
-    cd "$cmderbin"
-
-    # Good inf
-    if ($args -eq "good") {
-        .\LGPO /s "$compfiles\infs\${os}GoodInf.inf";
-        Set-SOLogonMessage
-
-        Add-SOProgress "Good INF applied"
-        echo "Good inf applied mate."
-    }
-
-    # Bad inf
-    if ($args -eq "bad") {
-        .\LGPO /s "$compfiles\infs\${os}BadInf.inf";
-        Set-SOLogonMessage
-
-        Add-SOProgress "Bad INF applied"
-        echo "Bad inf applied mate."
-    } else {
-        echo "Please specify 'good' or 'bad' INF.";
-        break;
-    }
-}
-
-# Import Audit policy
-function Import-Audit {
-    cd "$cmderbin"
-
-    # Good
-    if ($args -eq "good") {
-        .\LGPO /a "$compfiles\audit_templates\${os}AllAudit.csv"
-
-        Add-SOProgress "Good audit policy applied";
-        echo "Good audit template applied my dude."
-    }
-
-    # Bad inf
-    if ($args -eq "bad") {
-        .\LGPO /a "$compfiles\audit_templates\${os}NoAudit.csv"
-
-        Add-SOProgress "Bad audit policy applied";
-        echo "Bad audit template applied my dude."
-    } else {
-        echo "Please specify 'good' or 'bad' template.";
-        break;
-    }
 }
 
 # Disable features

@@ -20,8 +20,6 @@ Enable-Firewall,ef
 Disable-Users,disu
 Update-Windows,uw
 Install-Programs,ip
-Import-Inf,iinf
-Import-Audit,iaud
 Disable-Features,df
 View-Shares,vs
 Delete-Shares,dshare
