@@ -161,13 +161,24 @@ function Import-SCT {
     .\LGPO.exe /g "$sct\${os}_$ver\MS"
 
     # Import chad custom baselines too
-    .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver"
+    if ($args -eq "good") {
+        .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver\Good"
+    }
+
+    if ($args -eq "bad") {
+        .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver\Bad"
+    } else {
+        echo "Please specify good or bad."
+    }
 
     # Allow cmder and stop scoring, etc. to actually run lol
     New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ValidateAdminCodeSignatures `
     -PropertyType DWord -Value "0" -Force
     New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableUIADesktopToggle `
     -PropertyType DWord -Value "0" -Force
+
+    # Set logon message
+    Set-SOLogonMessage
 
     Add-SOProgress "SCT Baselines imported";
     echo "SCT baselines imported."
@@ -418,7 +429,7 @@ function Disable-Features {
     $feature_list = Import-SOLists features
 
     $feature_list.foreach{
-        Disable-WindowsOptionalFeature -FeatureName $_ -Online;
+        Disable-WindowsOptionalFeature -FeatureName $_.Name -Online;
     }
 
     Add-SOProgress "Disabled lame features"
