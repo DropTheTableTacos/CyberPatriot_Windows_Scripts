@@ -12,13 +12,13 @@ New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithm
 New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control" -Name FIPSAlgorithmPolicy `
 -PropertyType DWord -Value "0" -Force
 
-if ((Get-PackageProvider | ? Name -eq "NuGet") -eq $null) {
+if ($null -eq (Get-PackageProvider | Where-Object Name -eq "NuGet")) {
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 }
 
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 
-if ((Get-Module | ? Name -eq "Carbon") -eq $null) {
+if ($null -eq (Get-Module | Where-Object Name -eq "Carbon")) {
     Install-Module Carbon
 }
 
@@ -70,7 +70,7 @@ function Import-SOLists {
 function Open-Readme {
     Start-Process C:\CyberPatriot\README.url;
 
-    echo "README opened."
+    Write-Output "README opened."
 }
 
 # Get user list
@@ -78,10 +78,10 @@ function Get-SOBadUsers {
     $goodusers = Get-Content "$compfiles\lists\good_users.txt" -ErrorAction SilentlyContinue
 
     # Add readme users to file if needed
-    if ($goodusers -eq $null) {
+    if ($null -eq $goodusers) {
         Open-Readme
 
-        echo "Put readme users in this text file" >> "$compfiles\lists\good_users.txt"
+        Write-Output "Put readme users in this text file" >> "$compfiles\lists\good_users.txt"
         start-process "$compfiles\lists\good_users.txt"
         pause
     }
@@ -110,8 +110,8 @@ function Add-SOProgress {
 }
 
 # Delete leftover text files
-function Delete-SOTempTxt {
-    cd C:\
+function Remove-SOTempTxt {
+    Set-Location C:\
     Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt, `
     userdiff.txt -Force -ErrorAction SilentlyContinue;
 }
@@ -148,14 +148,14 @@ $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 $global:ver = Get-SOVer
 $global:os = Get-SOOS
 $global:users = Get-CUser
-$global:users_nobuiltin = $users | where {$_.Description -eq $null} | where {$_.Name -ne "defaultuser0"}
+$global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
 $global:badusers = Get-SOBadUsers
-$global:ip = Get-CIPAddress | where {$_.IPAddressToString -match "192.168"} | select IPAddressToString `
+$global:ip = Get-CIPAddress | Where-Object IPAddressToString -match "192.168" | Select-Object IPAddressToString `
 | Format-Table -HideTableHeaders
 
 # SCT Baselines
 function Import-SCT {
-    cd "$cmderbin"
+    Set-Location "$cmderbin"
 
     # Import Microsoft recommended baselines like an absolute chad
     .\LGPO.exe /g "$sct\${os}_$ver\MS"
@@ -168,7 +168,7 @@ function Import-SCT {
     if ($args -eq "bad") {
         .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver\Bad"
     } else {
-        echo "Please specify good or bad."
+        Write-Output "Please specify good or bad."
     }
 
     # Allow cmder and stop scoring, etc. to actually run lol
@@ -181,17 +181,17 @@ function Import-SCT {
     Set-SOLogonMessage
 
     Add-SOProgress "SCT Baselines imported";
-    echo "SCT baselines imported."
+    Write-Output "SCT baselines imported."
 }
 
 # Delete users
-function Delete-Users {
+function Remove-Users {
     if ($args -in "m","man","manual") {
         while ($true) {
-            cls;
+            Clear-Host;
 
             List-Users nobuiltin
-            echo "`n"
+            Write-Output "`n"
             $answer = Read-Host "Enter a username to delete"
 
             if ($answer -eq "n") {
@@ -207,7 +207,7 @@ function Delete-Users {
 
         $badusers.foreach{
             Remove-LocalUser $_
-            echo "$_ was yeeted off the face of the earth."
+            Write-Output "$_ was yeeted off the face of the earth."
         }
 
         Add-SOProgress "Unauthorized user(s) have been deleted"
@@ -215,11 +215,11 @@ function Delete-Users {
 }
 
 # Delete Admins
-function Delete-Admins {
+function Remove-Admins {
     Open-Readme
 
     while ($true) {
-        cls;
+        Clear-Host;
 
         List-Admins;
         $answer = Read-Host "Enter a username to delete"
@@ -238,7 +238,7 @@ function Delete-Admins {
 function Disable-Services {
     # Service exclusions
     while ($true) {
-        cls
+        Clear-Host
 
         $answer = Read-Host "Enter a service to exclude (use 'remote' for Remote Desktop)";
 
@@ -256,23 +256,23 @@ function Disable-Services {
     # Disable list of services
     $services = Import-SOLists services
 
-    ($services | where {$_.State -match "Uninstall"}).foreach{
+    ($services | Where-Object State -match "Uninstall").foreach{
         Stop-Service $_.Name;
         Set-Service $_.Name -startuptype Disabled -ErrorAction SilentlyContinue;
         Uninstall-Service -Name $_.Name
     }
 
-    ($services | where {$_.State -match "Automatic"}).foreach{
+    ($services | Where-Object State -match "Automatic").foreach{
         Set-Service $_.Name -startuptype Automatic -ErrorAction SilentlyContinue;
         Start-Service $_.Name;
     }
 
-    ($services | where {$_.State -match "Manual"}).foreach{
+    ($services | Where-Object State -match "Manual").foreach{
         Set-Service $_.Name -startuptype Automatic -ErrorAction SilentlyContinue;
         Start-Service $_.Name;
     }
 
-    ($services | where {$_.State -match "Disabled"}).foreach{
+    ($services | Where-Object State -match "Disabled").foreach{
         Stop-Service $_.Name;
         Set-Service $_.Name -startuptype Disabled -ErrorAction SilentlyContinue;
     }
@@ -284,7 +284,7 @@ function Disable-Services {
     }
 
     Add-SOProgress "Lame services disabled";
-    echo "Bad services disabled and good ones enabled."
+    Write-Output "Bad services disabled and good ones enabled."
 }
 
 # Check forensics questions
@@ -294,11 +294,11 @@ function Open-Forensics {
     }
 
     Add-SOProgress "Forensics Questions checked out"
-    echo "Opened the forensics questions, brah."
+    Write-Output "Opened the forensics questions, brah."
 }
 
 # Delete Media files
-function Delete-MediaFiles {
+function Remove-MediaFiles {
     $ext = Get-Content "$compfiles\lists\media_extensions.txt"
 
     $ext.foreach{
@@ -306,20 +306,20 @@ function Delete-MediaFiles {
     }
 
     Add-SOProgress "Media files deleted"
-    echo "Bad media files deleted."
+    Write-Output "Bad media files deleted."
 }
 
 # Change passwords
-function Change-Passwords {
+function Set-Passwords {
     if ($args -in "m","man","manual") {
         while ($true) {
-            cls
+            Clear-Host
 
             List-Users
-            echo "`n"
+            Write-Output "`n"
 
-            echo "NOTE: Passwords are set to: abc123ABC123@@"
-            echo "`n"
+            Write-Output "NOTE: Passwords are set to: abc123ABC123@@"
+            Write-Output "`n"
             $answer = Read-Host "Enter username to change password"
 
             if ($answer -eq "n") {
@@ -335,7 +335,7 @@ function Change-Passwords {
 
         Add-SOProgress "All passwords changed to a gamer secure password"
 
-        echo "All passwords changed to: abc123ABC123@@"
+        Write-Output "All passwords changed to: abc123ABC123@@"
     }
 }
 
@@ -345,7 +345,7 @@ function Enable-Firewall {
     # Put command to import firewall template here
 
     Add-SOProgress "Firewall enabled and template applied"
-    echo "Firewall enabled, brah."
+    Write-Output "Firewall enabled, brah."
 }
 
 # Disable Users
@@ -354,10 +354,10 @@ function Disable-Users {
         Open-Readme
 
         while ($true) {
-            cls
+            Clear-Host
 
             List-Users
-            echo "`n"
+            Write-Output "`n"
             $answer = Read-Host "Enter username to disable"
 
             if ($answer -eq "n") {
@@ -375,7 +375,7 @@ function Disable-Users {
 
         Add-SOProgress "Built-in Admin and Guest disabled"
 
-        echo "Built-in Admin and Guest disabled."
+        Write-Output "Built-in Admin and Guest disabled."
     }
 }
 
@@ -396,9 +396,9 @@ function Update-Windows {
     -PropertyType DWord -Value "4" -Force;
 
     # Completed message
-    echo "`n";
-    echo "Automatic Windows Update has been configured and the service was started.";
-    echo "Now start the update, biggie.";
+    Write-Output "`n";
+    Write-Output "Automatic Windows Update has been configured and the service was started.";
+    Write-Output "Now start the update, biggie.";
 
     # Opening gui
     Start-Process ms-settings:windowsupdate -ErrorAction SilentlyContinue;
@@ -421,7 +421,7 @@ function Install-Programs {
     choco install firefox ie11 malwarebytes mbsa patch-my-pc --ignorechecksum --force
 
     Add-SOProgress "Good security programs installed"
-    echo "Gucci security programs installed."
+    Write-Output "Gucci security programs installed."
 }
 
 # Disable features
@@ -433,16 +433,16 @@ function Disable-Features {
     }
 
     Add-SOProgress "Disabled lame features"
-    echo "Lame features disabled, or one could say, clapped"
+    Write-Output "Lame features disabled, or one could say, clapped"
 }
 
 # View file shares
-function View-Shares {
+function Open-Shares {
     while ($true) {
-        cls;
+        Clear-Host;
 
         Get-FileShare
-        echo "`n"
+        Write-Output "`n"
 
         $answer = Read-Host "Choose a sketchy share to view"
 
@@ -456,12 +456,12 @@ function View-Shares {
 }
 
 # Delete shares
-function Delete-Shares {
+function Remove-Shares {
     while ($true) {
-        cls;
+        Clear-Host;
 
         Get-FileShare
-        echo "`n"
+        Write-Output "`n"
 
         $answer = Read-Host "Choose a sketchy share to delete"
 
@@ -475,13 +475,13 @@ function Delete-Shares {
 }
 
 # Remove programs
-function Delete-Programs {
+function Remove-Programs {
     # WIP
     Add-SOProgress "Sketchy programs removed"
 }
 
 # Remove stinky malware
-function Delete-Malware {
+function Remove-Malware {
     # WIP
     Add-SOProgress "Malware absolutely yeeted on"
 }
@@ -492,11 +492,11 @@ function Disable-RemoteDesktop {
     -PropertyType DWord -Value "1" -Force
 
     Add-SOProgress "Remote Desktop disabled"
-    echo "Disable remote desktop."
+    Write-Output "Disable remote desktop."
 }
 
 # Secure screensaver with password gamer
-function Secure-Screensaver {
+function Protect-Screensaver {
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Control Panel" -Force
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control Panel" -Name "Desktop" -Force
     New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" `
@@ -508,7 +508,7 @@ function Secure-Screensaver {
     -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
 
     Add-SOProgress "Screensaver secured with password"
-    echo "Secured screensaver with a password."
+    Write-Output "Secured screensaver with a password."
 }
 
 # Hosts file
@@ -516,7 +516,7 @@ function Clear-Hosts {
     Reset-CHostsFile
 
     Add-SOProgress "Hosts file cleared"
-    echo "Hosts file cleared, ez"
+    Write-Output "Hosts file cleared, ez"
 }
 
 # Firefox config
@@ -538,7 +538,7 @@ function Set-FirefoxConfig {
     }
 
     Add-SOProgress "Firefox config files copied"
-    echo "Firefox swole settings copied."
+    Write-Output "Firefox swole settings copied."
 }
 
 # Prohibited users' files
@@ -549,16 +549,16 @@ function Find-ProhibitedUserFiles {
         $f = Get-ChildItem C:\* -Recurse | Get-Acl
 
         if ($f.Owner -eq "$_") {
-            echo $f.Path
+            Write-Output $f.Path
         }
     }
 
     Add-SOProgress "Prohibited user files theoretically found maybe idk"
-    echo "Prohibited user files theoretically found maybe idk."
+    Write-Output "Prohibited user files theoretically found maybe idk."
 }
 
 # Delete user folders of bad users
-function Delete-BadUserFolders {
+function Remove-BadUserFolders {
     $global:badusers = Get-SOBadUsers
 
     $badusers.foreach{
@@ -566,23 +566,23 @@ function Delete-BadUserFolders {
     }
 
     Add-SOProgress "Bad user folders deleted"
-    echo "Bad user folders deleted."
+    Write-Output "Bad user folders deleted."
 }
 
 # Update programs
 function Update-Programs {
-    cls
-    echo "Update all the dang programs, son."
-    echo "`n"
-    echo "IMPORTANT: Check if the programs have auto updates"
+    Clear-Host
+    Write-Output "Update all the dang programs, son."
+    Write-Output "`n"
+    Write-Output "IMPORTANT: Check if the programs have auto updates"
     pause
     Add-SOProgress "Hopefully got those gamer program updates"
 }
 
 # Run Nessus scans
-function Run-Nessus {
+function Start-Nessus {
     $ip
-    echo "Run Nessus scans, ya brainlet"
+    Write-Output "Run Nessus scans, ya brainlet"
     pause
 
     Add-SOProgress "Nessus scan theoretically run?"
@@ -592,11 +592,11 @@ function Run-Nessus {
 function Find-ProhibitedFiles {
        # Put stuff here eventually
        Add-SOProgress "Prohibited files may have been found"
-       echo "Prohibited files may have been found"
+       Write-Output "Prohibited files may have been found"
 }
 
 # Run Sysinternals
-function Run-Sysinternals {
+function Start-Sysinternals {
     $sysinternals = "autoruns","procexp","tcpview"
 
     $sysinternals.foreach{
@@ -607,7 +607,7 @@ function Run-Sysinternals {
 }
 
 # CISCAT Registry batch file
-function Run-CiscatRegistry {
+function Start-CiscatRegistry {
     $cisreg = Get-Content "$compfiles\lists\ciscat_registry.txt"
 
     $cisreg.foreach{
@@ -619,14 +619,14 @@ function Run-CiscatRegistry {
 
 # IE registry gamers
 function Import-IERegistry {
-    $ie_reg = Get-Content "$compfiles\lists\ie_registry.txt" | Select-String -NotMatch "#"
+    $ie_reg = Get-Content "$compfiles\lists\ie_registry.txt" | Select-Object-String -NotMatch "#"
 
     $ie_reg.foreach{
         $_
     }
 
     Add-SOProgress "Set CISCAT Internet Explorer registry settings"
-    echo "Imported IE Registry settings"
+    Write-Output "Imported IE Registry settings"
 }
 
 # Enable internet explorer
@@ -638,15 +638,15 @@ function Enable-InternetExplorer {
     -ErrorAction SilentlyContinue
 
     Add-SOProgress "Enabled Internet Explorer"
-    echo "Enabled the gamer internet explorer."
+    Write-Output "Enabled the gamer internet explorer."
 }
 
 # Delete applocker rules
-function Delete-AppLocker {
+function Remove-AppLocker {
     Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
 
     Add-SOProgress "AppLocker policies cleared"
-    echo "Applocker policies cleared."
+    Write-Output "Applocker policies cleared."
 }
 
 # Activate/Disable users
@@ -655,10 +655,10 @@ function Enable-Users {
         Open-Readme
 
         while ($true) {
-            cls
+            Clear-Host
 
             List-Users nobuiltin
-            echo "`n"
+            Write-Output "`n"
             $answer = Read-Host "Enter username to enable"
 
             if ($answer -eq "n") {
@@ -674,7 +674,7 @@ function Enable-Users {
 
         Add-SOProgress "All users (except built-in Admin and Guest) enabled"
 
-        echo "All users (except built-in Admin and Guest) enabled."
+        Write-Output "All users (except built-in Admin and Guest) enabled."
     }
 }
 
@@ -684,23 +684,23 @@ function Enable-UAC {
     -PropertyType DWord -Value "1" -Force
 
     Add-SOProgress "UAC Enabled"
-    echo "Enabled UAC"
+    Write-Output "Enabled UAC"
 }
 
 # Cat-Lite scanner
-function Run-CatLite {
+function Start-CatLite {
     if ($os -eq "Win10") {
         Start-Process "$cmderbin\cis-cat-lite\CISCAT.jar"
     } else {
-        cls
-        echo "Sorry mate, you can't use the Cat-Lite scanner. Cause it aint Windows 10."
+        Clear-Host
+        Write-Output "Sorry mate, you can't use the Cat-Lite scanner. Cause it aint Windows 10."
     }
 }
 
 # Add Admins
 function Add-Admins {
     while ($true) {
-        cls;
+        Clear-Host;
 
         List-Admins;
         List-Users;
@@ -721,10 +721,10 @@ function Add-Users {
     Open-Readme
 
     while ($true) {
-        cls;
+        Clear-Host;
 
         List-Users
-        echo "`n"
+        Write-Output "`n"
         $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
@@ -742,7 +742,7 @@ function Copy-ToProfile {
     Copy-Item "$env:userprofile\Desktop\Script\script.ps1" `
     "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 
-    echo "Script copied to pshell profile."
+    Write-Output "Script copied to pshell profile."
 }
 
 # Find media files
@@ -759,62 +759,39 @@ function Find-MediaFiles {
     Add-SOProgress "Searched for media files"
 }
 
-# Get program list
-function List-Programs {
-    Get-CProgramInstallInfo
-}
-
-# List services
-function List-Service {
-    $services = Get-WmiObject -Class Win32_Service | select Name, DisplayName, State, StartMode, ProcessId, `
-    InstallDate, PathName;
-
-    if ($args -in "running","stopped") {
-        $services | where state -match "$args";
-        break;
-    }
-
-    if ($args -eq "auto","disabled","manual") {
-        $services | where startmode -match "$args";
-        break;
-    } else {
-        $services;
-    }
-}
-
 # List admins
-function List-Admins {
+function Get-Admins {
     $global:users = Get-CUser
-    $global:users_nobuiltin = $users | where {$_.Description -eq $null} | where {$_.Name -ne "defaultuser0"}
+    $global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
 
     if ($args -eq "nobuiltin") {
-        $users_nobuiltin | where {(test-groupmember Administrators $_) -eq $true} | select name
+        $users_nobuiltin | Where-Object (test-groupmember Administrators $_) -eq $true | Select-Object name
     } else {
-        $users | where {(test-groupmember Administrators $_) -eq $true} | select name
+        $users | Where-Object (test-groupmember Administrators $_) -eq $true | Select-Object name
     }
 }
 
 # List users
-function List-Users {
+function Get-Users {
     $global:users = Get-CUser
-    $global:users_nobuiltin = $users | where {$_.Description -eq $null} | where {$_.Name -ne "defaultuser0"}
+    $global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
 
     if ($args -eq "nobuiltin") {
-        $users_nobuiltin | select name | format-wide
+        $users_nobuiltin | Select-Object name | format-wide
     } else {
-        $users | select name | format-wide
+        $users | Select-Object name | format-wide
     }
 }
 
 # List functions
-function List-Functions {
+function Get-Functions {
     $functions = Import-SOLists functions
 
-    $functions | where {$_ -notmatch "-SO"} | format-table
+    $functions | Where-Object {$_ -notmatch "-SO"} | Format-Table
 }
 
 # Run script easily function
-function Run-Script {
+function Start-Script {
     Copy-ToProfile
     . $profile
 }
@@ -830,25 +807,25 @@ function Open-StopScoring {
 }
 
 # Intro screen bois
-cls
+Clear-Host
 
-echo "__          ___    _       _______   _    _ _____"
-echo "\ \        / / |  | |   /\|__   __| | |  | |  __ \"
-echo " \ \  /\  / /| |__| |  /  \  | |    | |  | | |__) |"
-echo "  \ \/  \/ / |  __  | / /\ \ | |    | |  | |  ___/"
-echo "   \  /\  /  | |  | |/ ____ \| |    | |__| | |"
-echo "    \/  \/   |_|  |_/_/    \_\_|     \____/|_|"
+Write-Output "__          ___    _       _______   _    _ _____"
+Write-Output "\ \        / / |  | |   /\|__   __| | |  | |  __ \"
+Write-Output " \ \  /\  / /| |__| |  /  \  | |    | |  | | |__) |"
+Write-Output "  \ \/  \/ / |  __  | / /\ \ | |    | |  | |  ___/"
+Write-Output "   \  /\  /  | |  | |/ ____ \| |    | |__| | |"
+Write-Output "    \/  \/   |_|  |_/_/    \_\_|     \____/|_|"
 
-echo "`n"
+Write-Output "`n"
 
-echo " _____ _____ _   _  _____   _____   ____  _   _  _____  _____"
-echo "|  __ \_   _| \ | |/ ____| |  __ \ / __ \| \ | |/ ____|/ ____|"
-echo "| |  | || | |  \| | |  __  | |  | | |  | |  \| | |  __| (___"
-echo "| |  | || | | .   | | |_ | | |  | | |  | | .   | | |_ |\___ \"
-echo "| |__| || |_| |\  | |__| | | |__| | |__| | |\  | |__| |____) |"
-echo "|_____/_____|_| \_|\_____| |_____/ \____/|_| \_|\_____|_____/"
+Write-Output " _____ _____ _   _  _____   _____   ____  _   _  _____  _____"
+Write-Output "|  __ \_   _| \ | |/ ____| |  __ \ / __ \| \ | |/ ____|/ ____|"
+Write-Output "| |  | || | |  \| | |  __  | |  | | |  | |  \| | |  __| (___"
+Write-Output "| |  | || | | .   | | |_ | | |  | | |  | | .   | | |_ |\___ \"
+Write-Output "| |__| || |_| |\  | |__| | | |__| | |__| | |\  | |__| |____) |"
+Write-Output "|_____/_____|_| \_|\_____| |_____/ \____/|_| \_|\_____|_____/"
 
-echo "`n"
+Write-Output "`n"
 
 pause
 
@@ -856,7 +833,7 @@ pause
 
 # Setup Functions
 Set-SOLogonMessage
-Delete-SOTempTxt
+Remove-SOTempTxt
 Import-SOAlias
 Set-SOAutoLogon
 $functions = Import-SOLists functions
@@ -864,8 +841,6 @@ $functions.foreach{
     Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
 }
 
-# Excute all functions with pauses inbetween
-($functions | where {$_ -notmatch "-SO"}).foreach{
-    & $_.Name;
-    pause
-}
+# List functions n stuff
+Clear-Host
+List-Functions
