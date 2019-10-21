@@ -697,6 +697,27 @@ function Start-CatLite {
     }
 }
 
+# Setup backup
+function Enable-Backup {
+    # WIP
+    Install-WindowsFeature Windows-Server-Backup
+
+    Read-Host "Plug in a flashdrive mate"
+
+    while ($true) {
+        Clear-Host
+        Get-PSDrive -PSProvider "FileSystem"
+
+        $answer = Read-Host "Choose the drive to use for backup"
+
+        if ($answer -eq "n") {
+            break;
+        }
+
+        wbadmin start backup -backupTarget:$answer: -include:C: -quiet -allCritical
+    }
+}
+
 # Add Admins
 function Add-Admins {
     while ($true) {
@@ -843,4 +864,4 @@ $functions.foreach{
 
 # List functions n stuff
 Clear-Host
-List-Functions
+Get-Functions
