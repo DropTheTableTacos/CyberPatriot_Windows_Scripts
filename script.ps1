@@ -71,7 +71,7 @@ function Import-SOLists {
 
 # README
 function Open-Readme {
-    Start-Process C:\CyberPatriot\README.url;
+    Start-Process C:\CyberPatriot\README.url
 
     Write-Output "README opened."
 }
@@ -109,14 +109,14 @@ function Set-SOLogonMessage {
 
 # Add to progress log
 function Add-SOProgress {
-    Write-Output "$args`n" >> "$desktop\progress.txt";
+    Write-Output "$args`n" >> "$desktop\progress.txt"
 }
 
 # Delete leftover text files
 function Remove-SOTempTxt {
     Set-Location C:\
     Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt, `
-    userdiff.txt -Force -ErrorAction SilentlyContinue;
+    userdiff.txt -Force -ErrorAction SilentlyContinue
 }
 
 # Import aliases
@@ -139,15 +139,15 @@ function Set-SOAutoLogon {
 }
 
 # Variables lol
-$global:desktop = "$env:userprofile\Desktop";
-$global:compfiles = "$desktop\Script";
-$global:sct = "$compfiles\sctbaselines";
-$global:cmderbin = "$compfiles\cmder\bin";
+$global:desktop = "$env:userprofile\Desktop"
+$global:compfiles = "$desktop\Script"
+$global:sct = "$compfiles\sctbaselines"
+$global:cmderbin = "$compfiles\cmder\bin"
 $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
 %systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
 %programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%", `
-[System.EnvironmentVariableTarget]::Machine);
+[System.EnvironmentVariableTarget]::Machine)
 $global:ver = Get-SOVer
 $global:os = Get-SOOS
 $global:users = Get-CUser
@@ -183,7 +183,7 @@ function Import-SCT {
     # Set logon message
     Set-SOLogonMessage
 
-    Add-SOProgress "SCT Baselines imported";
+    Add-SOProgress "SCT Baselines imported"
     Write-Output "SCT baselines imported."
 }
 
@@ -191,14 +191,14 @@ function Import-SCT {
 function Remove-Users {
     if ($args -in "m","man","manual") {
         while ($true) {
-            Clear-Host;
+            Clear-Host
 
             List-Users nobuiltin
             Write-Output "`n"
             $answer = Read-Host "Enter a username to delete"
 
             if ($answer -eq "n") {
-                break;
+                break
             }
 
             Remove-LocalUser $answer
@@ -222,13 +222,13 @@ function Remove-Admins {
     Open-Readme
 
     while ($true) {
-        Clear-Host;
+        Clear-Host
 
-        List-Admins;
+        List-Admins
         $answer = Read-Host "Enter a username to delete"
 
         if ($answer -eq "n") {
-            break;
+            break
         }
 
         Remove-LocalGroupMember Administrators $answer
@@ -243,16 +243,16 @@ function Disable-Services {
     while ($true) {
         Clear-Host
 
-        $answer = Read-Host "Enter a service to exclude (use 'remote' for Remote Desktop)";
+        $answer = Read-Host "Enter a service to exclude (use 'remote' for Remote Desktop)"
 
         if ($answer -eq "n") {
-            break;
+            break
         }
 
         if ($answer -eq "remote") {
-            $serv_exclusions += "termservice","sessionenv";
+            $serv_exclusions += "termservice","sessionenv"
         } else {
-            $serv_exclusions += $answer;
+            $serv_exclusions += $answer
         }
     }
 
@@ -260,40 +260,40 @@ function Disable-Services {
     $services = Import-SOLists services
 
     ($services | Where-Object State -match "Uninstall").foreach{
-        Stop-Service $_.Name;
-        Set-Service $_.Name -startuptype Disabled -ErrorAction SilentlyContinue;
+        Stop-Service $_.Name
+        Set-Service $_.Name -startuptype Disabled -ErrorAction SilentlyContinue
         Uninstall-Service -Name $_.Name
     }
 
     ($services | Where-Object State -match "Automatic").foreach{
-        Set-Service $_.Name -startuptype Automatic -ErrorAction SilentlyContinue;
-        Start-Service $_.Name;
+        Set-Service $_.Name -startuptype Automatic -ErrorAction SilentlyContinue
+        Start-Service $_.Name
     }
 
     ($services | Where-Object State -match "Manual").foreach{
-        Set-Service $_.Name -startuptype Automatic -ErrorAction SilentlyContinue;
-        Start-Service $_.Name;
+        Set-Service $_.Name -startuptype Automatic -ErrorAction SilentlyContinue
+        Start-Service $_.Name
     }
 
     ($services | Where-Object State -match "Disabled").foreach{
-        Stop-Service $_.Name;
-        Set-Service $_.Name -startuptype Disabled -ErrorAction SilentlyContinue;
+        Stop-Service $_.Name
+        Set-Service $_.Name -startuptype Disabled -ErrorAction SilentlyContinue
     }
 
     # Enable exlusions
     $serv_exclusions.foreach{
-        Set-Service $_.Name -startuptype Automatic;
-        Start-Service $_.Name;
+        Set-Service $_.Name -startuptype Automatic
+        Start-Service $_.Name
     }
 
-    Add-SOProgress "Lame services disabled";
+    Add-SOProgress "Lame services disabled"
     Write-Output "Bad services disabled and good ones enabled."
 }
 
 # Check forensics questions
 function Open-Forensics {
     (Get-ChildItem "$desktop\Forensics Question *.txt").foreach{
-        Start-Process $_;
+        Start-Process $_
     }
 
     Add-SOProgress "Forensics Questions checked out"
@@ -344,7 +344,7 @@ function Set-Passwords {
 
 # Enable Firewall and template
 function Enable-Firewall {
-    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True;
+    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
     # Put command to import firewall template here
 
     Add-SOProgress "Firewall enabled and template applied"
@@ -364,7 +364,7 @@ function Disable-Users {
             $answer = Read-Host "Enter username to disable"
 
             if ($answer -eq "n") {
-                break;
+                break
             }
 
             Disable-LocalUser $answer
@@ -385,31 +385,31 @@ function Disable-Users {
 # Windows Update
 function Update-Windows {
     # Set windows update service to auto and start
-    Set-Service wuauserv -startuptype Automatic;
-    Start-Service wuauserv;
+    Set-Service wuauserv -startuptype Automatic
+    Start-Service wuauserv
 
     # Enable automatic updates
     New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" `
-    -Name NoAutoUpdate -PropertyType DWord -Value "0" -Force;
+    -Name NoAutoUpdate -PropertyType DWord -Value "0" -Force
     New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" `
-    -Name AUOptions -PropertyType DWord -Value "4" -Force;
+    -Name AUOptions -PropertyType DWord -Value "4" -Force
     New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate `
-    -PropertyType DWord -Value "0" -Force;
+    -PropertyType DWord -Value "0" -Force
     New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name AUOptions `
-    -PropertyType DWord -Value "4" -Force;
+    -PropertyType DWord -Value "4" -Force
 
     # Completed message
-    Write-Output "`n";
-    Write-Output "Automatic Windows Update has been configured and the service was started.";
-    Write-Output "Now start the update, biggie.";
+    Write-Output "`n"
+    Write-Output "Automatic Windows Update has been configured and the service was started."
+    Write-Output "Now start the update, biggie."
 
     # Opening gui
-    Start-Process ms-settings:windowsupdate -ErrorAction SilentlyContinue;
-    Start-Process wuapp.exe -ErrorAction SilentlyContinue;
+    Start-Process ms-settings:windowsupdate -ErrorAction SilentlyContinue
+    Start-Process wuapp.exe -ErrorAction SilentlyContinue
 
     pause
 
-    Add-SOProgress "Windows Update configured and started";
+    Add-SOProgress "Windows Update configured and started"
 }
 
 # Install gucci programs
@@ -432,7 +432,7 @@ function Disable-Features {
     $feature_list = Import-SOLists features
 
     $feature_list.foreach{
-        Disable-WindowsOptionalFeature -FeatureName $_.Name -Online;
+        Disable-WindowsOptionalFeature -FeatureName $_.Name -Online
     }
 
     Add-SOProgress "Disabled lame features"
@@ -442,7 +442,7 @@ function Disable-Features {
 # View file shares
 function Open-Shares {
     while ($true) {
-        Clear-Host;
+        Clear-Host
 
         Get-FileShare
         Write-Output "`n"
@@ -451,17 +451,17 @@ function Open-Shares {
 
         if ($answer -eq "n") {
             Add-SOProgress "Sketchy shares viewed"
-            break;
+            break
         }
 
-        explorer "\\$env:computername\$answer";
+        explorer "\\$env:computername\$answer"
     }
 }
 
 # Delete shares
 function Remove-Shares {
     while ($true) {
-        Clear-Host;
+        Clear-Host
 
         Get-FileShare
         Write-Output "`n"
@@ -470,10 +470,10 @@ function Remove-Shares {
 
         if ($answer -eq "n") {
             Add-SOProgress "Sketchy shares deleted"
-            break;
+            break
         }
 
-        Uninstall-FileShare $answer;
+        Uninstall-FileShare $answer
     }
 }
 
@@ -614,10 +614,10 @@ function Start-CiscatRegistry {
     $cisreg = Get-Content "$compfiles\lists\ciscat_registry.txt"
 
     $cisreg.foreach{
-        $_;
+        $_
     }
 
-    Add-SOProgress "CISCAT Registry batch file run";
+    Add-SOProgress "CISCAT Registry batch file run"
 }
 
 # IE registry gamers
@@ -665,14 +665,14 @@ function Enable-Users {
             $answer = Read-Host "Enter username to enable"
 
             if ($answer -eq "n") {
-                break;
+                break
             }
 
             Enable-LocalUser $answer
         }
     } else {
         $users_nobuiltin.foreach{
-            Enable-LocalUser $_;
+            Enable-LocalUser $_
         }
 
         Add-SOProgress "All users (except built-in Admin and Guest) enabled"
@@ -714,7 +714,7 @@ function Enable-Backup {
         $answer = Read-Host "Choose the drive to use for backup"
 
         if ($answer -eq "n") {
-            break;
+            break
         }
 
         wbadmin start backup -backupTarget:${answer}: -include:C: -quiet -allCritical
@@ -724,14 +724,14 @@ function Enable-Backup {
 # Add Admins
 function Add-Admins {
     while ($true) {
-        Clear-Host;
+        Clear-Host
 
-        List-Admins;
-        List-Users;
+        List-Admins
+        List-Users
         $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
-            break;
+            break
         }
 
         Add-CGroupMember Administrators $answer
@@ -745,14 +745,14 @@ function Add-Users {
     Open-Readme
 
     while ($true) {
-        Clear-Host;
+        Clear-Host
 
         List-Users
         Write-Output "`n"
         $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
-            break;
+            break
         }
 
         New-LocalUser $answer -Password $pass
