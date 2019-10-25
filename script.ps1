@@ -43,22 +43,25 @@ function Get-SOVer {
 
 # Get OS name
 function Get-SOOS {
-    $os_name = (Get-CimInstance -ClassName CIM_OperatingSystem).Name;
-    $os_list = "Windows 7","Windows 8","Windows 10","Server 2008","Server 2016";
+    $os_name = (Get-CimInstance -ClassName CIM_OperatingSystem).Name
+    $os_list = "Windows 7","Windows 8","Windows 10","Server 2008","Server 2016"
 
     $os_list.foreach{
         if ($os_name -match $_) {
-            $os = $_
+            $os_name = $_
+
+            # Change name to shorter, gooder version
+            if ($os_name -in "Windows 7","Windows 8","Windows 10") {
+                return $os_name.Remove(3,5)
+            }
+
+            if ($os_name -in "Server 2008","Server 2016") {
+                return $os_name.Remove(6,1)
+            }
         }
     }
 
-    # Change name to shorter, gooder version
-    if ($os -in "Windows 7","Windows 8","Windows 10") {
-        return $os.Remove(3,5)
-    }
-    if ($os -in "Server 2008","Server 2016") {
-        return $os.Remove(6,1)
-    }
+    
 }
 
 # Import lists
@@ -772,9 +775,9 @@ function Find-MediaFiles {
 
     $ext.foreach{
         $mediafiles = Get-ChildItem "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
+        $mediafiles >> "C:\mediafiles.txt"
     }
 
-    $mediafiles >> "C:\mediafiles.txt"
     Start-Process "C:\mediafiles.txt"
 
     Add-SOProgress "Searched for media files"
