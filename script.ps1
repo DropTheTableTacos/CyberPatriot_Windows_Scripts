@@ -224,7 +224,8 @@ function Remove-Admins {
     while ($true) {
         Clear-Host
 
-        List-Admins
+        Get-Admins
+        Write-Output "`n"
         $answer = Read-Host "Enter a username to delete"
 
         if ($answer -eq "n") {
@@ -305,7 +306,7 @@ function Remove-MediaFiles {
     $ext = Get-Content "$compfiles\lists\media_extensions.txt"
 
     $ext.foreach{
-        Remove-Item "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" -Force
+        Get-ChildItem "C:\$_" -Recurse -Exclude "C:\CyberPatriot\*" | Remove-Item -Force
     }
 
     Add-SOProgress "Media files deleted"
@@ -407,8 +408,6 @@ function Update-Windows {
     Start-Process ms-settings:windowsupdate -ErrorAction SilentlyContinue
     Start-Process wuapp.exe -ErrorAction SilentlyContinue
 
-    pause
-
     Add-SOProgress "Windows Update configured and started"
 }
 
@@ -480,6 +479,8 @@ function Remove-Shares {
 # Remove programs
 function Remove-Programs {
     # WIP
+    appwiz.cpl
+    explorer.exe
     Add-SOProgress "Sketchy programs removed"
 }
 
@@ -622,7 +623,7 @@ function Start-CiscatRegistry {
 
 # IE registry gamers
 function Import-IERegistry {
-    $ie_reg = Get-Content "$compfiles\lists\ie_registry.txt" | Select-Object-String -NotMatch "#"
+    $ie_reg = Get-Content "$compfiles\lists\ie_registry.txt" | Select-String -NotMatch "#"
 
     $ie_reg.foreach{
         $_
@@ -747,7 +748,7 @@ function Add-Users {
     while ($true) {
         Clear-Host
 
-        List-Users
+        Get-Users
         Write-Output "`n"
         $answer = Read-Host "Enter a username to add"
 
@@ -789,9 +790,17 @@ function Get-Admins {
     $global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
 
     if ($args -eq "nobuiltin") {
-        $users_nobuiltin | Where-Object (test-groupmember Administrators $_) -eq $true | Select-Object name
+        $users_nobuiltin.foreach{
+            if ((test-groupmember Administrators $_) -eq $true) {
+                Write-Output "$_"
+            }
+        }
     } else {
-        $users | Where-Object (test-groupmember Administrators $_) -eq $true | Select-Object name
+        $users.foreach{
+            if ((test-groupmember Administrators $_) -eq $true) {
+                Write-Output "$_"
+            }
+        }
     }
 }
 
@@ -828,6 +837,15 @@ function Open-ScoringReport {
 # Open stop scoring thing (to check scoring timer)
 function Open-StopScoring {
     C:\CyberPatriot\Stop.exe
+}
+
+# Enable remote desktop
+function Enable-RemoteDesktop {
+    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" `
+    -PropertyType DWord -Value "0" -Force
+
+    Add-SOProgress "Remote Desktop enabled"
+    Write-Output "Enable remote desktop."
 }
 
 # Intro screen bois

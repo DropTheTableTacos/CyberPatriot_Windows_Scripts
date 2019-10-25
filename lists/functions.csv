@@ -52,3 +52,4 @@ Get-Functions,gf
 Start-Script,ss
 Open-ScoringReport,osr
 Open-StopScoring,oss
+Enable-RemoteDesktop,erd
