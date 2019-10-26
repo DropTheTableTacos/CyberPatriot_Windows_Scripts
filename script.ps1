@@ -131,7 +131,7 @@ function Import-SOAlias {
 # Setup autologon again for our user for convenience
 function Set-SOAutoLogon {
     New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name DefaultUserName `
-    -PropertyType String -Value "$env:userprofile" -Force
+    -PropertyType String -Value "$env:username" -Force
     New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name DefaultPassword `
     -PropertyType String -Value "abc123ABC123@@" -Force
     New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoAdminLogon `
