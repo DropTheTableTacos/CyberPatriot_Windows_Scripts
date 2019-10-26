@@ -17,6 +17,7 @@ Open-Forensics,of
 Remove-MediaFiles,rmf
 Set-Passwords,sp
 Enable-Firewall,ef
+Set-PasswordExpire,spe
 Disable-Users,disu
 Update-Windows,uw
 Install-Programs,ip

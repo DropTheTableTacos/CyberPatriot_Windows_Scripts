@@ -352,6 +352,32 @@ function Enable-Firewall {
     Write-Output "Firewall enabled, brah."
 }
 
+# Ensure user passwords expire
+function Set-PasswordExpire {
+    if ($args -in "m","man","manual") {
+        while ($true) {
+            Clear-Host
+
+            Get-Users
+            Write-Output "`n"
+            $answer = Read-Host "Enter username to enable password expiration for"
+
+            if ($answer -eq "n") {
+                break
+            }
+
+            Set-LocalUser -Name "$answer" -PasswordNeverExpires $false
+        }
+    } else {
+        $users.foreach{
+            Set-LocalUser -Name "$_" -PasswordNeverExpires $false
+        }
+    }
+
+    Add-SOProgress "Set user passwords to expire"
+    Write-Output "Set user accounts to expire."
+}
+
 # Disable Users
 function Disable-Users {
     if ($args -in "m","man","manual") {
