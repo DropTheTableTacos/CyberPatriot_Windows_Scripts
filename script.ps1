@@ -854,7 +854,7 @@ function Get-Users {
 function Get-Functions {
     $functions = Import-SOLists functions
 
-    $functions | Where-Object {$_ -notmatch "-SO"} | Format-Table
+    $functions | Where-Object Name -notmatch "-SO" | Format-Table
 }
 
 # Run script easily function
@@ -918,8 +918,8 @@ $functions.foreach{
 }
 
 # Run each function in order
-$functions | Where-Object {$_ -notmatch "-SO"}
-$functions.foreach{
+$funct_noso = Import-SOLists functions | Where-Object Name -notmatch "-SO"
+$funct_noso.foreach{
     Invoke-Expression -Command "$_"
     Pause
 }
