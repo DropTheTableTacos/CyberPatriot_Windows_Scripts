@@ -7,25 +7,35 @@ Start-Transcript "C:\log.txt"
 Set-PSDebug -Trace 0
 
 # Install epic carbon module
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name Enabled `
--PropertyType DWord -Value "0" -Force
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control" -Name FIPSAlgorithmPolicy `
--PropertyType DWord -Value "0" -Force
+if ((Get-ItemPropertyValue -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled") -eq "1") {
+    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name Enabled `
+    -PropertyType DWord -Value "0" -Force
+}
+if ((Get-ItemPropertyValue -Path "HKLM:\System\CurrentControlSet\Control" -Name "FIPSAlgorithmPolicy") -eq "1") {
+    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control" -Name FIPSAlgorithmPolicy `
+    -PropertyType DWord -Value "0" -Force
+}
 
 if ($null -eq (Get-PackageProvider | Where-Object Name -eq "NuGet")) {
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 }
 
-Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+if ($null -eq (Get-PSRepository | Where-Object Name -eq "PSGallery")) {
+    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+}
 
 if ($null -eq (Get-Module | Where-Object Name -eq "Carbon")) {
     Install-Module Carbon
 }
 
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name Enabled `
--PropertyType DWord -Value "1" -Force
-New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control" -Name FIPSAlgorithmPolicy `
--PropertyType DWord -Value "1" -Force
+if ((Get-ItemPropertyValue -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled") -eq "0") {
+    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name Enabled `
+    -PropertyType DWord -Value "1" -Force
+}
+if ((Get-ItemPropertyValue -Path "HKLM:\System\CurrentControlSet\Control" -Name "FIPSAlgorithmPolicy") -eq "0") {
+    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control" -Name FIPSAlgorithmPolicy `
+    -PropertyType DWord -Value "1" -Force
+}
 
 # Get windows version
 function Get-SOVer {
