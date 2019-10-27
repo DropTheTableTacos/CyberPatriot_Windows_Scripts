@@ -7,13 +7,14 @@ Start-Transcript "C:\log.txt"
 Set-PSDebug -Trace 0
 
 # Install epic carbon module
-if ((Get-ItemPropertyValue -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled") -eq "1") {
-    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name Enabled `
-    -PropertyType DWord -Value "0" -Force
+$reg1 = "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy","Enabled"
+$reg2 = "HKLM:\System\CurrentControlSet\Control","FIPSAlgorithmPolicy"
+
+if ((Get-ItemPropertyValue -Path $reg1[0] -Name $reg1[1]) -eq "1") {
+    New-ItemProperty -Path $reg1[0] -Name $reg1[1] -PropertyType DWord -Value "0" -Force
 }
-if ((Get-ItemPropertyValue -Path "HKLM:\System\CurrentControlSet\Control" -Name "FIPSAlgorithmPolicy") -eq "1") {
-    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control" -Name FIPSAlgorithmPolicy `
-    -PropertyType DWord -Value "0" -Force
+if ((Get-ItemPropertyValue -Path $reg2[0] -Name $reg2[1]) -eq "1") {
+    New-ItemProperty -Path $reg2[0] -Name $reg2[1] -PropertyType DWord -Value "0" -Force
 }
 
 if ($null -eq (Get-PackageProvider | Where-Object Name -eq "NuGet")) {
@@ -28,13 +29,11 @@ if ($null -eq (Get-Module | Where-Object Name -eq "Carbon")) {
     Install-Module Carbon
 }
 
-if ((Get-ItemPropertyValue -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled") -eq "0") {
-    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name Enabled `
-    -PropertyType DWord -Value "1" -Force
+if ((Get-ItemPropertyValue -Path $reg1[0] -Name $reg1[1]) -eq "0") {
+    New-ItemProperty -Path $reg1[0] -Name $reg1[1] -PropertyType DWord -Value "1" -Force
 }
-if ((Get-ItemPropertyValue -Path "HKLM:\System\CurrentControlSet\Control" -Name "FIPSAlgorithmPolicy") -eq "0") {
-    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control" -Name FIPSAlgorithmPolicy `
-    -PropertyType DWord -Value "1" -Force
+if ((Get-ItemPropertyValue -Path $reg2[0] -Name $reg2[1]) -eq "0") {
+    New-ItemProperty -Path $reg2[0] -Name $reg2[1] -PropertyType DWord -Value "1" -Force
 }
 
 # Get windows version
@@ -96,7 +95,7 @@ function Get-SOBadUsers {
 
         Write-Output "Put readme users in this text file" >> "$compfiles\lists\good_users.txt"
         start-process "$compfiles\lists\good_users.txt"
-        pause
+        Pause
     }
 
     # Compare and get bad users
@@ -174,19 +173,18 @@ function Import-SCT {
     .\LGPO.exe /g "$sct\${os}_$ver\MS"
 
     # Import chad custom baselines too
-    if ($args -eq "good") {
-        .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver\Good"
-    }
+    .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver\Good"
 
     if ($args -eq "bad") {
         .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver\Bad"
-    } else {
-        Write-Output "Please specify good or bad."
     }
 
     # Allow cmder and stop scoring, etc. to actually run lol
-    New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ValidateAdminCodeSignatures `
-    -PropertyType DWord -Value "0" -Force
+    if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" `
+    -Name ValidateAdminCodeSignatures) -eq "1") {
+        New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System `
+        -Name ValidateAdminCodeSignatures -PropertyType DWord -Value "0" -Force
+    }
     New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableUIADesktopToggle `
     -PropertyType DWord -Value "0" -Force
 
@@ -203,7 +201,7 @@ function Remove-Users {
         while ($true) {
             Clear-Host
 
-            List-Users nobuiltin
+            Get-Users nobuiltin
             Write-Output "`n"
             $answer = Read-Host "Enter a username to delete"
 
@@ -329,7 +327,7 @@ function Set-Passwords {
         while ($true) {
             Clear-Host
 
-            List-Users
+            Get-Users
             Write-Output "`n"
 
             Write-Output "NOTE: Passwords are set to: abc123ABC123@@"
@@ -396,7 +394,7 @@ function Disable-Users {
         while ($true) {
             Clear-Host
 
-            List-Users
+            Get-Users
             Write-Output "`n"
             $answer = Read-Host "Enter username to disable"
 
@@ -615,7 +613,7 @@ function Update-Programs {
     Write-Output "Update all the dang programs, son."
     Write-Output "`n"
     Write-Output "IMPORTANT: Check if the programs have auto updates"
-    pause
+    Pause
     Add-SOProgress "Hopefully got those gamer program updates"
 }
 
@@ -623,7 +621,7 @@ function Update-Programs {
 function Start-Nessus {
     $ip
     Write-Output "Run Nessus scans, ya brainlet"
-    pause
+    Pause
 
     Add-SOProgress "Nessus scan theoretically run?"
 }
@@ -697,7 +695,7 @@ function Enable-Users {
         while ($true) {
             Clear-Host
 
-            List-Users nobuiltin
+            Get-Users nobuiltin
             Write-Output "`n"
             $answer = Read-Host "Enter username to enable"
 
@@ -763,8 +761,8 @@ function Add-Admins {
     while ($true) {
         Clear-Host
 
-        List-Admins
-        List-Users
+        Get-Admins
+        Get-Users
         $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
@@ -905,7 +903,7 @@ Write-Output "|_____/_____|_| \_|\_____| |_____/ \____/|_| \_|\_____|_____/"
 
 Write-Output "`n"
 
-pause
+Pause
 
 # Actually start the script UwU
 
@@ -919,6 +917,9 @@ $functions.foreach{
     Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
 }
 
-# List functions n stuff
-Clear-Host
-Get-Functions
+# Run each function in order
+$functions | Where-Object {$_ -notmatch "-SO"}
+$functions.foreach{
+    Invoke-Expression -Command "$_"
+    Pause
+}
