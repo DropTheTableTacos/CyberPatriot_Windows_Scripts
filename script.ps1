@@ -649,7 +649,7 @@ function Start-CiscatRegistry {
     $cisreg = Get-Content "$compfiles\lists\ciscat_registry.txt"
 
     $cisreg.foreach{
-        $_
+        Invoke-Expression -Command "$_"
     }
 
     Add-SOProgress "CISCAT Registry batch file run"
@@ -660,7 +660,7 @@ function Import-IERegistry {
     $ie_reg = Get-Content "$compfiles\lists\ie_registry.txt" | Select-String -NotMatch "#"
 
     $ie_reg.foreach{
-        $_
+        Invoke-Expression -Command "$_"
     }
 
     Add-SOProgress "Set CISCAT Internet Explorer registry settings"

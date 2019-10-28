@@ -7,3 +7,17 @@ wireshark
 metasploit
 netcat
 johntheripper
+itunes
+bircd
+teamviewer
+torrent
+driver support
+advanced ip scanner
+mycleanpc
+tonido
+ophcrack
+hashcat
+stickykeys
+tini
+ntbindshell
+real player
