@@ -836,7 +836,7 @@ function Get-Users {
 function Get-Functions {
     $functions = Import-SOLists functions
 
-    $functions | Where-Object Name -notmatch "-SO" | Format-Table
+    $functions | Where-Object Type -ne "ScriptOnly" | Select-Object Name, Alias, Type | Format-Table
 }
 
 # Run script easily function
