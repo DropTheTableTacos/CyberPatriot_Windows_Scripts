@@ -22,7 +22,6 @@ Disable-Users,disu
 Update-Windows,uw
 Install-Programs,ip
 Disable-Features,df
-Open-Shares,os
 Remove-Shares,rshare
 Remove-Programs,rp
 Remove-Malware,rm

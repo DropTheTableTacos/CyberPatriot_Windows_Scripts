@@ -472,25 +472,6 @@ function Disable-Features {
     Write-Output "Lame features disabled, or one could say, clapped"
 }
 
-# View file shares
-function Open-Shares {
-    while ($true) {
-        Clear-Host
-
-        Get-FileShare
-        Write-Output "`n"
-
-        $answer = Read-Host "Choose a sketchy share to view"
-
-        if ($answer -eq "n") {
-            Add-SOProgress "Sketchy shares viewed"
-            break
-        }
-
-        explorer "\\$env:computername\$answer"
-    }
-}
-
 # Delete shares
 function Remove-Shares {
     while ($true) {
@@ -506,6 +487,7 @@ function Remove-Shares {
             break
         }
 
+        explorer "\\$env:computername\$answer"
         Uninstall-FileShare $answer
     }
 }
