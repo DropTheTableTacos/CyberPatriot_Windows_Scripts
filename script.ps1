@@ -1,7 +1,7 @@
 # Jackson's Epic Powershell Script That Has A 100% Guaranteed Chance Of Not Breaking During The Competition
 
 # Make transcript file
-Start-Transcript "C:\log.txt"
+Start-Transcript "C:\epiclog.txt"
 
 # Turn off command spam
 Set-PSDebug -Trace 0
@@ -125,7 +125,7 @@ function Add-SOProgress {
 function Remove-SOTempTxt {
     Set-Location C:\
     Remove-Item approved_users.txt,mediafiles.txt,sketchyfiles.txt,eek.txt,*files.txt,whomst.txt,sketchymemes.txt, `
-    userdiff.txt -Force -ErrorAction SilentlyContinue
+    userdiff.txt epiclog.txt -Force -ErrorAction SilentlyContinue
 }
 
 # Import aliases
@@ -900,8 +900,11 @@ $functions.foreach{
 }
 
 # Run each function in order
-$funct_noso = Import-SOLists functions | Where-Object Name -notmatch "-SO"
-$funct_noso.foreach{
+($functions | Where-Object Type -match "Auto").foreach{
+    Invoke-Expression -Command "$_"
+}
+
+($functions | Where-Object Type -match "Manual").foreach{
     Invoke-Expression -Command "$_"
     Pause
 }
