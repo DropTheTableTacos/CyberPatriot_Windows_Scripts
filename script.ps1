@@ -17,12 +17,12 @@ if ((Get-ItemPropertyValue -Path $reg2[0] -Name $reg2[1]) -eq "1") {
     New-ItemProperty -Path $reg2[0] -Name $reg2[1] -PropertyType DWord -Value "0" -Force
 }
 
-if ($null -eq (Get-PackageProvider | Where-Object Name -eq "NuGet")) {
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-}
-
 if ($null -eq (Get-PSRepository | Where-Object Name -eq "PSGallery")) {
     Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+}
+
+if ($null -eq (Get-PackageProvider | Where-Object Name -eq "NuGet")) {
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 }
 
 if ($null -eq (Get-Module | Where-Object Name -eq "Carbon")) {
@@ -462,11 +462,7 @@ function Install-Programs {
 
 # Disable features
 function Disable-Features {
-    $feature_list = Import-SOLists features
-
-    $feature_list.foreach{
-        Disable-WindowsOptionalFeature -FeatureName $_.Name -Online
-    }
+    . "$compfiles\disable_features.ps1"
 
     Add-SOProgress "Disabled lame features"
     Write-Output "Lame features disabled, or one could say, clapped"
@@ -628,13 +624,10 @@ function Start-Sysinternals {
 
 # CISCAT Registry batch file
 function Start-CiscatRegistry {
-    $cisreg = Get-Content "$compfiles\lists\ciscat_registry.txt"
-
-    $cisreg.foreach{
-        Invoke-Expression -Command "$_"
-    }
+    . "$compfiles\ciscat_registry.ps1"
 
     Add-SOProgress "CISCAT Registry batch file run"
+    Write-Output "CISCAT Registry batch file run"
 }
 
 # IE registry gamers
@@ -901,10 +894,10 @@ $functions.foreach{
 
 # Run each function in order
 ($functions | Where-Object Type -match "Auto").foreach{
-    Invoke-Expression -Command "$_"
+    Invoke-Expression -Command "$_.Name"
 }
 
 ($functions | Where-Object Type -match "Manual").foreach{
-    Invoke-Expression -Command "$_"
+    Invoke-Expression -Command "$_.Name"
     Pause
 }

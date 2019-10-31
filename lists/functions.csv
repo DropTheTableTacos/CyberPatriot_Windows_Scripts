@@ -2,7 +2,7 @@ Name,Alias,Type
 Import-SCT,isct,Auto
 Remove-Users,ru,Auto
 Disable-Services,dserv,Auto
-Open-Forensics,of,Utility
+Open-Forensics,of,Auto
 Remove-MediaFiles,rmf,Auto
 Set-Passwords,sp,Auto
 Enable-Firewall,ef,Auto
