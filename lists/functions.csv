@@ -3,7 +3,7 @@ Import-SCT,isct,Auto
 Remove-Users,ru,Auto
 Disable-Services,dserv,Auto
 Open-Forensics,of,Auto
-Remove-MediaFiles,rmf,Auto
+Remove-ProhibitedFiles,rpf,Auto
 Set-Passwords,sp,Auto
 Enable-Firewall,ef,Auto
 Set-PasswordExpire,spe,Auto
