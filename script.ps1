@@ -456,7 +456,7 @@ function Install-Programs {
         choco feature enable -n useFipsCompliantChecksums
     }
 
-    choco install firefox ie11 malwarebytes mbsa patch-my-pc --ignorechecksum --force
+    choco install firefox ie11 malwarebytes mbsa patch-my-pc iobit-uninstaller --ignorechecksum --force
 
     Add-SOProgress "Good security programs installed"
     Write-Output "Gucci security programs installed."
@@ -508,6 +508,8 @@ function Remove-Malware {
 function Disable-RemoteDesktop {
     New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" `
     -PropertyType DWord -Value "1" -Force
+    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "fAllowToGetHelp" `
+    -PropertyType DWord -Value "0" -Force
 
     Add-SOProgress "Remote Desktop disabled"
     Write-Output "Disable remote desktop."
@@ -592,6 +594,8 @@ function Update-Programs {
     Clear-Host
     Write-Output "Update all the dang programs, son."
     Write-Output "`n"
+    Write-Output "Java JRE 8, Firefox, others."
+    Write-Output "`n"
     Write-Output "IMPORTANT: Check if the programs have auto updates"
     Pause
     Add-SOProgress "Hopefully got those gamer program updates"
@@ -628,14 +632,14 @@ function Find-ProhibitedFiles {
 
     # Find the files
     $ext.foreach{
-        $files = Get-ChildItem -Path "C:\" -Filter "$_.Name" -Recurse -Exclude "C:\CyberPatriot\*"
+        $files = Get-ChildItem -Path "C:\" -Filter "$_.Name" -Recurse -Exclude "C:\CyberPatriot\*" -Force
         takeown /f $files.FullName
         icacls $files.FullName /grant $env:USERNAME:(F)
         $files.FullName >> C:\stinkyfiles.txt
     }
 
     # Find sensitive info in plaintext files
-    $txt = Get-ChildItem -Path "C:\" -Filter "*.txt" -Recurse -Exclude "C:\CyberPatriot\*"
+    $txt = Get-ChildItem -Path "C:\" -Filter "*.txt" -Recurse -Exclude "C:\CyberPatriot\*" -Force
 
     $txt.foreach{
         takeown /f $_.FullName

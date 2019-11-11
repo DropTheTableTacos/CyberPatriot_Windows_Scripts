@@ -178,7 +178,7 @@ WerSvc,Manual
 WiaRpc,Manual
 WinDefend,Automatic
 WinHttpAutoProxySvc,Manual
-WinRM,Disabled
+WinRM,Manual
 Winmgmt,Automatic
 WlanSvc,Manual
 Wms,Uninstall
