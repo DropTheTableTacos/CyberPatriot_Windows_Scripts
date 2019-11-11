@@ -632,10 +632,16 @@ function Find-ProhibitedFiles {
 
     # Find the files
     $ext.foreach{
-        $files = Get-ChildItem -Path "C:\" -Filter "$_.Name" -Recurse -Exclude "C:\CyberPatriot\*" -Force
+        $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "$compfiles" | Where-Object FullName -notmatch "C:\CyberPatriot"
         takeown /f $files.FullName
-        icacls $files.FullName /grant $env:USERNAME:(F)
+        icacls $files.FullName /grant ${env:USERNAME}:(F)
         $files.FullName >> C:\stinkyfiles.txt
+		
+		$pattern.foreach{
+			if ((Get-Content $files.FullName | Select-String -Pattern "$_.Pattern") -eq $true) {
+                $_.FullName
+            }
+		}
     }
 
     # Find sensitive info in plaintext files
@@ -895,21 +901,21 @@ function Enable-RemoteDesktop {
 # Intro screen bois
 Clear-Host
 
-Write-Output "__          ___    _       _______   _    _ _____"
-Write-Output "\ \        / / |  | |   /\|__   __| | |  | |  __ \"
-Write-Output " \ \  /\  / /| |__| |  /  \  | |    | |  | | |__) |"
-Write-Output "  \ \/  \/ / |  __  | / /\ \ | |    | |  | |  ___/"
-Write-Output "   \  /\  /  | |  | |/ ____ \| |    | |__| | |"
-Write-Output "    \/  \/   |_|  |_/_/    \_\_|     \____/|_|"
+Write-Output "__     __      _   _  _____"
+Write-Output "\ \   / //\   | \ | |/ ____|"
+Write-Output " \ \_/ //  \  |  \| | |  __"
+Write-Output "  \   // /\ \ | .   | | |_ |"
+Write-Output "   | |/ ____ \| |\  | |__| |"
+Write-Output "   |_/_/  __\_\_| \_|\_____|"
 
 Write-Output "`n"
 
-Write-Output " _____ _____ _   _  _____   _____   ____  _   _  _____  _____"
-Write-Output "|  __ \_   _| \ | |/ ____| |  __ \ / __ \| \ | |/ ____|/ ____|"
-Write-Output "| |  | || | |  \| | |  __  | |  | | |  | |  \| | |  __| (___"
-Write-Output "| |  | || | | .   | | |_ | | |  | | |  | | .   | | |_ |\___ \"
-Write-Output "| |__| || |_| |\  | |__| | | |__| | |__| | |\  | |__| |____) |"
-Write-Output "|_____/_____|_| \_|\_____| |_____/ \____/|_| \_|\_____|_____/"
+Write-Output " ___   ___ ___   ___"
+Write-Output "|__ \ / _ \__ \ / _ \"
+Write-Output "   ) | | | | ) | | | |"
+Write-Output "  / /| | | |/ /| | | |"
+Write-Output " / /_| |_| / /_| |_| |"
+Write-Output "|____|\___/____|\___/"
 
 Write-Output "`n"
 
