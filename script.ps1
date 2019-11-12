@@ -313,9 +313,14 @@ function Remove-ProhibitedFiles {
     $ext = Import-SOLists extensions | Where-Object Action -eq "Delete"
 
     $ext.foreach{
-        $files = Get-ChildItem -Path "C:\" -Filter "$_.Name" -Recurse -Exclude "C:\CyberPatriot\*"
-        takeown /f $files.FullName
-        icacls $files.FullName /grant $env:USERNAME:(F)
+        # Get the files
+        $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "$compfiles" | Where-Object FullName -notmatch "C:\CyberPatriot"
+        
+        # Takeown and yeet them off the VM
+        $files.foreach{
+            takeown /f $files.FullName
+            icacls $files.FullName /grant ${env:USERNAME}:(F)
+        }
         $files.FullName | Remove-Item -Force
     }
 
@@ -612,55 +617,32 @@ function Start-Nessus {
 
 # Find prohibited files
 function Find-ProhibitedFiles {
-    # WIP
-
     $ext = Import-SOLists extensions | Where-Object Action -eq "Find"
 
     # Sketchy pattern variables
     $pattern = Import-SOLists sensinfo_patterns
 
-    # Regex pattern variables
-    $ssn_regex = "((?!000)(?!666)(?:[0-6]\d{2}|7[0-2][0-9]|73[0-3]|7[5-6][0-9]|77[0-2]))-((?!00)\d{2})-((?!0000)\d{4})"
-    $credit_regex = "((4\d{3})|(5[1-5]\d{2})|(6011))-?\d{4}-?\d{4}-?\d{4}|3[4,7]\d{13}"
-    $jtr_regex = "Loaded .* password hash(es)?","guesses: \d+   time: (\d+:){3}\d+ (\d?){2}\d% ....: \d+  trying: .* -.*"
-    $hydra_regex = "Hydra v.{3} \(c\) \d{4}","\[.+\] \d+\.\d{2} tries/min, \d+ tries in \d{2}:\d{2}., \d+ todo in \d{2}:\d{2}."
-    $ncrack_regex = "Starting Ncrack .* \( ?http://ncrack.org ?\) at \d{4}-\d{2}-\d{2} \d{2}:\d{2} ...","Stats: (\d+:){2}\d+ elapsed; \d+ services completed \(\d+ total\)"
-    $medusa_regex = "Medusa v\d\.\d+ \[http://www.foofus.net] \(C\).*","ACCOUNT [A-Z]+: \[.+\]"
-    $nmap_regex = "Starting Nmap \d\.\d{2} \( ?https?://nmap\.org \) at \d{4}-\d{2}-\d{2} \d{2}:\d{2} ...","Scanning .* \(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\) \[\d+ ports\]","Discovered open port \d{1,5}/[tu]cp on \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}","(About)? \d{1,3}.\d\d% done; ETC: \d\d:\d\d \(\d:\d\d:\d\d remaining\)"
-    $acng_regex = "([0-F]{2}:){5}[0-F]{2} -\d\d \d{1,3} \d{1,3} \d{1,3} \d{1,3} \d{1,3}e?\.? .{,4} (CCMP )?(PSK )?.*","([0-F]{2}:){5}[0-F]{2} -\d\d \d{1,3} \d{1,3} \d{1,3} \d{1,3} \d{1,3}e?\.? .{,4} (CCMP )?(PSK )?.*"
-    $hashcat_regex = "hashcat \(v\d+\.\d+\.\d+\) starting\.{3}"
-
     # Find the files
     $ext.foreach{
+        # Get the files
         $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "$compfiles" | Where-Object FullName -notmatch "C:\CyberPatriot"
-        takeown /f $files.FullName
-        icacls $files.FullName /grant ${env:USERNAME}:(F)
+        
+        # Output stinky ones to file and takeown
+        $files.foreach{
+            takeown /f $files.FullName
+            icacls $files.FullName /grant ${env:USERNAME}:(F)
+        }
         $files.FullName >> C:\stinkyfiles.txt
-		
+        
+        # Find patterns in files
 		$pattern.foreach{
 			if ((Get-Content $files.FullName | Select-String -Pattern "$_.Pattern") -eq $true) {
-                $_.FullName
+                $_.FullName >> C:\stinkyfiles.txt
             }
 		}
     }
 
-    # Find sensitive info in plaintext files
-    $txt = Get-ChildItem -Path "C:\" -Filter "*.txt" -Recurse -Exclude "C:\CyberPatriot\*" -Force
-
-    $txt.foreach{
-        takeown /f $_.FullName
-        icacls $_.FullName /grant $env:USERNAME:(F)
-    }
-
-    $pattern.foreach{
-        if (($txt | Select-String -Pattern "$_") -eq $true) {
-            Write-Output "$txt"
-        }
-    }
-
-
     Start-Process C:\stinkyfiles.txt
-    Start-Process C:\stinky_plaintext.txt
 
     Add-SOProgress "Prohibited files may have been found"
     Write-Output "Prohibited files may have been found"
