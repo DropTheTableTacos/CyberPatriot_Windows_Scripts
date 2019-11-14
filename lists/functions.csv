@@ -35,6 +35,7 @@ Enable-Users,eu,Utility
 Start-CatLite,scl,Utility
 Add-Admins,aa,Utility
 Add-Users,au,Utility
+Add-Groups,ag,Utility
 Copy-ToProfile,ctp,Utility
 Find-MediaFiles,fmf,Utility
 Get-Admins,ga,Utility
@@ -44,6 +45,7 @@ Start-Script,ss,Utility
 Open-ScoringReport,osr,Utility
 Open-StopScoring,oss,Utility
 Enable-RemoteDesktop,erd,Utility
+Replace-EaseOfAccess,reoa,Utility
 Get-SOVer,gv,ScriptOnly
 Get-SOOS,gos,ScriptOnly
 Import-SOLists,il,ScriptOnly

