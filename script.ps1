@@ -304,6 +304,8 @@ function Open-Forensics {
         Start-Process $_
     }
 
+    Pause
+
     Add-SOProgress "Forensics Questions checked out"
     Write-Output "Opened the forensics questions, brah."
 }
@@ -314,12 +316,12 @@ function Remove-ProhibitedFiles {
 
     $ext.foreach{
         # Get the files
-        $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "$compfiles" | Where-Object FullName -notmatch "C:\CyberPatriot"
+        $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
         
         # Takeown and yeet them off the VM
         $files.foreach{
-            takeown /f $files.FullName
-            icacls $files.FullName /grant ${env:USERNAME}:(F)
+            takeown /f $_.FullName
+            icacls $_.FullName /grant ${env:USERNAME}:(F)
         }
         $files.FullName | Remove-Item -Force
     }
@@ -625,12 +627,12 @@ function Find-ProhibitedFiles {
     # Find the files
     $ext.foreach{
         # Get the files
-        $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "$compfiles" | Where-Object FullName -notmatch "C:\CyberPatriot"
+        $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
         
         # Output stinky ones to file and takeown
         $files.foreach{
-            takeown /f $files.FullName
-            icacls $files.FullName /grant ${env:USERNAME}:(F)
+            takeown /f $_.FullName
+            icacls $_.FullName /grant ${env:USERNAME}:(F)
         }
         $files.FullName >> C:\stinkyfiles.txt
         
