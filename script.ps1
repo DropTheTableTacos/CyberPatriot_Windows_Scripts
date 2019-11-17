@@ -1,44 +1,10 @@
 # Jackson's Epic Powershell Script That Has A 100% Guaranteed Chance Of Not Breaking During The Competition
 
-# Make transcript file
-Start-Transcript "C:\epiclog.txt"
-
-# Turn off command spam
-Set-PSDebug -Trace 0
-
-# Install epic carbon module
-$reg1 = "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy","Enabled"
-$reg2 = "HKLM:\System\CurrentControlSet\Control","FIPSAlgorithmPolicy"
-
-if ((Get-ItemPropertyValue -Path $reg1[0] -Name $reg1[1]) -eq "1") {
-    New-ItemProperty -Path $reg1[0] -Name $reg1[1] -PropertyType DWord -Value "0" -Force
-}
-if ((Get-ItemPropertyValue -Path $reg2[0] -Name $reg2[1]) -eq "1") {
-    New-ItemProperty -Path $reg2[0] -Name $reg2[1] -PropertyType DWord -Value "0" -Force
-}
-
-if ($null -eq (Get-PSRepository | Where-Object Name -eq "PSGallery")) {
-    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
-}
-
-if ($null -eq (Get-PackageProvider | Where-Object Name -eq "NuGet")) {
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-}
-
-if ($null -eq (Get-Module | Where-Object Name -eq "Carbon")) {
-    Install-Module Carbon
-}
-
-if ((Get-ItemPropertyValue -Path $reg1[0] -Name $reg1[1]) -eq "0") {
-    New-ItemProperty -Path $reg1[0] -Name $reg1[1] -PropertyType DWord -Value "1" -Force
-}
-if ((Get-ItemPropertyValue -Path $reg2[0] -Name $reg2[1]) -eq "0") {
-    New-ItemProperty -Path $reg2[0] -Name $reg2[1] -PropertyType DWord -Value "1" -Force
-}
+# Functions
 
 # Get windows version
 function Get-SOVer {
-    $ver = (Get-WmiObject -Class Win32_OperatingSystem).Version
+    $ver = (Get-WmiObject Win32_OperatingSystem).Version
 
     if ($ver -eq "10.0.10240") {return "1507"}
     if ($ver -eq "10.0.10586") {return "1511"}
@@ -52,25 +18,18 @@ function Get-SOVer {
 
 # Get OS name
 function Get-SOOS {
-    $os_name = (Get-CimInstance -ClassName CIM_OperatingSystem).Name
-    $os_list = "Windows 7","Windows 8","Windows 10","Server 2008","Server 2016"
+    $os_name = (Get-CimInstance CIM_OperatingSystem).Name
+    $os_list = "Windows 10","Server 2016"
 
     $os_list.foreach{
         if ($os_name -match $_) {
             $os_name = $_
 
             # Change name to shorter, gooder version
-            if ($os_name -in "Windows 7","Windows 8","Windows 10") {
-                return $os_name.Remove(3,5)
-            }
-
-            if ($os_name -in "Server 2008","Server 2016") {
-                return $os_name.Remove(6,1)
-            }
+            if ($os_name -in "Windows 10") {return $os_name.Remove(3,5)}
+            if ($os_name -in "Server 2016") {return $os_name.Remove(6,1)}
         }
     }
-
-    
 }
 
 # Import lists
@@ -80,26 +39,26 @@ function Import-SOLists {
 
 # README
 function Open-Readme {
-    Start-Process C:\CyberPatriot\README.url
+    Start-Process -FilePath "C:\CyberPatriot\README.url"
 
-    Write-Output "README opened."
+    Write-Output -InputObject "README opened."
 }
 
 # Get user list
 function Get-SOBadUsers {
-    $goodusers = Get-Content "$compfiles\lists\good_users.txt" -ErrorAction SilentlyContinue
+    $goodusers = Get-Content -Path "$compfiles\lists\good_users.txt"
 
     # Add readme users to file if needed
     if ($null -eq $goodusers) {
         Open-Readme
+        Write-Output -InputObject "Put README users in this text file. (replace this text)`nPut a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
+        Start-Process -FilePath "$compfiles\lists\good_users.txt"
 
-        Write-Output "Put readme users in this text file" >> "$compfiles\lists\good_users.txt"
-        start-process "$compfiles\lists\good_users.txt"
         Pause
     }
 
     # Compare and get bad users
-    (Compare-Object $goodusers $users_nobuiltin).foreach{
+    (Compare-Object -ReferenceObject $goodusers -DifferenceObject $users_nobuiltin).foreach{
         return $_.InputObject
     }
 }
@@ -121,12 +80,6 @@ function Add-SOProgress {
     Write-Output "$args`n" >> "$desktop\progress.txt"
 }
 
-# Delete leftover text files
-function Remove-SOTempTxt {
-    Set-Location C:\
-    Remove-Item "stinkyfiles.txt" -Force -ErrorAction SilentlyContinue
-}
-
 # Import aliases
 function Import-SOAlias {
     $functions = Import-SOLists functions
@@ -145,24 +98,6 @@ function Set-SOAutoLogon {
     New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name AutoAdminLogon `
     -PropertyType String -Value "1" -Force
 }
-
-# Variables lol
-$global:desktop = "$env:userprofile\Desktop"
-$global:compfiles = "$desktop\Script"
-$global:sct = "$compfiles\sctbaselines"
-$global:cmderbin = "$compfiles\cmder\bin"
-$global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
-[System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32; `
-%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0; `
-%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%", `
-[System.EnvironmentVariableTarget]::Machine)
-$global:ver = Get-SOVer
-$global:os = Get-SOOS
-$global:users = Get-CUser
-$global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
-$global:badusers = Get-SOBadUsers
-$global:ip = Get-CIPAddress | Where-Object IPAddressToString -match "192.168" | Select-Object IPAddressToString `
-| Format-Table -HideTableHeaders
 
 # SCT Baselines
 function Import-SCT {
@@ -304,14 +239,15 @@ function Open-Forensics {
         Start-Process $_
     }
 
-    Pause
-
     Add-SOProgress "Forensics Questions checked out"
     Write-Output "Opened the forensics questions, brah."
 }
 
 # Delete prohibited files
 function Remove-ProhibitedFiles {
+	Write-Output "Did you check the forensics questions mate? Be careful"
+    Pause
+	
     $ext = Import-SOLists extensions | Where-Object Action -eq "Delete"
 
     $ext.foreach{
@@ -355,7 +291,6 @@ function Set-Passwords {
         }
 
         Add-SOProgress "All passwords changed to a gamer secure password"
-
         Write-Output "All passwords changed to: abc123ABC123@@"
     }
 }
@@ -428,6 +363,11 @@ function Disable-Users {
 
 # Windows Update
 function Update-Windows {
+	# Get microsoft update server and start update, auto too fam
+	Add-WUServiceManager -ServiceID 7971f918-a847-4430-9279-4a52d1efe18d
+	Set-WUSettings -AutoInstallMinorUpdates -IncludeRecommendedUpdates
+	Get-WUInstall –MicrosoftUpdate –AcceptAll
+
     # Set windows update service to auto and start
     Set-Service wuauserv -startuptype Automatic
     Start-Service wuauserv
@@ -445,11 +385,6 @@ function Update-Windows {
     # Completed message
     Write-Output "`n"
     Write-Output "Automatic Windows Update has been configured and the service was started."
-    Write-Output "Now start the update, biggie."
-
-    # Opening gui
-    Start-Process ms-settings:windowsupdate -ErrorAction SilentlyContinue
-    Start-Process wuapp.exe -ErrorAction SilentlyContinue
 
     Add-SOProgress "Windows Update configured and started"
 }
@@ -513,7 +448,7 @@ function Remove-Malware {
 
 # Disable remote desktop
 function Disable-RemoteDesktop {
-    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" `
+    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" `
     -PropertyType DWord -Value "1" -Force
     New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "fAllowToGetHelp" `
     -PropertyType DWord -Value "0" -Force
@@ -529,9 +464,9 @@ function Protect-Screensaver {
     New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" `
     -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
 
-    New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "Control Panel"
+    New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows" -Name "Control Panel"
     New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Control Panel" -Name "Desktop" -Force
-    New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop" `
+    New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" `
     -Name ScreenSaverIsSecure -PropertyType DWord -Value "1" -Force
 
     Add-SOProgress "Screensaver secured with password"
@@ -619,9 +554,10 @@ function Start-Nessus {
 
 # Find prohibited files
 function Find-ProhibitedFiles {
-    $ext = Import-SOLists extensions | Where-Object Action -eq "Find"
+    # Remove existing output file if it exists
+    Remove-Item "C:\stinkyfiles.txt" -Force -ErrorAction SilentlyContinue
 
-    # Sketchy pattern variables
+    $ext = Import-SOLists extensions | Where-Object Action -eq "Find"
     $pattern = Import-SOLists sensinfo_patterns
 
     # Find the files
@@ -812,8 +748,7 @@ function Add-Users {
 
 # Copy script to profile
 function Copy-ToProfile {
-    Copy-Item "$env:userprofile\Desktop\Script\script.ps1" `
-    "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+    Copy-Item "$env:userprofile\Desktop\Script\script.ps1" "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
 
     Write-Output "Script copied to pshell profile."
 }
@@ -860,7 +795,7 @@ function Get-Functions {
 # Run script easily function
 function Start-Script {
     Copy-ToProfile
-    . $profile
+    . $profile $args
 }
 
 # Open Scoring report
@@ -875,7 +810,7 @@ function Open-StopScoring {
 
 # Enable remote desktop
 function Enable-RemoteDesktop {
-    New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" `
+    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" `
     -PropertyType DWord -Value "0" -Force
 
     Add-SOProgress "Remote Desktop enabled"
@@ -917,48 +852,103 @@ function Replace-EaseOfAccess {
     Write-Output "Replaced ease of access menu with powershell. (in case of lockout)"
 }
 
-# Intro screen bois
-Clear-Host
+# Install chocolatey function ez
+function Install-Chocolatey {
+	if ((Test-Path $env:programdata\chocolatey) -eq $False) {
+        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-Write-Output "__     __      _   _  _____"
-Write-Output "\ \   / //\   | \ | |/ ____|"
-Write-Output " \ \_/ //  \  |  \| | |  __"
-Write-Output "  \   // /\ \ | .   | | |_ |"
-Write-Output "   | |/ ____ \| |\  | |__| |"
-Write-Output "   |_/_/  __\_\_| \_|\_____|"
+        choco feature enable -n allowGlobalConfirmation
+        choco feature enable -n useFipsCompliantChecksums
+		
+		Write-Output "Chocolatey installed."
+		Add-SOProgress "Chocolatey installed."
+    }
+}
 
-Write-Output "`n"
+# Remove unnecessary .git folder
+function Remove-SOGitFolder {
+    Remove-Item "$env:userprofile\Desktop\Script\.git" -Recurse -Force
 
-Write-Output " ___   ___ ___   ___"
-Write-Output "|__ \ / _ \__ \ / _ \"
-Write-Output "   ) | | | | ) | | | |"
-Write-Output "  / /| | | |/ /| | | |"
-Write-Output " / /_| |_| / /_| |_| |"
-Write-Output "|____|\___/____|\___/"
+    Write-Output ".git folder removed."
+}
 
-Write-Output "`n"
+# Allow cmder, stop scoring, etc. to work lol
+function Fix-Programs {
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ValidateAdminCodeSignatures" -PropertyType "DWord" -Value "0" -Force
+    New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableUIADesktopToggle" -PropertyType "DWord" -Value "0" -Force
 
-Pause
+    Write-Output "Cmder, stop scoring, etc. fixed."
+}
 
-# Actually start the script UwU
+# Variables lol
+$global:desktop = "$env:userprofile\Desktop"
+$global:compfiles = "$desktop\Script"
+$global:sct = "$compfiles\sctbaselines"
+$global:cmderbin = "$compfiles\cmder\bin"
+$global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
+[System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine)
+$global:ver = Get-SOVer
+$global:os = Get-SOOS
+$global:users = Get-CUser
+$global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
+$global:badusers = Get-SOBadUsers
+$global:ip = (Get-CIPAddress | Where-Object IPAddressToString -match "192\.168\.\d*\.\d*").IPAddressToString
 
-# Setup Functions
+# Initial Setup
+
+if ($firstrun -ne $false) {
+    # Install Carbon and PSWindowsUpdate modules
+
+    # Disable Use FIPS compliant checksums (Allow install of modules)
+    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled" -PropertyType "DWord" -Value "0" -Force
+    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "0" -Force
+
+    Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
+    Install-PackageProvider -Name "NuGet" -MinimumVersion "2.8.5.201" -Force
+    Install-Module -Name "Carbon" -AllowClobber -Force
+    Install-Module -Name "PSWindowsUpdate" -AllowClobber -Force
+
+    # Re-enable Use FIPS compliant algorithms
+    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled" -PropertyType "DWord" -Value "1" -Force
+    New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "1" -Force
+}
+
+# Run setup commands
+Set-PSDebug -Trace 0
 Set-SOLogonMessage
-Remove-SOTempTxt
 Import-SOAlias
 Set-SOAutoLogon
 Replace-EaseOfAccess
+Copy-ToProfile
+Remove-SOGitFolder
+
+# Execute script
 $functions = Import-SOLists functions
+
+# Create aliases
 $functions.foreach{
     Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
 }
 
-# Run each function in order
-($functions | Where-Object Type -match "Auto").foreach{
-    Invoke-Expression -Command "$_.Name"
+# Determine type of execute, then execute
+if ($args -in "a") {
+    ($functions | Where-Object Type -match "Auto").foreach{
+        Invoke-Expression -Command "$_.Name"
+    }
+
+    ($functions | Where-Object Type -match "Manual").foreach{
+        Invoke-Expression -Command "$_.Name"
+        Pause
+    }
 }
 
-($functions | Where-Object Type -match "Manual").foreach{
-    Invoke-Expression -Command "$_.Name"
-    Pause
+if ($args -in "m") {
+    Clear-Host
+    Get-Functions
 }
+
+if ($firstrun -ne $false) {Write-Output "Welcome to Jackson's chad powershell script.`nRemember, don't be an idiot.`n`n"}
+if ($args -notin "a","m") {Write-Output "Please specify auto [a] or manual [m]"}
+
+# Set firstrun to false
+$global:firstrun = $false

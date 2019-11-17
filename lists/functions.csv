@@ -3,7 +3,6 @@ Import-SCT,isct,Auto
 Remove-Users,ru,Auto
 Disable-Services,dserv,Auto
 Open-Forensics,of,Auto
-Remove-ProhibitedFiles,rpf,Auto
 Set-Passwords,sp,Auto
 Enable-Firewall,ef,Auto
 Set-PasswordExpire,spe,Auto
@@ -19,6 +18,7 @@ Remove-AppLocker,rapp,Auto
 Enable-UAC,euac,Auto
 Disable-Features,df,Auto
 Install-Programs,ip,Auto
+Remove-ProhibitedFiles,rpf,Auto
 Remove-Admins,ra,Manual
 Update-Windows,uw,Manual
 Remove-Shares,rshare,Manual
@@ -46,12 +46,14 @@ Open-ScoringReport,osr,Utility
 Open-StopScoring,oss,Utility
 Enable-RemoteDesktop,erd,Utility
 Replace-EaseOfAccess,reoa,Utility
+Install-Chocolatey,ic,Utility
+Fix-Programs,fp,Utility
 Get-SOVer,gv,ScriptOnly
 Get-SOOS,gos,ScriptOnly
 Import-SOLists,il,ScriptOnly
 Get-SOBadUsers,gbu,ScriptOnly
 Set-SOLogonMessage,slm,ScriptOnly
 Add-SOProgress,ap,ScriptOnly
-Remove-SOTempTxt,rtt,ScriptOnly
 Import-SOAlias,ialias,ScriptOnly
 Set-SOAutoLogon,sal,ScriptOnly
+Remove-SOGitFolder,rgf,ScriptOnly

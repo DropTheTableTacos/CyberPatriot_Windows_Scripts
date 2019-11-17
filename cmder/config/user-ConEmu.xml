@@ -485,7 +485,7 @@
 			<value name="WndDragKey" type="dword" data="00121101"/>
 			<key name="Tasks" modified="2019-09-09 21:47:46" build="180626">
 				<value name="Count" type="long" data="4"/>
-				<key name="Task1" modified="2019-09-09 23:26:37" build="180626">
+				<key name="Task1" modified="2019-09-14 11:24:35" build="180626">
 					<value name="Name" type="string" data="{default}"/>
 					<value name="GuiArgs" type="string" data=""/>
 					<value name="Cmd1" type="string" data='*cmd /k ""%ConEmuDir%\..\init.bat" "'/>
@@ -493,7 +493,7 @@
 					<value name="Count" type="long" data="2"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="Flags" type="dword" data="00000004"/>
-					<value name="Cmd2" type="string" data='*PowerShell -ExecutionPolicy Bypass -NoLogo -NoExit -Command "Invoke-Expression &apos;Import-Module &apos;&apos;%ConEmuDir%\..\profile.ps1&apos;&apos;&apos;"'/>
+					<value name="Cmd2" type="string" data='*PowerShell -ExecutionPolicy Bypass -NoLogo -NoExit -NoProfile -Command "Invoke-Expression &apos;Import-Module &apos;&apos;%ConEmuDir%\..\profile.ps1&apos;&apos;&apos;"'/>
 				</key>
 				<key name="Task2" modified="2019-09-09 23:26:37" build="180626">
 					<value name="Name" type="string" data="{powershell}"/>
@@ -513,14 +513,14 @@
 					<value name="Count" type="long" data="1"/>
 					<value name="Cmd1" type="string" data='*cmd /k ""%ConEmuDir%\..\init.bat" "'/>
 				</key>
-				<key name="Task4" modified="2019-09-09 23:26:37" build="180626">
+				<key name="Task4" modified="2019-09-14 11:24:29" build="180626">
 					<value name="Name" type="string" data="{script}"/>
 					<value name="Flags" type="dword" data="00000004"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
-					<value name="Cmd1" type="string" data='*PowerShell -ExecutionPolicy Bypass -NoLogo -NoExit -Command "Invoke-Expression &apos;Import-Module &apos;&apos;%ConEmuDir%\..\profile.ps1&apos;&apos;&apos;"'/>
+					<value name="Cmd1" type="string" data='*PowerShell -ExecutionPolicy Bypass -NoLogo -NoExit -NoProfile -Command "Invoke-Expression &apos;Import-Module &apos;&apos;%ConEmuDir%\..\profile.ps1&apos;&apos;&apos;"'/>
 				</key>
 			</key>
 			<key name="Apps" modified="2018-02-22 06:05:13" build="171109">
