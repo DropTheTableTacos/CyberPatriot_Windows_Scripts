@@ -907,7 +907,7 @@ function Fix-Programs {
 
 # Initial Setup
 
-if ($env:firstrun -ne "false") {
+if ($firstrun -ne $false -or $env:firstrun -ne "false") {
     # Install Carbon and PSWindowsUpdate modules
 
     # Disable Use FIPS compliant checksums (Allow install of modules)
@@ -952,15 +952,12 @@ Import-SOAlias
 Set-SOAutoLogon
 Replace-EaseOfAccess
 Copy-ToProfile
-Remove-SOGitFolder
 
 # Execute script
 $functions = Import-SOLists functions
 
 # Create aliases
-$functions.foreach{
-    Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
-}
+$functions.foreach{Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force}
 
 # Determine type of execute, then execute
 if ($args -eq "a") {
@@ -979,7 +976,9 @@ if ($args -eq "m") {
     Get-Functions
 }
 
-if ($env:firstrun -ne "false") {
+if ($firstrun -ne $false -or $env:firstrun -ne "false") {
+    Clear-Host
+
     Write-Output "__   __"
     Write-Output "\ \ / /_ _ _ __   __ _"
     Write-Output " \ V / _  | '_ \ / _  |"
@@ -990,16 +989,21 @@ if ($env:firstrun -ne "false") {
     Write-Output "  __) | | | |__) | | | |"
     Write-Output " / __/| |_| / __/| |_| |"
     Write-Output "|_____|\___/_____|\___/"
-
     Write-Output "`n"
-
-    Write-Output "Welcome to Jackson's chad powershell script.`nRemember, don't be an idiot.`n`n"
+    Write-Output "Welcome to Jackson's chad powershell script."
+    Write-Output "Remember, don't be an idiot."
+    Write-Output "`n"
+    Write-Output "To execute the script:"
+    Write-Output "Run 'Start-Script' (or ss) and specify auto (a) or manual (m)"
+    Write-Output "`n"
+    Write-Output "Ex: ss a, ss m"
 }
 
-if ($args -notin "a","m") {
+if ($args -notin "a","m" -and $firstrun -eq $false -or $env:firstrun -eq "false") {
     Clear-Host
-    Write-Output "Please specify auto [a] or manual [m]"
+    Write-Output "Please specify auto (a) or manual (m)"
 }
 
 # Set firstrun to false
 [System.Environment]::SetEnvironmentVariable("firstrun","false",[System.EnvironmentVariableTarget]::Machine)
+$global:firstrun = $false
