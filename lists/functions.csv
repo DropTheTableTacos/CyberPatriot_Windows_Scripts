@@ -56,4 +56,3 @@ Set-SOLogonMessage,slm,ScriptOnly
 Add-SOProgress,ap,ScriptOnly
 Import-SOAlias,ialias,ScriptOnly
 Set-SOAutoLogon,sal,ScriptOnly
-Remove-SOGitFolder,rgf,ScriptOnly

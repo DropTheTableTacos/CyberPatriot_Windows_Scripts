@@ -259,13 +259,13 @@ function Open-Forensics {
 function Remove-ProhibitedFiles {
 	Write-Output "Did you check the forensics questions mate? Be careful"
     Pause
-	
+
     $ext = Import-SOLists extensions | Where-Object Action -eq "Delete"
 
     $ext.foreach{
         # Get the files
         $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
-        
+
         # Takeown and yeet them off the VM
         $files.foreach{
             takeown /f $_.FullName
@@ -576,14 +576,14 @@ function Find-ProhibitedFiles {
     $ext.foreach{
         # Get the files
         $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
-        
+
         # Output stinky ones to file and takeown
         $files.foreach{
             takeown /f $_.FullName
             icacls $_.FullName /grant ${env:USERNAME}:(F)
         }
         $files.FullName >> C:\stinkyfiles.txt
-        
+
         # Find patterns in files
 		$pattern.foreach{
 			if ((Get-Content $files.FullName | Select-String -Pattern "$_.Pattern") -eq $true) {
@@ -807,7 +807,7 @@ function Get-Functions {
 # Run script easily function
 function Start-Script {
     Copy-ToProfile
-    . $profile $args
+    . $profile "$args"
 }
 
 # Open Scoring report
@@ -851,7 +851,7 @@ function Add-Groups {
 # Replace ease of access menu with powershell because reasons
 function Replace-EaseOfAccess {
     $list = "utilman.exe","powershell.exe"
-    
+
     $list.foreach{
         takeown /f "C:\Windows\System32\$_"
         icacls "C:\Windows\System32\$_" /grant ${env:username}:(F)
@@ -871,17 +871,10 @@ function Install-Chocolatey {
 
         choco feature enable -n allowGlobalConfirmation
         choco feature enable -n useFipsCompliantChecksums
-		
+
 		Write-Output "Chocolatey installed."
 		Add-SOProgress "Chocolatey installed."
     }
-}
-
-# Remove unnecessary .git folder
-function Remove-SOGitFolder {
-    Remove-Item "$env:userprofile\Desktop\Script\.git" -Recurse -Force
-
-    Write-Output ".git folder removed."
 }
 
 # Allow cmder, stop scoring, etc. to work lol
@@ -959,9 +952,27 @@ if ($args -eq "m") {
     Get-Functions
 }
 
-Clear-Host
-if ($firstrun -ne $false) {Write-Output "Welcome to Jackson's chad powershell script.`nRemember, don't be an idiot.`n`n"}
-if ($args -notin "a","m") {Write-Output "Please specify auto [a] or manual [m]"}
+if ($firstrun -ne $false) {
+    Write-Output "__   __"
+    Write-Output "\ \ / /_ _ _ __   __ _"
+    Write-Output " \ V / _  | '_ \ / _  |"
+    Write-Output "  | | (_| | | | | (_| |"
+    Write-Output "  |_|\__,_|_| |_|\__, |"
+    Write-Output " ____   ___ ____ |___/"
+    Write-Output "|___ \ / _ \___ \ / _ \"
+    Write-Output "  __) | | | |__) | | | |"
+    Write-Output " / __/| |_| / __/| |_| |"
+    Write-Output "|_____|\___/_____|\___/"
+
+    Write-Output "`n"
+
+    Write-Output "Welcome to Jackson's chad powershell script.`nRemember, don't be an idiot.`n`n"
+}
+
+if ($args -notin "a","m") {
+    Clear-Host
+    Write-Output "Please specify auto [a] or manual [m]"
+}
 
 # Set firstrun to false
 $global:firstrun = $false
