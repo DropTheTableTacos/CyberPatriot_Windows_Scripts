@@ -52,6 +52,7 @@ Get-SOVer,gv,ScriptOnly
 Get-SOOS,gos,ScriptOnly
 Import-SOLists,il,ScriptOnly
 Get-SOBadUsers,gbu,ScriptOnly
+Get-SOBadAdmins,gba,ScriptOnly
 Set-SOLogonMessage,slm,ScriptOnly
 Add-SOProgress,ap,ScriptOnly
 Import-SOAlias,ialias,ScriptOnly

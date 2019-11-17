@@ -44,10 +44,30 @@ function Open-Readme {
     Write-Output -InputObject "README opened."
 }
 
-# Get user list
+# Get bad users list
 function Get-SOBadUsers {
-    $gooduserlist = Get-Content -Path "$compfiles\lists\good_users.txt"
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
     $goodusers = ($gooduserlist).Split(";",2)
+
+    # Add readme users to file if needed
+    if ($null -eq $gooduserlist) {
+        Open-Readme
+        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
+        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
+        Start-Process "$compfiles\lists\good_users.txt"
+
+        Pause
+    }
+
+    # Compare and get bad users
+    (Compare-Object $goodusers $users_nobuiltin).foreach{
+        return $_.InputObject
+    }
+}
+
+# Get bad admin list
+function Get-SOBadAdmins {
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
     $goodadmins = ($gooduserlist | Select-String ";").Split(";",2)
 
     # Add readme users to file if needed
@@ -61,7 +81,7 @@ function Get-SOBadUsers {
     }
 
     # Compare and get bad users
-    (Compare-Object $gooduserlist $users_nobuiltin).foreach{
+    (Compare-Object $goodadmins $admins_nobuiltin).foreach{
         return $_.InputObject
     }
 }
@@ -181,7 +201,7 @@ function Remove-Admins {
 
         Add-SOProgress "Admin(s) have been deleted"
     } else {
-        $global:badadmins = Get-SOBadUsers admins
+        $global:badadmins = Get-SOBadAdmins
 
         $badadmins.foreach{
             Remove-LocalGroupMember "Administrators" $_
@@ -887,7 +907,7 @@ function Fix-Programs {
 
 # Initial Setup
 
-if ($firstrun -ne $false) {
+if ($env:firstrun -ne "false") {
     # Install Carbon and PSWindowsUpdate modules
 
     # Disable Use FIPS compliant checksums (Allow install of modules)
@@ -915,7 +935,14 @@ $global:ver = Get-SOVer
 $global:os = Get-SOOS
 $global:users = Get-CUser
 $global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
+$global:admins = $users.foreach{
+    if ((Test-CGroupMember "Administrators" $_) -eq $true) {return $_}
+}
+$global:admins_nobuiltin = $users_nobuiltin.foreach{
+    if ((Test-CGroupMember "Administrators" $_) -eq $true) {return $_}
+}
 $global:badusers = Get-SOBadUsers
+$global:badadmins = Get-SOBadAdmins
 $global:ip = (Get-CIPAddress | Where-Object IPAddressToString -match "192\.168\.\d*\.\d*").IPAddressToString
 
 # Run setup commands
@@ -952,7 +979,7 @@ if ($args -eq "m") {
     Get-Functions
 }
 
-if ($firstrun -ne $false) {
+if ($env:firstrun -ne "false") {
     Write-Output "__   __"
     Write-Output "\ \ / /_ _ _ __   __ _"
     Write-Output " \ V / _  | '_ \ / _  |"
@@ -975,4 +1002,4 @@ if ($args -notin "a","m") {
 }
 
 # Set firstrun to false
-$global:firstrun = $false
+[System.Environment]::SetEnvironmentVariable("firstrun","false",[System.EnvironmentVariableTarget]::Machine)
