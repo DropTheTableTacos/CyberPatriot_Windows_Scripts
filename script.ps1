@@ -46,19 +46,22 @@ function Open-Readme {
 
 # Get user list
 function Get-SOBadUsers {
-    $goodusers = Get-Content -Path "$compfiles\lists\good_users.txt"
+    $gooduserlist = Get-Content -Path "$compfiles\lists\good_users.txt"
+    $goodusers = ($gooduserlist).Split(";",2)
+    $goodadmins = ($gooduserlist | Select-String ";").Split(";",2)
 
     # Add readme users to file if needed
-    if ($null -eq $goodusers) {
+    if ($null -eq $gooduserlist) {
         Open-Readme
-        Write-Output -InputObject "Put README users in this text file. (replace this text)`nPut a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
-        Start-Process -FilePath "$compfiles\lists\good_users.txt"
+        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
+        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
+        Start-Process "$compfiles\lists\good_users.txt"
 
         Pause
     }
 
     # Compare and get bad users
-    (Compare-Object -ReferenceObject $goodusers -DifferenceObject $users_nobuiltin).foreach{
+    (Compare-Object $gooduserlist $users_nobuiltin).foreach{
         return $_.InputObject
     }
 }
@@ -161,23 +164,32 @@ function Remove-Users {
 
 # Delete Admins
 function Remove-Admins {
-    Open-Readme
+    if ($args -in "m","man","manual") {
+        while ($true) {
+            Clear-Host
 
-    while ($true) {
-        Clear-Host
+            Get-Admins
+            Write-Output "`n"
+            $answer = Read-Host "Enter a username to delete"
 
-        Get-Admins
-        Write-Output "`n"
-        $answer = Read-Host "Enter a username to delete"
+            if ($answer -eq "n") {
+                break
+            }
 
-        if ($answer -eq "n") {
-            break
+            Remove-LocalGroupMember "Administrators" $answer
         }
 
-        Remove-LocalGroupMember Administrators $answer
-    }
+        Add-SOProgress "Admin(s) have been deleted"
+    } else {
+        $global:badadmins = Get-SOBadUsers admins
 
-    Add-SOProgress "Admin(s) have been deleted"
+        $badadmins.foreach{
+            Remove-LocalGroupMember "Administrators" $_
+            Write-Output "$_ was removed from Administrators group."
+        }
+
+        Add-SOProgress "Admin(s) have been deleted"
+    }
 }
 
 # Disable services
@@ -880,20 +892,6 @@ function Fix-Programs {
     Write-Output "Cmder, stop scoring, etc. fixed."
 }
 
-# Variables lol
-$global:desktop = "$env:userprofile\Desktop"
-$global:compfiles = "$desktop\Script"
-$global:sct = "$compfiles\sctbaselines"
-$global:cmderbin = "$compfiles\cmder\bin"
-$global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
-[System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine)
-$global:ver = Get-SOVer
-$global:os = Get-SOOS
-$global:users = Get-CUser
-$global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
-$global:badusers = Get-SOBadUsers
-$global:ip = (Get-CIPAddress | Where-Object IPAddressToString -match "192\.168\.\d*\.\d*").IPAddressToString
-
 # Initial Setup
 
 if ($firstrun -ne $false) {
@@ -913,6 +911,20 @@ if ($firstrun -ne $false) {
     New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "1" -Force
 }
 
+# Variables lol
+$global:desktop = "$env:userprofile\Desktop"
+$global:compfiles = "$desktop\Script"
+$global:sct = "$compfiles\sctbaselines"
+$global:cmderbin = "$compfiles\cmder\bin"
+$global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
+[System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine)
+$global:ver = Get-SOVer
+$global:os = Get-SOOS
+$global:users = Get-CUser
+$global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
+$global:badusers = Get-SOBadUsers
+$global:ip = (Get-CIPAddress | Where-Object IPAddressToString -match "192\.168\.\d*\.\d*").IPAddressToString
+
 # Run setup commands
 Set-PSDebug -Trace 0
 Set-SOLogonMessage
@@ -931,7 +943,7 @@ $functions.foreach{
 }
 
 # Determine type of execute, then execute
-if ($args -in "a") {
+if ($args -eq "a") {
     ($functions | Where-Object Type -match "Auto").foreach{
         Invoke-Expression -Command "$_.Name"
     }
@@ -942,11 +954,12 @@ if ($args -in "a") {
     }
 }
 
-if ($args -in "m") {
+if ($args -eq "m") {
     Clear-Host
     Get-Functions
 }
 
+Clear-Host
 if ($firstrun -ne $false) {Write-Output "Welcome to Jackson's chad powershell script.`nRemember, don't be an idiot.`n`n"}
 if ($args -notin "a","m") {Write-Output "Please specify auto [a] or manual [m]"}
 
