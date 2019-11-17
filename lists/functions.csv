@@ -1,6 +1,7 @@
 Name,Alias,Type
 Import-SCT,isct,Auto
 Remove-Users,ru,Auto
+Remove-Admins,ra,Auto
 Disable-Services,dserv,Auto
 Open-Forensics,of,Auto
 Set-Passwords,sp,Auto
@@ -19,7 +20,6 @@ Enable-UAC,euac,Auto
 Disable-Features,df,Auto
 Install-Programs,ip,Auto
 Remove-ProhibitedFiles,rpf,Auto
-Remove-Admins,ra,Manual
 Update-Windows,uw,Manual
 Remove-Shares,rshare,Manual
 Remove-Programs,rp,Manual
