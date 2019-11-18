@@ -1,56 +1,58 @@
-Pattern,Type
-Social Security,Normal
-Social Security#,Normal
-Soc Sec,Normal
-SSN,Normal
-SSNS,Normal
-SSN#,Normal
-SS#,Normal
-SSID,Normal
-card verification,Normal
-card identification number,Normal
-cvn,Normal
-cid,Normal
-Password,Normal
-Salary,Normal
-Visa,Normal
-mastercard,Normal
-credit card,Normal
-card number,Normal
-Starting nmap,Normal
-KEY FOUND!,Normal
-cain,Normal
-nmap,Normal
-zenmap,Normal
-keylogger,Normal
-armitage,Normal
-wireshark,Normal
-metasploit,Normal
-netcat,Normal
-johntheripper,Normal
-itunes,Normal
-bircd,Normal
-teamviewer,Normal
-torrent,Normal
-driver support,Normal
-advanced ip scanner,Normal
-mycleanpc,Normal
-tonido,Normal
-ophcrack,Normal
-hashcat,Normal
-stickykeys,Normal
-tini,Normal
-ntbindshell,Normal
-real player,Normal
-aircrack-ng,Normal
-((?!000)(?!666)(?:[0-6]\d{2}|7[0-2][0-9]|73[0-3]|7[5-6][0-9]|77[0-2]))-((?!00)\d{2})-((?!0000)\d{4}),RE
-((4\d{3})|(5[1-5]\d{2})|(6011))-?\d{4}-?\d{4}-?\d{4}|3[4,7]\d{13},RE
-Loaded .* password hash(es)?,RE
-guesses: \d+   time: (\d+:){3}\d+ (\d?){2}\d% ....: \d+  trying: .* -.*,RE
-Hydra v.{3} \(c\) \d{4},RE
-Starting Ncrack .* \( ?http://ncrack.org ?\) at \d{4}-\d{2}-\d{2} \d{2}:\d{2} ...,RE
-Stats: (\d+:){2}\d+ elapsed; \d+ services completed \(\d+ total\),RE
-Medusa v\d\.\d+ \[http://www.foofus.net] \(C\).*,RE
-ACCOUNT [A-Z]+: \[.+\],RE
-Starting Nmap \d\.\d{2} \( ?https?://nmap\.org \) at \d{4}-\d{2}-\d{2} \d{2}:\d{2} ...,RE
-hashcat \(v\d+\.\d+\.\d+\) starting\.{3},RE
+Pattern
+Social Security
+Social Security#
+Soc Sec
+SSN
+SSNS
+SSN#
+SS#
+SSID
+card verification
+card identification number
+cvn
+cid
+Password
+Salary
+Visa
+mastercard
+credit card
+card number
+Starting nmap
+KEY FOUND!
+brutus
+cain
+nmap
+zenmap
+keylogger
+armitage
+wireshark
+metasploit
+netcat
+johntheripper
+john
+itunes
+bircd
+teamviewer
+torrent
+driver support
+advanced ip scanner
+mycleanpc
+tonido
+ophcrack
+hashcat
+stickykeys
+tini
+ntbindshell
+real player
+aircrack-ng
+((?!000)(?!666)(?:[0-6]\d{2}|7[0-2][0-9]|73[0-3]|7[5-6][0-9]|77[0-2]))-((?!00)\d{2})-((?!0000)\d{4})
+((4\d{3})|(5[1-5]\d{2})|(6011))-?\d{4}-?\d{4}-?\d{4}|3[4,7]\d{13}
+Loaded .* password hash(es)?
+guesses: \d+   time: (\d+:){3}\d+ (\d?){2}\d% ....: \d+  trying: .* -.*
+Hydra v.{3} \(c\) \d{4}
+Starting Ncrack .* \( ?http://ncrack.org ?\) at \d{4}-\d{2}-\d{2} \d{2}:\d{2} ...
+Stats: (\d+:){2}\d+ elapsed; \d+ services completed \(\d+ total\)
+Medusa v\d\.\d+ \[http://www.foofus.net] \(C\).*
+ACCOUNT [A-Z]+: \[.+\]
+Starting Nmap \d\.\d{2} \( ?https?://nmap\.org \) at \d{4}-\d{2}-\d{2} \d{2}:\d{2} ...
+hashcat \(v\d+\.\d+\.\d+\) starting\.{3}

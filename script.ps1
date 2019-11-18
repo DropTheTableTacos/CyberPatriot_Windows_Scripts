@@ -226,28 +226,15 @@ function Open-Forensics {
         Start-Process $_
     }
 
+    Pause
+
     Add-SOProgress "Forensics Questions checked out"
     Write-Output "Opened the forensics questions, brah."
 }
 
 # Delete prohibited files
 function Remove-ProhibitedFiles {
-	Write-Output "Did you check the forensics questions mate? Be careful"
-    Pause
-
-    $ext = Import-SOLists extensions | Where-Object Action -eq "Delete"
-
-    $ext.foreach{
-        # Get the files
-        $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
-
-        # Takeown and yeet them off the VM
-        $files.foreach{
-            takeown /f $_.FullName
-            icacls $_.FullName /grant ${env:USERNAME}:(F)
-        }
-        $files.FullName | Remove-Item -Force
-    }
+	Invoke-Expression "cmd /c start powershell {$compfiles\remove_prohibitedfiles.ps1}"
 
     Add-SOProgress "Media files deleted"
     Write-Output "Bad media files deleted."
@@ -350,42 +337,15 @@ function Disable-Users {
 
 # Windows Update
 function Update-Windows {
-	# Get microsoft update server and start update, auto too fam
-	Add-WUServiceManager -ServiceID 7971f918-a847-4430-9279-4a52d1efe18d
-	Set-WUSettings -AutoInstallMinorUpdates -IncludeRecommendedUpdates
-	Get-WUInstall –MicrosoftUpdate –AcceptAll
+    Invoke-Expression "cmd /c start powershell {$compfiles\update_windows.ps1}"
 
-    # Set windows update service to auto and start
-    Set-Service wuauserv -startuptype Automatic
-    Start-Service wuauserv
-
-    # Enable automatic updates
-    New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" `
-    -Name NoAutoUpdate -PropertyType DWord -Value "0" -Force
-    New-ItemProperty -Path "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" `
-    -Name AUOptions -PropertyType DWord -Value "4" -Force
-    New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate `
-    -PropertyType DWord -Value "0" -Force
-    New-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name AUOptions `
-    -PropertyType DWord -Value "4" -Force
-
-    # Completed message
-    Write-Output "`n"
     Write-Output "Automatic Windows Update has been configured and the service was started."
-
     Add-SOProgress "Windows Update configured and started"
 }
 
 # Install gucci programs
 function Install-Programs {
-    if ((Test-Path $env:programdata\chocolatey) -eq $False) {
-        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
-        choco feature enable -n allowGlobalConfirmation
-        choco feature enable -n useFipsCompliantChecksums
-    }
-
-    choco install firefox ie11 malwarebytes mbsa patch-my-pc iobit-uninstaller --ignorechecksum --force
+    Invoke-Expression "cmd /c start powershell {$compfiles\install_programs.ps1}"
 
     Add-SOProgress "Good security programs installed"
     Write-Output "Gucci security programs installed."
@@ -393,7 +353,7 @@ function Install-Programs {
 
 # Disable features
 function Disable-Features {
-    . "$compfiles\disable_features.ps1"
+    Invoke-Expression "cmd /c start powershell {$compfiles\disable_features.ps1}"
 
     Add-SOProgress "Disabled lame features"
     Write-Output "Lame features disabled, or one could say, clapped"
@@ -586,19 +546,15 @@ function Start-Sysinternals {
 
 # CISCAT Registry batch file
 function Start-CiscatRegistry {
-    . "$compfiles\ciscat_registry.ps1"
+    Invoke-Expression "cmd /c start powershell {$compfiles\start_ciscatregistry.ps1}"
 
-    Add-SOProgress "CISCAT Registry batch file run"
-    Write-Output "CISCAT Registry batch file run"
+    Add-SOProgress "CISCAT Registry script run"
+    Write-Output "CISCAT Registry script run"
 }
 
 # IE registry gamers
 function Import-IERegistry {
-    $ie_reg = Get-Content "$compfiles\lists\ie_registry.txt" | Select-String -NotMatch "#"
-
-    $ie_reg.foreach{
-        Invoke-Expression -Command "$_"
-    }
+    Invoke-Expression "cmd /c start powershell {$compfiles\import_ieregistry.ps1}"
 
     Add-SOProgress "Set CISCAT Internet Explorer registry settings"
     Write-Output "Imported IE Registry settings"
@@ -860,9 +816,8 @@ function Fix-Programs {
     Write-Output "Cmder, stop scoring, etc. fixed."
 }
 
-# Initial Setup
-
-if ($firstrun -ne $false -or $env:firstrun -ne "false") {
+# Run initial setup manually
+function Start-InitialSetup {
     # Install Carbon and PSWindowsUpdate modules
 
     # Disable Use FIPS compliant checksums (Allow install of modules)
@@ -878,6 +833,9 @@ if ($firstrun -ne $false -or $env:firstrun -ne "false") {
     New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled" -PropertyType "DWord" -Value "1" -Force
     New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "1" -Force
 }
+
+# Run initial setup if it hasnt been run
+if ($firstrun -ne $false -or $env:firstrun -ne "false") {Start-InitialSetup}
 
 # Variables lol
 $global:desktop = "$env:userprofile\Desktop"

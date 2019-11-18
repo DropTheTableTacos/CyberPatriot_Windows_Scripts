@@ -78,3 +78,6 @@ Name,Action
 *.wks,Find
 *.wps,Find
 *.wpd,Find
+*.index,Find
+*.start,Find
+*.bru,Find
