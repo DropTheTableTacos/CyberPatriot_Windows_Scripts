@@ -49,7 +49,6 @@ Replace-EaseOfAccess,reoa,Utility
 Install-Chocolatey,ic,Utility
 Fix-Programs,fp,Utility
 Start-InitialSetup,sis,Utility
-Get-SOVer,gv,ScriptOnly
 Get-SOOS,gos,ScriptOnly
 Import-SOLists,il,ScriptOnly
 Get-SOBadUsers,gbu,ScriptOnly

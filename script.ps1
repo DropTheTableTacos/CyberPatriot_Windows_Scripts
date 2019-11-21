@@ -2,20 +2,6 @@
 
 # Functions
 
-# Get windows version
-function Get-SOVer {
-    $ver = (Get-WmiObject Win32_OperatingSystem).Version
-
-    if ($ver -eq "10.0.10240") {return "1507"}
-    if ($ver -eq "10.0.10586") {return "1511"}
-    if ($ver -eq "10.0.14393") {return "1607"}
-    if ($ver -eq "10.0.15063") {return "1703"}
-    if ($ver -eq "10.0.16299") {return "1709"}
-    if ($ver -eq "10.0.17134") {return "1803"}
-    if ($ver -eq "10.0.17763") {return "1809"}
-    if ($ver -eq "10.0.18362") {return "1903"}
-}
-
 # Get OS name
 function Get-SOOS {
     $os_name = (Get-CimInstance CIM_OperatingSystem).Name
@@ -122,13 +108,13 @@ function Import-SCT {
     Set-Location "$cmderbin"
 
     # Import Microsoft recommended baselines like an absolute chad
-    .\LGPO.exe /g "$sct\${os}_$ver\MS"
+    .\LGPO.exe /g "$sct\MS"
 
     # Import chad custom baselines too
-    .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver\Good"
+    .\LGPO.exe /g "$sct\Custom\Good"
 
     if ($args -eq "bad") {
-        .\LGPO.exe /g "$sct\${os}_$ver\Chad_$ver\Bad"
+        .\LGPO.exe /g "$sct\Custom\Bad"
     }
 
     # Allow cmder and stop scoring, etc. to actually run lol
@@ -816,7 +802,6 @@ $global:sct = "$compfiles\sctbaselines"
 $global:cmderbin = "$compfiles\cmder\bin"
 $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine)
-$global:ver = Get-SOVer
 $global:os = Get-SOOS
 $global:users = Get-CUser
 $global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
