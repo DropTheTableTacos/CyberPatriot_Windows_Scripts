@@ -30,6 +30,8 @@ Update-Programs,up,Manual
 Start-Nessus,sn,Manual
 Find-ProhibitedFiles,fpf,Manual
 Start-Sysinternals,ssys,Manual
+Unlock-Users,uu,Manual
+Run-UserAuditing,rua,Combo
 Open-Readme,or,Utility
 Enable-Users,eu,Utility
 Start-CatLite,scl,Utility

@@ -146,8 +146,6 @@ function Remove-Users {
 
         Add-SOProgress "User(s) have been deleted"
     } else {
-        $global:badusers = Get-SOBadUsers
-
         $badusers.foreach{
             Remove-LocalUser $_
             Write-Output "$_ was yeeted off the face of the earth."
@@ -663,9 +661,9 @@ function Get-Users {
     $global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
 
     if ($args -eq "nobuiltin") {
-        $users_nobuiltin | Select-Object name | format-wide
+        $users_nobuiltin | Select-Object name
     } else {
-        $users | Select-Object name | format-wide
+        $users | Select-Object name
     }
 }
 
@@ -780,6 +778,34 @@ function Enable-WindowsDefender {
 
     Add-SOProgress "Enabled Windows Defender."
     Write-Output "Enabled Windows Defender."
+}
+
+function Unlock-Users {
+	lusrmgr.msc
+
+	Clear-Host
+	Write-Output "Gotta check locked users manually, sorry son."
+	Write-Output "Powershell didn't come through for us this time."
+	Write-Output "`n"
+	Pause
+	
+	Add-SOProgress "Unlocked locked users"
+	Write-Output "Unlocked locked users"
+}
+
+# Combo user auditing script
+function Run-UserAuditing {
+	Remove-Users
+	Remove-Admins
+	Disable-Users
+	Enable-Users
+	Set-Passwords
+	Set-PasswordExpire
+	Unlock-Users
+	
+	Add-SOProgress "Did all the user auditing epics."
+	Write-Output "Did all the user auditing epics."
+	
 }
 
 # Run initial setup if it hasnt been run
