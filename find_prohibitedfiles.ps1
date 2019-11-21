@@ -24,6 +24,14 @@ $ext.foreach{
 	}
 }
 
+$badusers.foreach{
+    $f = Get-ChildItem C:\* -Recurse -Force | Get-Acl
+
+    if ($f.Owner -eq "$_") {
+        $f.Path >> "C:\stinky_files.txt"
+    }
+}
+
 Start-Process "C:\stinky_files.txt"
 
 while ($true) {

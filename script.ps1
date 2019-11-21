@@ -412,26 +412,8 @@ function Set-FirefoxConfig {
     Write-Output "Firefox swole settings copied."
 }
 
-# Prohibited users' files
-function Find-ProhibitedUserFiles {
-    $global:badusers = Get-SOBadUsers
-
-    $badusers.foreach{
-        $f = Get-ChildItem C:\* -Recurse | Get-Acl
-
-        if ($f.Owner -eq "$_") {
-            Write-Output $f.Path
-        }
-    }
-
-    Add-SOProgress "Prohibited user files theoretically found maybe idk"
-    Write-Output "Prohibited user files theoretically found maybe idk."
-}
-
 # Delete user folders of bad users
 function Remove-BadUserFolders {
-    $global:badusers = Get-SOBadUsers
-
     $badusers.foreach{
         Remove-Item C:\Users\$_ -Recurse -Force
     }
@@ -790,6 +772,14 @@ function Start-InitialSetup {
     # Re-enable Use FIPS compliant algorithms
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "1" -Force
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "1" -Force
+}
+
+# Enable Windows Defender
+function Enable-WindowsDefender {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Force | New-ItemProperty -Name "DisableAntiSpyware" -PropertyType "DWord" -Value "0" -Force
+
+    Add-SOProgress "Enabled Windows Defender."
+    Write-Output "Enabled Windows Defender."
 }
 
 # Run initial setup if it hasnt been run

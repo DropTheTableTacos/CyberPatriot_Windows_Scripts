@@ -7,6 +7,7 @@ Enable-Firewall,ef,Auto
 Set-PasswordExpire,spe,Auto
 Disable-Users,disu,Auto
 Disable-RemoteDesktop,drd,Auto
+Enable-WindowsDefender,ewd,Auto
 Protect-Screensaver,ps,Auto
 Clear-Hosts,ch,Auto
 Set-FirefoxConfig,sffc,Auto
@@ -24,7 +25,6 @@ Import-IERegistry,iier,Auto
 Remove-Shares,rshare,Manual
 Remove-Programs,rp,Manual
 Remove-Malware,rm,Manual
-Find-ProhibitedUserFiles,fpuf,Manual
 Remove-BadUserFolders,rbuf,Manual
 Update-Programs,up,Manual
 Start-Nessus,sn,Manual
