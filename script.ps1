@@ -242,10 +242,10 @@ function Set-Passwords {
     }
 }
 
-# Enable Firewall and template
+# Enable Firewall and set settings
 function Enable-Firewall {
-    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
-    # Put command to import firewall template here
+    Set-NetFirewallProfile -All -Enabled True
+    netsh advfirewall import "$compfiles\firewall.wfw"
 
     Add-SOProgress "Firewall enabled and template applied"
     Write-Output "Firewall enabled, brah."
