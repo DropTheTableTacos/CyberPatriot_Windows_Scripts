@@ -6,6 +6,7 @@ Set-Passwords,sp,Auto
 Enable-Firewall,ef,Auto
 Set-PasswordExpire,spe,Auto
 Disable-Users,disu,Auto
+Enable-Users,eu,Auto
 Disable-RemoteDesktop,drd,Auto
 Enable-WindowsDefender,ewd,Auto
 Protect-Screensaver,ps,Auto
@@ -27,13 +28,11 @@ Remove-Programs,rp,Manual
 Remove-Malware,rm,Manual
 Remove-BadUserFolders,rbuf,Manual
 Update-Programs,up,Manual
-Start-Nessus,sn,Manual
+Unlock-Users,uu,Manual
 Find-ProhibitedFiles,fpf,Manual
 Start-Sysinternals,ssys,Manual
-Unlock-Users,uu,Manual
 Run-UserAuditing,rua,Combo
 Open-Readme,or,Utility
-Enable-Users,eu,Utility
 Start-CatLite,scl,Utility
 Add-Admins,aa,Utility
 Add-Users,au,Utility

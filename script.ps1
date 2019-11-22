@@ -432,15 +432,6 @@ function Update-Programs {
     Add-SOProgress "Hopefully got those gamer program updates"
 }
 
-# Run Nessus scans
-function Start-Nessus {
-    $ip
-    Write-Output "Run Nessus scans, ya brainlet"
-    Pause
-
-    Add-SOProgress "Nessus scan theoretically run?"
-}
-
 # Find prohibited files
 function Find-ProhibitedFiles {
     # Remove existing output file if it exists
@@ -829,7 +820,6 @@ $global:admins_nobuiltin = $users_nobuiltin.foreach{
 }
 $global:badusers = Get-SOBadUsers
 $global:badadmins = Get-SOBadAdmins
-$global:ip = (Get-CIPAddress | Where-Object IPAddressToString -match "192\.168\.\d*\.\d*").IPAddressToString
 
 # Run setup commands
 Set-PSDebug -Trace 0
