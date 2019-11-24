@@ -242,10 +242,10 @@ function Set-Passwords {
     }
 }
 
-# Enable Firewall and template
+# Enable Firewall and set settings
 function Enable-Firewall {
-    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
-    # Put command to import firewall template here
+    Set-NetFirewallProfile -All -Enabled True
+    netsh advfirewall import "$compfiles\firewall.wfw"
 
     Add-SOProgress "Firewall enabled and template applied"
     Write-Output "Firewall enabled, brah."
@@ -448,7 +448,7 @@ function Find-ProhibitedFiles {
         # Output stinky ones to file and takeown
         $files.foreach{
             takeown /f $_.FullName
-            icacls $_.FullName /grant ${env:USERNAME}:(F)
+            icacls $_.FullName /grant ${env:USERNAME}:`(F`)
         }
         $files.FullName >> C:\stinkyfiles.txt
 
@@ -563,7 +563,9 @@ function Enable-Backup {
     # WIP
     Install-WindowsFeature Windows-Server-Backup
 
+    Clear-Host
     Read-Host "Plug in a flashdrive mate"
+    Pause
 
     while ($true) {
         Clear-Host
@@ -797,6 +799,14 @@ function Run-UserAuditing {
 	Add-SOProgress "Did all the user auditing epics."
 	Write-Output "Did all the user auditing epics."
 	
+}
+
+# Enable SmartScreen
+function Enable-SmartScreen {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Force | New-ItemProperty -Name "EnableSmartScreen" -PropertyType "DWord" -Value "2" -Force
+
+    Add-SOProgress "Enabled SmartScreen."
+    Write-Output "Enabled SmartScreen."
 }
 
 # Run initial setup if it hasnt been run

@@ -2,7 +2,7 @@ $ext = Import-SOLists extensions | Where-Object Action -eq "Delete"
 
 $ext.foreach{
     # Get the files
-    $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+    $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Attributes !Directory,ReadOnly+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
 
     # Takeown and yeet them off the VM
     $files.foreach{

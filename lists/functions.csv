@@ -15,6 +15,7 @@ Set-FirefoxConfig,sffc,Auto
 Enable-InternetExplorer,eie,Auto
 Remove-AppLocker,rapp,Auto
 Enable-UAC,euac,Auto
+Enable-SmartScreen,ess,Auto
 Open-Forensics,of,Auto
 Disable-Features,df,Auto
 Install-Programs,ip,Auto
@@ -31,6 +32,7 @@ Update-Programs,up,Manual
 Unlock-Users,uu,Manual
 Find-ProhibitedFiles,fpf,Manual
 Start-Sysinternals,ssys,Manual
+Enable-Backup,eb,Manual
 Run-UserAuditing,rua,Combo
 Open-Readme,or,Utility
 Start-CatLite,scl,Utility
@@ -38,7 +40,6 @@ Add-Admins,aa,Utility
 Add-Users,au,Utility
 Add-Groups,ag,Utility
 Copy-ToProfile,ctp,Utility
-Find-MediaFiles,fmf,Utility
 Get-Admins,ga,Utility
 Get-Users,gu,Utility
 Get-Functions,gf,Utility
