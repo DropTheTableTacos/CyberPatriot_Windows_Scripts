@@ -5,7 +5,7 @@ $ext = Import-SOLists extensions | Where-Object Action -eq "Find"
 $pattern = Import-SOLists sensinfo_patterns
 
 # Initial finding zip files cause they most common
-$zip = Get-ChildItem -Path "C:\" -Filter *.zip -Recurse -Attributes !Directory,ReadOnly+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+$zip = Get-ChildItem -Path "C:\" -Filter *.zip -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
 
 # Takeown and output to file
 $zip.foreach{
@@ -36,7 +36,7 @@ while ($true) {
 
 $ext.foreach{
     # Get the files
-    $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Attributes !Directory,ReadOnly+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+    $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
 
     # Takeown and output to file
     $files.foreach{

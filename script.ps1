@@ -434,33 +434,7 @@ function Update-Programs {
 
 # Find prohibited files
 function Find-ProhibitedFiles {
-    # Remove existing output file if it exists
-    Remove-Item "C:\stinkyfiles.txt" -Force -ErrorAction SilentlyContinue
-
-    $ext = Import-SOLists extensions | Where-Object Action -eq "Find"
-    $pattern = Import-SOLists sensinfo_patterns
-
-    # Find the files
-    $ext.foreach{
-        # Get the files
-        $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Force | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
-
-        # Output stinky ones to file and takeown
-        $files.foreach{
-            takeown /f $_.FullName
-            icacls $_.FullName /grant ${env:USERNAME}:`(F`)
-        }
-        $files.FullName >> C:\stinkyfiles.txt
-
-        # Find patterns in files
-		$pattern.foreach{
-			if ((Get-Content $files.FullName | Select-String -Pattern "$_.Pattern") -eq $true) {
-                $_.FullName >> C:\stinkyfiles.txt
-            }
-		}
-    }
-
-    Start-Process C:\stinkyfiles.txt
+    Invoke-Expression "cmd /c start powershell {$compfiles\find_prohibitedfiles.ps1}"
 
     Add-SOProgress "Prohibited files may have been found"
     Write-Output "Prohibited files may have been found"
