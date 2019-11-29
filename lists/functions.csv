@@ -33,7 +33,6 @@ Unlock-Users,uu,Manual
 Find-ProhibitedFiles,fpf,Manual
 Start-Sysinternals,ssys,Manual
 Enable-Backup,eb,Manual
-Run-UserAuditing,rua,Combo
 Open-Readme,or,Utility
 Start-CatLite,scl,Utility
 Add-Admins,aa,Utility
@@ -58,4 +57,3 @@ Get-SOBadAdmins,gba,ScriptOnly
 Set-SOLogonMessage,slm,ScriptOnly
 Add-SOProgress,ap,ScriptOnly
 Import-SOAlias,ialias,ScriptOnly
-Set-SOAutoLogon,sal,ScriptOnly

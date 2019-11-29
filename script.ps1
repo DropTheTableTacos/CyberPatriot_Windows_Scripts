@@ -96,13 +96,6 @@ function Import-SOAlias {
     }
 }
 
-# Setup autologon again for our user for convenience
-function Set-SOAutoLogon {
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Force | New-ItemProperty -Name "DefaultUserName" -PropertyType "String" -Value "$env:username" -Force
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Force | New-ItemProperty -Name "DefaultPassword" -PropertyType "String" -Value "abc123ABC123@@" -Force
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Force | New-ItemProperty -Name "AutoAdminLogon" -PropertyType "String" -Value "1" -Force
-}
-
 # SCT Baselines
 function Import-SCT {
     Set-Location "$cmderbin"
@@ -690,7 +683,7 @@ function Replace-EaseOfAccess {
 
     $list.foreach{
         takeown /f "C:\Windows\System32\$_"
-        icacls "C:\Windows\System32\$_" /grant ${env:username}:(F)
+        icacls "C:\Windows\System32\$_" /grant ${env:username}:`(F`)
     }
 
     Move-Item "C:\Windows\System32\utilman.exe" "C:\Windows\System32\utilman1.exe" -Force
@@ -726,17 +719,19 @@ function Start-InitialSetup {
     # Install Carbon and PSWindowsUpdate modules
 
     # Disable Use FIPS compliant checksums (Allow install of modules)
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "0" -Force
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "0" -Force
+    #New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "0" -Force
+    #New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "0" -Force
 
-    Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
+    #Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
+    if (Get-InstalledModule -Name "Carbon") {break}
+
     Install-PackageProvider -Name "NuGet" -MinimumVersion "2.8.5.201" -Force
     Install-Module -Name "Carbon" -AllowClobber -Force
     Install-Module -Name "PSWindowsUpdate" -AllowClobber -Force
 
     # Re-enable Use FIPS compliant algorithms
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "1" -Force
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "1" -Force
+    #New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "1" -Force
+    #New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "1" -Force
 }
 
 # Enable Windows Defender
@@ -760,21 +755,6 @@ function Unlock-Users {
 	Write-Output "Unlocked locked users"
 }
 
-# Combo user auditing script
-function Run-UserAuditing {
-	Remove-Users
-	Remove-Admins
-	Disable-Users
-	Enable-Users
-	Set-Passwords
-	Set-PasswordExpire
-	Unlock-Users
-	
-	Add-SOProgress "Did all the user auditing epics."
-	Write-Output "Did all the user auditing epics."
-	
-}
-
 # Enable SmartScreen
 function Enable-SmartScreen {
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Force | New-ItemProperty -Name "EnableSmartScreen" -PropertyType "DWord" -Value "2" -Force
@@ -783,8 +763,13 @@ function Enable-SmartScreen {
     Write-Output "Enabled SmartScreen."
 }
 
-# Run initial setup if it hasnt been run
-if ($firstrun -ne $false -or $env:firstrun -ne "false") {Start-InitialSetup}
+# Initial Setup
+Start-InitialSetup
+Set-PSDebug -Trace 0
+Set-SOLogonMessage
+Import-SOAlias
+Replace-EaseOfAccess
+Copy-ToProfile
 
 # Variables lol
 $global:desktop = "$env:userprofile\Desktop"
@@ -805,65 +790,72 @@ $global:admins_nobuiltin = $users_nobuiltin.foreach{
 $global:badusers = Get-SOBadUsers
 $global:badadmins = Get-SOBadAdmins
 
-# Run setup commands
-Set-PSDebug -Trace 0
-Set-SOLogonMessage
-Import-SOAlias
-Set-SOAutoLogon
-Replace-EaseOfAccess
-Copy-ToProfile
-
-# Execute script
-$functions = Import-SOLists functions
-
 # Create aliases
+$functions = Import-SOLists functions
 $functions.foreach{Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force}
 
 # Determine type of execute, then execute
 if ($args -eq "a") {
     ($functions | Where-Object Type -match "Auto").foreach{
         Invoke-Expression -Command "$_.Name"
-    }
-
-    ($functions | Where-Object Type -match "Manual").foreach{
-        Invoke-Expression -Command "$_.Name"
         Pause
     }
 }
 
-if ($args -eq "m") {
-    Clear-Host
-    Get-Functions
+$banner = Get-Random -Maximum "3"
+
+Clear-Host
+
+# Show a random banner lmao
+if ($banner -eq "0") {
+    Write-Output "__     __                 "
+    Write-Output "\ \   / /                 "
+    Write-Output " \ \_/ /___ ____   ____   "
+    Write-Output "  \   / _  | '_ \ / _  |  "
+    Write-Output "   | | (_| | | | | (_| |  "
+    Write-Output "  _|_|\__,_|_| |_|\__, |  "
+    Write-Output " / ____|           __/ |  "
+    Write-Output "| |  __  ____ _ __|___/__ "
+    Write-Output "| | |_ |/ _  | '_ \ / _  |"
+    Write-Output "| |__| | (_| | | | | (_| |"
+    Write-Output " \_____|\__,_|_| |_|\__, |"
+    Write-Output "                     __/ |"
+    Write-Output "                    |___/ "
 }
 
-if ($firstrun -ne $false -or $env:firstrun -ne "false") {
-    Clear-Host
-
-    Write-Output "__   __"
-    Write-Output "\ \ / /_ _ _ __   __ _"
-    Write-Output " \ V / _  | '_ \ / _  |"
-    Write-Output "  | | (_| | | | | (_| |"
-    Write-Output "  |_|\__,_|_| |_|\__, |"
-    Write-Output " ____   ___ ____ |___/"
-    Write-Output "|___ \ / _ \___ \ / _ \"
-    Write-Output "  __) | | | |__) | | | |"
-    Write-Output " / __/| |_| / __/| |_| |"
-    Write-Output "|_____|\___/_____|\___/"
-    Write-Output "`n"
-    Write-Output "Welcome to Jackson's chad powershell script."
-    Write-Output "Remember, don't be an idiot."
-    Write-Output "`n"
-    Write-Output "To execute the script:"
-    Write-Output "Run 'Start-Script' (or ss) and specify auto (a) or manual (m)"
-    Write-Output "`n"
-    Write-Output "Ex: ss a, ss m"
+if ($banner -eq "1") {
+    Write-Output "  _____ _           _     _    _       "
+    Write-Output " / ____| |         | |   | |  | |      "
+    Write-Output "| (___ | |__  _   _| |_  | |  | |_ __  "
+    Write-Output " \___ \| '_ \| | | | __| | |  | | '_ \ "
+    Write-Output " ____) | | | | |_| | |_  | |__| | |_) |"
+    Write-Output "|_____/|_| |_|\__,_|\__|  \____/| .__/ "
+    Write-Output "|  _ \                          | |    "
+    Write-Output "| |_) | ___   ___  _ ______   __|_| __ "
+    Write-Output "|  _ < / _ \ / _ \| '_   _ \ / _ \ '__|"
+    Write-Output "| |_) | (_) | (_) | | | | | |  __/ |   "
+    Write-Output "|____/ \___/ \___/|_| |_| |_|\___|_|   "
 }
 
-if ($args -notin "a","m" -and $firstrun -eq $false -or $env:firstrun -eq "false") {
-    Clear-Host
-    Write-Output "Please specify auto (a) or manual (m)"
+if ($banner -eq "2") {
+    Write-Output " _    _ _        ____  _       "
+    Write-Output "| |  | | |      / __ \| |      "
+    Write-Output "| |  | | |__   | |  | | |__    "
+    Write-Output "| |  | | '_ \  | |  | | '_ \   "
+    Write-Output "| |__| | | | | | |__| | | | |  "
+    Write-Output " \____/|_| |_|  \____/|_| |_|  "
+    Write-Output " / ____| | (_)     | |         "
+    Write-Output "| (___ | |_ _ _ __ | | ___   _ "
+    Write-Output " \___ \| __| | '_ \| |/ / | | |"
+    Write-Output " ____) | |_| | | | |   <| |_| |"
+    Write-Output "|_____/ \__|_|_| |_|_|\_\\__, |"
+    Write-Output "                          __/ |"
+    Write-Output "                         |___/ "
 }
 
-# Set firstrun to false
-[System.Environment]::SetEnvironmentVariable("firstrun","false",[System.EnvironmentVariableTarget]::Machine)
-$global:firstrun = $false
+Write-Output "`n"
+Write-Output "Welcome to Jackson's chad powershell script."
+Write-Output "Remember, don't be an idiot."
+Write-Output "`n"
+Write-Output "To run the script in auto mode:"
+Write-Output "Type 'ss a'"
