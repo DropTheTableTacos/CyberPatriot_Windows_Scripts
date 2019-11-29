@@ -1,8 +1,8 @@
 # Remove existing output file if it exists
 Remove-Item "C:\stinky_files.txt" -Force -ErrorAction SilentlyContinue | Out-Null
 
-$ext = Import-SOLists extensions | Where-Object Action -eq "Find"
-$pattern = Import-SOLists sensinfo_patterns
+$ext = Import-Lists extensions | Where-Object Action -eq "Find"
+$pattern = Import-Lists sensinfo_patterns
 
 # Initial finding zip files cause they most common
 $zip = Get-ChildItem -Path "C:\" -Filter *.zip -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"

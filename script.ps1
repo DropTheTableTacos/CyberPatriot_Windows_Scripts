@@ -378,8 +378,10 @@ function Protect-Screensaver {
 function Clear-Hosts {
     Reset-CHostsFile
 
-    Add-Progress "Hosts file cleared"
-    Write-Output "Hosts file cleared, ez"
+    Copy-Item "$compfiles\hosts" "$env:SystemRoot\System32\drivers\etc\hosts" -Force
+
+    Add-Progress "Hosts file cleared, ez."
+    Write-Output "Hosts file cleared, ez."
 }
 
 # Firefox config
@@ -622,7 +624,7 @@ function Get-Users {
 function Get-Functions {
     $functions = Import-Lists functions
 
-    $functions | Where-Object Type -ne "ScriptOnly" | Select-Object Name, Alias, Type | Format-Table
+    $functions | Where-Object Type -ne "ScriptOnly" | Select-Object Name, Alias | Format-Table
 }
 
 # Run script easily function
@@ -789,8 +791,14 @@ $functions.foreach{Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -For
 if ($args -eq "a") {
     ($functions | Where-Object Type -match "Auto").foreach{
         Invoke-Expression -Command "$_.Name"
-        Pause
     }
+
+    $sep_functs = $functions | Where-Object Type -match "Auto_Seperate"
+    Clear-Host
+    Write-Output "Run these functions manually cause they are dumb when I try to execute automatically."
+    Write-Output "`n"
+    $sep_functs
+    exit
 }
 
 $banner = Get-Random -Maximum "3"

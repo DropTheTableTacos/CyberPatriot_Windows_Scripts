@@ -1,4 +1,4 @@
-$ext = Import-SOLists extensions | Where-Object Action -eq "Delete"
+$ext = Import-Lists extensions | Where-Object Action -eq "Delete"
 
 $ext.foreach{
     # Get the files

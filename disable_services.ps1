@@ -18,7 +18,7 @@ while ($true) {
 }
 
 # Disable list of services
-$services = Import-SOLists services
+$services = Import-Lists services
 
 ($services | Where-Object State -match "Uninstall").foreach{
     Stop-Service $_.Name -ErrorAction SilentlyContinue
