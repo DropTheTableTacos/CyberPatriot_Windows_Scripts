@@ -81,3 +81,4 @@ Name,Action
 *.index,Find
 *.start,Find
 *.bru,Find
+*.bad,Find
