@@ -54,7 +54,7 @@ function Get-SOBadUsers {
 # Get bad admin list
 function Get-SOBadAdmins {
     $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
-    $goodadmins = ($gooduserlist | Select-String ";").Split(";",2)
+    $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Split(";",2)
 
     # Add readme users to file if needed
     if ($null -eq $gooduserlist) {
@@ -679,15 +679,15 @@ function Add-Groups {
 
 # Replace ease of access menu with powershell because reasons
 function Replace-EaseOfAccess {
-    $list = "utilman.exe","powershell.exe"
+    # Take ownership
+    takeown /f "C:\Windows\System32\utilman.exe"
+    icacls "C:\Windows\System32\utilman.exe" /grant ${env:username}:`(F`)
+    takeown /f "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+    icacls "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" /grant ${env:username}:`(F`)
 
-    $list.foreach{
-        takeown /f "C:\Windows\System32\$_"
-        icacls "C:\Windows\System32\$_" /grant ${env:username}:`(F`)
-    }
-
-    Move-Item "C:\Windows\System32\utilman.exe" "C:\Windows\System32\utilman1.exe" -Force
-    Copy-Item "C:\Windows\System32\powershell.exe" "C:\Windows\System32\utilman.exe" -Force
+    # Replace files
+    Move-Item "C:\Windows\System32\utilman.exe" "C:\Windows\System32\utilman1.exe" -Force -ErrorAction SilentlyContinue
+    Copy-Item "C:\Windows\System32\powershell.exe" "C:\Windows\System32\utilman.exe" -Force -ErrorAction SilentlyContinue
 
     Add-SOProgress "Replaced ease of access menu with powershell. (in case of lockout)"
     Write-Output "Replaced ease of access menu with powershell. (in case of lockout)"
