@@ -1,9 +1,7 @@
 # Jackson's Epic Powershell Script That Has A 100% Guaranteed Chance Of Not Breaking During The Competition
 
-# Functions
-
 # Get OS name
-function Get-SOOS {
+function Get-OS {
     $os_name = (Get-CimInstance CIM_OperatingSystem).Name
     $os_list = "Windows 10","Server 2016"
 
@@ -19,19 +17,19 @@ function Get-SOOS {
 }
 
 # Import lists
-function Import-SOLists {
+function Import-Lists {
     return Import-Csv "$compfiles\lists\$args.csv"
 }
 
 # README
 function Open-Readme {
-    Start-Process -FilePath "C:\CyberPatriot\README.url"
+    Start-Process "C:\CyberPatriot\README.url"
 
-    Write-Output -InputObject "README opened."
+    Write-Output "README opened."
 }
 
 # Get bad users list
-function Get-SOBadUsers {
+function Get-BadUsers {
     $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
     $goodusers = ($gooduserlist).Split(";",2)
 
@@ -52,7 +50,7 @@ function Get-SOBadUsers {
 }
 
 # Get bad admin list
-function Get-SOBadAdmins {
+function Get-BadAdmins {
     $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
     $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Split(";",2)
 
@@ -66,30 +64,32 @@ function Get-SOBadAdmins {
         Pause
     }
 
-    # Compare and get bad users
+    # Compare and get bad admins
     (Compare-Object $goodadmins $admins_nobuiltin).foreach{
         return $_.InputObject
     }
 }
 
 # Set logon message to username and password
-function Set-SOLogonMessage {
+function Set-LogonMessage {
     # Change password
     Set-LocalUser $env:username -Password $pass
 
     # Set logon message
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "legalnoticecaption" -PropertyType "String" -Value "Username: $env:username" -Force
     New-Item -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Force | New-ItemProperty -Name "legalnoticetext" -PropertyType "String" -Value "Password: abc123ABC123@@" -Force
+
+    Write-Output "Set logon message to useful thing."
 }
 
 # Add to progress log
-function Add-SOProgress {
+function Add-Progress {
     Write-Output "$args`n" >> "$desktop\progress.txt"
 }
 
 # Import aliases
-function Import-SOAlias {
-    $functions = Import-SOLists functions
+function Import-Alias {
+    $functions = Import-Lists functions
 
     $functions.foreach{
         Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
@@ -114,9 +114,9 @@ function Import-SCT {
     Fix-Programs
 
     # Set logon message
-    Set-SOLogonMessage
+    Set-LogonMessage
 
-    Add-SOProgress "SCT Baselines imported"
+    Add-Progress "SCT Baselines imported."
     Write-Output "SCT baselines imported."
 }
 
@@ -137,14 +137,14 @@ function Remove-Users {
             Remove-LocalUser $answer
         }
 
-        Add-SOProgress "User(s) have been deleted"
+        Add-Progress "User(s) have been deleted"
     } else {
         $badusers.foreach{
             Remove-LocalUser $_
             Write-Output "$_ was yeeted off the face of the earth."
         }
 
-        Add-SOProgress "Unauthorized user(s) have been deleted"
+        Add-Progress "Unauthorized user(s) have been deleted"
     }
 }
 
@@ -165,16 +165,14 @@ function Remove-Admins {
             Remove-LocalGroupMember "Administrators" $answer
         }
 
-        Add-SOProgress "Admin(s) have been deleted"
+        Add-Progress "Admin(s) have been deleted"
     } else {
-        $global:badadmins = Get-SOBadAdmins
-
         $badadmins.foreach{
             Remove-LocalGroupMember "Administrators" $_
             Write-Output "$_ was removed from Administrators group."
         }
 
-        Add-SOProgress "Admin(s) have been deleted"
+        Add-Progress "Admin(s) have been deleted"
     }
 }
 
@@ -182,7 +180,7 @@ function Remove-Admins {
 function Disable-Services {
     Invoke-Expression "cmd /c start powershell {$compfiles\disable_services.ps1}"
 
-    Add-SOProgress "Lame services disabled and good ones enabled."
+    Add-Progress "Lame services disabled and good ones enabled."
     Write-Output "Bad services disabled and good ones enabled."
 }
 
@@ -194,7 +192,7 @@ function Open-Forensics {
 
     Pause
 
-    Add-SOProgress "Forensics Questions checked out"
+    Add-Progress "Forensics Questions checked out"
     Write-Output "Opened the forensics questions, brah."
 }
 
@@ -202,7 +200,7 @@ function Open-Forensics {
 function Remove-ProhibitedFiles {
 	Invoke-Expression "cmd /c start powershell {$compfiles\remove_prohibitedfiles.ps1}"
 
-    Add-SOProgress "Media files deleted"
+    Add-Progress "Media files deleted"
     Write-Output "Bad media files deleted."
 }
 
@@ -230,17 +228,16 @@ function Set-Passwords {
             Set-LocalUser $_ -Password $pass
         }
 
-        Add-SOProgress "All passwords changed to a gamer secure password"
+        Add-Progress "All passwords changed to a gamer secure password"
         Write-Output "All passwords changed to: abc123ABC123@@"
     }
 }
 
-# Enable Firewall and set settings
+# Enable Firewall
 function Enable-Firewall {
     Set-NetFirewallProfile -All -Enabled True
-    netsh advfirewall import "$compfiles\firewall.wfw"
 
-    Add-SOProgress "Firewall enabled and template applied"
+    Add-Progress "Firewall enabled, brah."
     Write-Output "Firewall enabled, brah."
 }
 
@@ -266,7 +263,7 @@ function Set-PasswordExpire {
         }
     }
 
-    Add-SOProgress "Set user passwords to expire"
+    Add-Progress "Set user passwords to expire"
     Write-Output "Set user accounts to expire."
 }
 
@@ -295,7 +292,7 @@ function Disable-Users {
             Disable-LocalUser $_ -ErrorAction SilentlyContinue
         }
 
-        Add-SOProgress "Built-in Admin and Guest disabled"
+        Add-Progress "Built-in Admin and Guest disabled"
 
         Write-Output "Built-in Admin and Guest disabled."
     }
@@ -306,14 +303,14 @@ function Update-Windows {
     Invoke-Expression "cmd /c start powershell {$compfiles\update_windows.ps1}"
 
     Write-Output "Automatic Windows Update has been configured and the service was started."
-    Add-SOProgress "Windows Update configured and started"
+    Add-Progress "Windows Update configured and started"
 }
 
 # Install gucci programs
 function Install-Programs {
     Invoke-Expression "cmd /c start powershell {$compfiles\install_programs.ps1}"
 
-    Add-SOProgress "Good security programs installed"
+    Add-Progress "Good security programs installed"
     Write-Output "Gucci security programs installed."
 }
 
@@ -321,7 +318,7 @@ function Install-Programs {
 function Disable-Features {
     Invoke-Expression "cmd /c start powershell {$compfiles\disable_features.ps1}"
 
-    Add-SOProgress "Disabled lame features"
+    Add-Progress "Disabled lame features"
     Write-Output "Lame features disabled, or one could say, clapped"
 }
 
@@ -336,7 +333,7 @@ function Remove-Shares {
         $answer = Read-Host "Choose a sketchy share to delete"
 
         if ($answer -eq "n") {
-            Add-SOProgress "Sketchy shares deleted"
+            Add-Progress "Sketchy shares deleted"
             break
         }
 
@@ -350,13 +347,13 @@ function Remove-Programs {
     # WIP
     appwiz.cpl
     explorer.exe
-    Add-SOProgress "Sketchy programs removed"
+    Add-Progress "Sketchy programs removed"
 }
 
 # Remove stinky malware
 function Remove-Malware {
     # WIP
-    Add-SOProgress "Malware absolutely yeeted on"
+    Add-Progress "Malware absolutely yeeted on"
 }
 
 # Disable remote desktop
@@ -364,7 +361,7 @@ function Disable-RemoteDesktop {
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fDenyTSConnections" -PropertyType "DWord" -Value "1" -Force
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fAllowToGetHelp" -PropertyType "DWord" -Value "0" -Force
 
-    Add-SOProgress "Remote Desktop disabled"
+    Add-Progress "Remote Desktop disabled"
     Write-Output "Disable remote desktop."
 }
 
@@ -373,7 +370,7 @@ function Protect-Screensaver {
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" -Force | New-ItemProperty -Name "ScreenSaverIsSecure" -PropertyType "DWord" -Value "1" -Force
     New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" -Force | New-ItemProperty -Name "ScreenSaverIsSecure" -PropertyType "DWord" -Value "1" -Force
 
-    Add-SOProgress "Screensaver secured with password"
+    Add-Progress "Screensaver secured with password"
     Write-Output "Secured screensaver with a password."
 }
 
@@ -381,7 +378,7 @@ function Protect-Screensaver {
 function Clear-Hosts {
     Reset-CHostsFile
 
-    Add-SOProgress "Hosts file cleared"
+    Add-Progress "Hosts file cleared"
     Write-Output "Hosts file cleared, ez"
 }
 
@@ -399,7 +396,7 @@ function Set-FirefoxConfig {
         Copy-Item "$compfiles\firefox_config\local-settings.js" "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\local-settings.js" -Force
     }
 
-    Add-SOProgress "Firefox config files copied"
+    Add-Progress "Firefox config files copied"
     Write-Output "Firefox swole settings copied."
 }
 
@@ -409,7 +406,7 @@ function Remove-BadUserFolders {
         Remove-Item C:\Users\$_ -Recurse -Force
     }
 
-    Add-SOProgress "Bad user folders deleted"
+    Add-Progress "Bad user folders deleted"
     Write-Output "Bad user folders deleted."
 }
 
@@ -422,14 +419,14 @@ function Update-Programs {
     Write-Output "`n"
     Write-Output "IMPORTANT: Check if the programs have auto updates"
     Pause
-    Add-SOProgress "Hopefully got those gamer program updates"
+    Add-Progress "Hopefully got those gamer program updates"
 }
 
 # Find prohibited files
 function Find-ProhibitedFiles {
     Invoke-Expression "cmd /c start powershell {$compfiles\find_prohibitedfiles.ps1}"
 
-    Add-SOProgress "Prohibited files may have been found"
+    Add-Progress "Prohibited files may have been found"
     Write-Output "Prohibited files may have been found"
 }
 
@@ -441,14 +438,14 @@ function Start-Sysinternals {
         Start-Process "$cmderbin\$_"
     }
 
-    Add-SOProgress "Ran sysinternals stuff"
+    Add-Progress "Ran sysinternals stuff"
 }
 
 # CISCAT Registry batch file
 function Start-CiscatRegistry {
     Invoke-Expression "cmd /c start powershell {$compfiles\start_ciscatregistry.ps1}"
 
-    Add-SOProgress "CISCAT Registry script run"
+    Add-Progress "CISCAT Registry script run"
     Write-Output "CISCAT Registry script run"
 }
 
@@ -456,7 +453,7 @@ function Start-CiscatRegistry {
 function Import-IERegistry {
     Invoke-Expression "cmd /c start powershell {$compfiles\import_ieregistry.ps1}"
 
-    Add-SOProgress "Set CISCAT Internet Explorer registry settings"
+    Add-Progress "Set CISCAT Internet Explorer registry settings"
     Write-Output "Imported IE Registry settings"
 }
 
@@ -466,7 +463,7 @@ function Enable-InternetExplorer {
     Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue
     Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue
 
-    Add-SOProgress "Enabled Internet Explorer"
+    Add-Progress "Enabled Internet Explorer"
     Write-Output "Enabled the gamer internet explorer."
 }
 
@@ -474,7 +471,7 @@ function Enable-InternetExplorer {
 function Remove-AppLocker {
     Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
 
-    Add-SOProgress "AppLocker policies cleared"
+    Add-Progress "AppLocker policies cleared"
     Write-Output "Applocker policies cleared."
 }
 
@@ -501,7 +498,7 @@ function Enable-Users {
             Enable-LocalUser $_
         }
 
-        Add-SOProgress "All users (except built-in Admin and Guest) enabled"
+        Add-Progress "All users (except built-in Admin and Guest) enabled"
 
         Write-Output "All users (except built-in Admin and Guest) enabled."
     }
@@ -511,7 +508,7 @@ function Enable-Users {
 function Enable-UAC {
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "EnableLUA" -PropertyType "DWord" -Value "1" -Force
 
-    Add-SOProgress "UAC Enabled"
+    Add-Progress "UAC Enabled"
     Write-Output "Enabled UAC"
 }
 
@@ -564,7 +561,7 @@ function Add-Admins {
         Add-CGroupMember Administrators $answer
     }
 
-    Add-SOProgress "Admin(s) have been added"
+    Add-Progress "Admin(s) have been added"
 }
 
 # Add users
@@ -585,7 +582,7 @@ function Add-Users {
         New-LocalUser $answer -Password $pass
     }
 
-    Add-SOProgress "User(s) have been added"
+    Add-Progress "User(s) have been added"
 }
 
 # Copy script to profile
@@ -597,9 +594,6 @@ function Copy-ToProfile {
 
 # List admins
 function Get-Admins {
-    $global:users = Get-CUser
-    $global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
-
     if ($args -eq "nobuiltin") {
         $users_nobuiltin.foreach{
             if ((test-groupmember Administrators $_) -eq $true) {
@@ -617,19 +611,16 @@ function Get-Admins {
 
 # List users
 function Get-Users {
-    $global:users = Get-CUser
-    $global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
-
     if ($args -eq "nobuiltin") {
-        $users_nobuiltin | Select-Object name
+        $users_nobuiltin | Select-Object Name
     } else {
-        $users | Select-Object name
+        $users | Select-Object Name
     }
 }
 
 # List functions
 function Get-Functions {
-    $functions = Import-SOLists functions
+    $functions = Import-Lists functions
 
     $functions | Where-Object Type -ne "ScriptOnly" | Select-Object Name, Alias, Type | Format-Table
 }
@@ -642,20 +633,20 @@ function Start-Script {
 
 # Open Scoring report
 function Open-ScoringReport {
-    C:\CyberPatriot\ScoringReport.html
+    Start-Process "C:\CyberPatriot\ScoringReport.html"
 }
 
 # Open stop scoring thing (to check scoring timer)
 function Open-StopScoring {
-    C:\CyberPatriot\Stop.exe
+    Start-Process "C:\CyberPatriot\Stop.exe"
 }
 
 # Enable remote desktop
 function Enable-RemoteDesktop {
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fDenyTSConnections" -PropertyType "DWord" -Value "0" -Force
 
-    Add-SOProgress "Remote Desktop enabled"
-    Write-Output "Enable remote desktop."
+    Add-Progress "Remote desktop enabled."
+    Write-Output "Remote desktop enabled."
 }
 
 # Add groups function cause why not
@@ -674,7 +665,7 @@ function Add-Groups {
         New-LocalGroup -Name $answer
     }
 
-    Add-SOProgress "Group(s) have been added"
+    Add-Progress "Group(s) have been added"
 }
 
 # Replace ease of access menu with powershell because reasons
@@ -689,7 +680,7 @@ function Replace-EaseOfAccess {
     Move-Item "C:\Windows\System32\utilman.exe" "C:\Windows\System32\utilman1.exe" -Force -ErrorAction SilentlyContinue
     Copy-Item "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "C:\Windows\System32\utilman.exe" -Force -ErrorAction SilentlyContinue
 
-    Add-SOProgress "Replaced ease of access menu with powershell. (in case of lockout)"
+    Add-Progress "Replaced ease of access menu with powershell. (in case of lockout)"
     Write-Output "Replaced ease of access menu with powershell. (in case of lockout)"
 }
 
@@ -702,7 +693,7 @@ function Install-Chocolatey {
         choco feature enable -n useFipsCompliantChecksums
 
 		Write-Output "Chocolatey installed."
-		Add-SOProgress "Chocolatey installed."
+		Add-Progress "Chocolatey installed."
     }
 }
 
@@ -723,7 +714,7 @@ function Start-InitialSetup {
     #New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "0" -Force
 
     #Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
-    if (Get-InstalledModule -Name "Carbon") {break}
+    if (Get-InstalledModule -Name "Carbon") {return}
 
     Install-PackageProvider -Name "NuGet" -MinimumVersion "2.8.5.201" -Force
     Install-Module -Name "Carbon" -AllowClobber -Force
@@ -738,7 +729,7 @@ function Start-InitialSetup {
 function Enable-WindowsDefender {
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Force | New-ItemProperty -Name "DisableAntiSpyware" -PropertyType "DWord" -Value "0" -Force
 
-    Add-SOProgress "Enabled Windows Defender."
+    Add-Progress "Enabled Windows Defender."
     Write-Output "Enabled Windows Defender."
 }
 
@@ -751,7 +742,7 @@ function Unlock-Users {
 	Write-Output "`n"
 	Pause
 	
-	Add-SOProgress "Unlocked locked users"
+	Add-Progress "Unlocked locked users"
 	Write-Output "Unlocked locked users"
 }
 
@@ -759,15 +750,15 @@ function Unlock-Users {
 function Enable-SmartScreen {
     New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Force | New-ItemProperty -Name "EnableSmartScreen" -PropertyType "DWord" -Value "2" -Force
 
-    Add-SOProgress "Enabled SmartScreen."
+    Add-Progress "Enabled SmartScreen."
     Write-Output "Enabled SmartScreen."
 }
 
 # Initial Setup
 Start-InitialSetup
 Set-PSDebug -Trace 0
-Set-SOLogonMessage
-Import-SOAlias
+Set-LogonMessage
+Import-Alias
 Replace-EaseOfAccess
 Copy-ToProfile
 
@@ -778,7 +769,7 @@ $global:sct = "$compfiles\sctbaselines"
 $global:cmderbin = "$compfiles\cmder\bin"
 $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine)
-$global:os = Get-SOOS
+$global:os = Get-OS
 $global:users = Get-CUser
 $global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
 $global:admins = $users.foreach{
@@ -787,11 +778,11 @@ $global:admins = $users.foreach{
 $global:admins_nobuiltin = $users_nobuiltin.foreach{
     if ((Test-CGroupMember "Administrators" $_) -eq $true) {return $_}
 }
-$global:badusers = Get-SOBadUsers
-$global:badadmins = Get-SOBadAdmins
+$global:badusers = Get-BadUsers
+$global:badadmins = Get-BadAdmins
 
 # Create aliases
-$functions = Import-SOLists functions
+$functions = Import-Lists functions
 $functions.foreach{Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force}
 
 # Determine type of execute, then execute
@@ -810,7 +801,7 @@ Clear-Host
 if ($banner -eq "0") {
     Write-Output "__     __                 "
     Write-Output "\ \   / /                 "
-    Write-Output " \ \_/ /___ ____   ____   "
+    Write-Output " \ \_/ /___ _ __   ____   "
     Write-Output "  \   / _  | '_ \ / _  |  "
     Write-Output "   | | (_| | | | | (_| |  "
     Write-Output "  _|_|\__,_|_| |_|\__, |  "
@@ -857,5 +848,8 @@ Write-Output "`n"
 Write-Output "Welcome to Jackson's chad powershell script."
 Write-Output "Remember, don't be an idiot."
 Write-Output "`n"
+Write-Output "To list all available functions:"
+Write-Output "Type 'Get-Functions (or gf)'"
+Write-Output "`n"
 Write-Output "To run the script in auto mode:"
-Write-Output "Type 'ss a'"
+Write-Output "Type 'Start-Script a (or ss a)'"

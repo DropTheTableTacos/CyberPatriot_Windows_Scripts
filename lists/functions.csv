@@ -1,4 +1,5 @@
 Name,Alias,Type
+Open-Readme,or,Auto
 Import-SCT,isct,Auto
 Remove-Users,ru,Auto
 Remove-Admins,ra,Auto
@@ -33,7 +34,6 @@ Unlock-Users,uu,Manual
 Find-ProhibitedFiles,fpf,Manual
 Start-Sysinternals,ssys,Manual
 Enable-Backup,eb,Manual
-Open-Readme,or,Utility
 Start-CatLite,scl,Utility
 Add-Admins,aa,Utility
 Add-Users,au,Utility
@@ -50,10 +50,10 @@ Replace-EaseOfAccess,reoa,Utility
 Install-Chocolatey,ic,Utility
 Fix-Programs,fp,Utility
 Start-InitialSetup,sis,Utility
-Get-SOOS,gos,ScriptOnly
-Import-SOLists,il,ScriptOnly
-Get-SOBadUsers,gbu,ScriptOnly
-Get-SOBadAdmins,gba,ScriptOnly
-Set-SOLogonMessage,slm,ScriptOnly
-Add-SOProgress,ap,ScriptOnly
-Import-SOAlias,ialias,ScriptOnly
+Get-OS,gos,ScriptOnly
+Import-Lists,il,ScriptOnly
+Get-BadUsers,gbu,ScriptOnly
+Get-BadAdmins,gba,ScriptOnly
+Set-LogonMessage,slm,ScriptOnly
+Add-Progress,ap,ScriptOnly
+Import-Alias,ialias,ScriptOnly
