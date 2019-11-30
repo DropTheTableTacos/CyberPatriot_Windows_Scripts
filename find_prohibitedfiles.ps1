@@ -5,14 +5,17 @@ $ext = Import-Lists extensions | Where-Object Action -eq "Find"
 $pattern = Import-Lists sensinfo_patterns
 
 # Initial finding zip files cause they most common
-$zip = Get-ChildItem -Path "C:\" -Filter *.zip -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+$cringe = "*.zip","*.txt"
+$cringe.foreach{
+    $files += Get-ChildItem -Path "C:\" -Filter $_ -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+}
 
 # Takeown and output to file
-$zip.foreach{
+$files.foreach{
     takeown /f $_.FullName
     icacls $_.FullName /grant ${env:USERNAME}:`(F`)
 }
-$zip.FullName >> "C:\stinky_files.txt"
+$files.FullName >> "C:\stinky_files.txt"
 
 Start-Process "C:\stinky_files.txt"
 
@@ -23,6 +26,8 @@ while ($true) {
         Write-Output "`n"
     }
 
+    Write-Output "Found .zip and .txt files..."
+    Write-Output "`n"
     $answer = Read-Host "Enter the path to a file to YEET it off the VM"
 
     if ($answer -eq "n") {
@@ -36,7 +41,7 @@ while ($true) {
 
 $ext.foreach{
     # Get the files
-    $files = Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+    $files += Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
 
     # Takeown and output to file
     $files.foreach{
@@ -71,6 +76,8 @@ while ($true) {
         Write-Output "`n"
     }
 
+    Write-Output "Found a buncha files..."
+    Write-Output "`n"
     $answer = Read-Host "Enter the path to a file to YEET it off the VM"
 
     if ($answer -eq "n") {

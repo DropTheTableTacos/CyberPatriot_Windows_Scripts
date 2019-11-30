@@ -139,6 +139,8 @@ function Remove-Users {
 
         Add-Progress "User(s) have been deleted"
     } else {
+        $global:badusers = Get-BadUsers
+
         $badusers.foreach{
             Remove-LocalUser $_
             Write-Output "$_ was yeeted off the face of the earth."
@@ -404,6 +406,8 @@ function Set-FirefoxConfig {
 
 # Delete user folders of bad users
 function Remove-BadUserFolders {
+    $global:badusers = Get-BadUsers
+
     $badusers.foreach{
         Remove-Item C:\Users\$_ -Recurse -Force
     }
