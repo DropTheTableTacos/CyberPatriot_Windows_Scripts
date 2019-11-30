@@ -805,7 +805,7 @@ if ($args -eq "a") {
     exit
 }
 
-$banner = Get-Random -Maximum "3"
+$banner = Get-Random -Maximum "4"
 
 Clear-Host
 
@@ -854,6 +854,24 @@ if ($banner -eq "2") {
     Write-Output "|_____/ \__|_|_| |_|_|\_\\__, |"
     Write-Output "                          __/ |"
     Write-Output "                         |___/ "
+}
+
+if ($banner -eq "3") {
+    Write-Output "  _____                _____ _ _                "
+    Write-Output " / ____|              / ____(_) |               "
+    Write-Output "| (___   ____ _   _  | (___  _| | _____         "
+    Write-Output " \___ \ / _  | | | |  \___ \| | |/ / _ \        "
+    Write-Output " ____) | (_| | |_| |  ____) | |   <  __/        "
+    Write-Output "|_____/ \__,_|\__, | |_____/|_|_|\_\___|        "
+    Write-Output "               __/ |                            "
+    Write-Output " _____  _     |___/   _     _   _               "
+    Write-Output "|  __ \(_)     | |   | |   | \ | |              "
+    Write-Output "| |__) |_  ____| |__ | |_  |  \| | _____      __"
+    Write-Output "|  _  /| |/ _  | '_ \| __| | .   |/ _ \ \ /\ / /"
+    Write-Output "| | \ \| | (_| | | | | |_  | |\  | (_) \ V  V / "
+    Write-Output "|_|  \_\_|\__, |_| |_|\__| |_| \_|\___/ \_/\_/  "
+    Write-Output "           __/ |                                "
+    Write-Output "          |___/                                 "
 }
 
 Write-Output "`n"
