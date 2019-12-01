@@ -537,7 +537,7 @@ function Enable-Backup {
     Install-WindowsFeature Windows-Server-Backup
 
     Clear-Host
-    Read-Host "Plug in a flashdrive mate"
+    Write-Output "Plug in a flashdrive mate"
     Pause
 
     while ($true) {

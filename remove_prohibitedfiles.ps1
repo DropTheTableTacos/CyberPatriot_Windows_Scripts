@@ -14,7 +14,8 @@ $ext.foreach{
 
     Write-Output "Files that have been deleted:"
     Write-Output "`n"
-    $files.FullName >> "C:\deleted_files.txt"
 
     $files.FullName | Remove-Item -Force
 }
+
+$files.FullName >> "C:\deleted_files.txt"
