@@ -722,8 +722,6 @@ function Start-InitialSetup {
     #>
 
     #Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
-    if (Get-InstalledModule -Name "Carbon") {return}
-
     Install-PackageProvider -Name "NuGet" -MinimumVersion "2.8.5.201" -Force
     Install-Module -Name "Carbon" -AllowClobber -Force
     Install-Module -Name "PSWindowsUpdate" -AllowClobber -Force
@@ -765,7 +763,8 @@ function Enable-SmartScreen {
 }
 
 # Initial Setup
-Start-InitialSetup
+if ($null -eq (Get-InstalledModule -Name "Carbon")) {Start-InitialSetup}
+if ($null -eq (Get-InstalledModule -Name "PSWindowsUpdate")) {Start-InitialSetup}
 Set-PSDebug -Trace 0
 Set-LogonMessage
 Import-Alias

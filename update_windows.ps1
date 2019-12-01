@@ -12,4 +12,4 @@ New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -For
 # Get microsoft update server and start update, auto too fam
 Add-WUServiceManager -MicrosoftUpdate -Silent
 Set-WUSettings -AutoInstallMinorUpdates -IncludeRecommendedUpdates
-Get-WindowsUpdate –AcceptAll -ForceDownload -ForceInstall -Install
+Get-WindowsUpdate -AcceptAll -ForceDownload -ForceInstall -Install
