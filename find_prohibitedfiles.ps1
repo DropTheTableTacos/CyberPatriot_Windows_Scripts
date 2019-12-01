@@ -10,13 +10,15 @@ Write-Output "Finding .zip and .txt files first..."
 
 $cringe = "*.zip","*.txt"
 $cringe.foreach{
-    $files += Get-ChildItem -Path "C:\" -Filter $_ -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+    $files += Get-ChildItem -Path "C:\" -Filter $_ -Recurse -Attributes !Directory+!System,Hidden | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
 }
 
 # Takeown and output to file
 $files.foreach{
-    takeown /f $_.FullName
-    icacls $_.FullName /grant ${env:USERNAME}:`(F`)
+    if ((Test-Path "$_") -eq $true) {
+        takeown /f $_.FullName
+        icacls $_.FullName /grant ${env:USERNAME}:`(F`)
+    }
 }
 $files.FullName >> "C:\stinky_files.txt"
 
@@ -47,7 +49,7 @@ while ($true) {
 # Find txt files matching patterns
 Remove-Item "C:\stinky_files.txt" -Force -ErrorAction SilentlyContinue | Out-Null
 
-$txt = Get-ChildItem -Path "C:\" -Filter *.txt -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+$txt = Get-ChildItem -Path "C:\" -Filter *.txt -Recurse -Attributes !Directory+!System,Hidden | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
 
 $pattern.foreach{
     Get-Content $txt.FullName | Select-String "$_.Pattern" >> "C:\stinky_files.txt"
@@ -82,12 +84,14 @@ Remove-Item "C:\stinky_files.txt" -Force -ErrorAction SilentlyContinue | Out-Nul
 
 $ext.foreach{
     # Get the files
-    $files += Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+    $files += Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Attributes !Directory+!System,Hidden | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
 
     # Takeown and output to file
     $files.foreach{
-        takeown /f $_.FullName
-        icacls $_.FullName /grant ${env:USERNAME}:`(F`)
+        if ((Test-Path "$_") -eq $true) {
+            takeown /f $_.FullName
+            icacls $_.FullName /grant ${env:USERNAME}:`(F`)
+        }
     }
 
     $files.FullName >> "C:\stinky_files.txt"
@@ -122,7 +126,7 @@ while ($true) {
 Remove-Item "C:\stinky_files.txt" -Force -ErrorAction SilentlyContinue | Out-Null
 
 $badusers.foreach{
-    $f = Get-ChildItem -Path "C:\" -Recurse -Attributes !Directory+!System | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot" | Get-Acl
+    $f = Get-ChildItem -Path "C:\" -Recurse -Attributes !Directory+!System,Hidden | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot" | Get-Acl
 
     if ($f.Owner -eq "$_") {
         $f.Path >> "C:\stinky_files.txt"

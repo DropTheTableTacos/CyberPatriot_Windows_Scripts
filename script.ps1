@@ -329,7 +329,7 @@ function Remove-Shares {
     while ($true) {
         Clear-Host
 
-        Get-FileShare
+        net share
         Write-Output "`n"
 
         $answer = Read-Host "Choose a sketchy share to delete"
@@ -339,22 +339,24 @@ function Remove-Shares {
             break
         }
 
-        explorer "\\$env:computername\$answer"
-        Uninstall-FileShare $answer
+        net share $answer /delete
     }
 }
 
 # Remove programs
 function Remove-Programs {
-    # WIP
-    appwiz.cpl
-    explorer.exe
+    Start-Process "$env:ProgramFiles\IObit\IObit Uninstaller\IObitUninstaler.exe"
+    Write-Output "REMOVE PROGRAMS!!1!"
+
     Add-Progress "Sketchy programs removed"
 }
 
 # Remove stinky malware
 function Remove-Malware {
-    # WIP
+    Start-Process "$env:programfiles\Malwarebytes\Anti-Malware\mbam.exe"
+    Start-Process "$env:programfiles\Microsoft Baseline Security Analyzer 2\mbsa.exe"
+    Write-Output "REMOVE MALWARE!!1!"
+
     Add-Progress "Malware absolutely yeeted on"
 }
 
@@ -424,7 +426,8 @@ function Update-Programs {
     Write-Output "Java JRE 8, Firefox, others."
     Write-Output "`n"
     Write-Output "IMPORTANT: Check if the programs have auto updates"
-    Pause
+    Start-Process "$env:programdata\chocolatey\bin\PatchMyPC.exe"
+
     Add-Progress "Hopefully got those gamer program updates"
 }
 
@@ -628,7 +631,7 @@ function Get-Users {
 function Get-Functions {
     $functions = Import-Lists functions
 
-    $functions | Where-Object Type -ne "ScriptOnly" | Select-Object Name, Alias | Format-Table
+    $functions | Where-Object Type -ne "ScriptOnly" | Format-Table
 }
 
 # Run script easily function
