@@ -765,6 +765,15 @@ function Enable-SmartScreen {
     Write-Output "Enabled SmartScreen."
 }
 
+# Firewall exceptions check
+function View-FirewallExceptions {
+    Clear-Host
+    Write-Output "Check firewall exceptions, bud"
+    Firewall.cpl
+
+    Add-Progress "Firewall exceptions checked."
+}
+
 # Initial Setup
 if ($null -eq (Get-InstalledModule -Name "Carbon")) {Start-InitialSetup}
 if ($null -eq (Get-InstalledModule -Name "PSWindowsUpdate")) {Start-InitialSetup}
