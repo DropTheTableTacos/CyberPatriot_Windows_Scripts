@@ -466,8 +466,8 @@ function Import-IERegistry {
 # Enable internet explorer
 function Enable-InternetExplorer {
     # Enable IE
-    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue
-    Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue
+    if ((Test-OSIs32Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue}
+    if ((Test-OSIs64Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue}
 
     Add-Progress "Enabled Internet Explorer"
     Write-Output "Enabled the gamer internet explorer."
@@ -478,7 +478,7 @@ function Remove-AppLocker {
     Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
 
     Add-Progress "AppLocker policies cleared"
-    Write-Output "Applocker policies cleared."
+    Write-Output "AppLocker policies cleared."
 }
 
 # Activate/Disable users
@@ -796,7 +796,7 @@ $functions.foreach{Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -For
 
 # Determine type of execute, then execute
 if ($args -eq "a") {
-    ($functions | Where-Object Type -match "Auto").foreach{
+    ($functions | Where-Object Type -match "^Auto$").foreach{
         Invoke-Expression -Command "$_.Name"
     }
 
