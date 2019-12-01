@@ -716,8 +716,10 @@ function Start-InitialSetup {
     # Install Carbon and PSWindowsUpdate modules
 
     # Disable Use FIPS compliant checksums (Allow install of modules)
-    #New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "0" -Force
-    #New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "0" -Force
+    <#
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "0" -Force
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "0" -Force
+    #>
 
     #Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
     if (Get-InstalledModule -Name "Carbon") {return}
@@ -727,8 +729,10 @@ function Start-InitialSetup {
     Install-Module -Name "PSWindowsUpdate" -AllowClobber -Force
 
     # Re-enable Use FIPS compliant algorithms
-    #New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "1" -Force
-    #New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "1" -Force
+    <#
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "1" -Force
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "1" -Force
+    #>
 }
 
 # Enable Windows Defender
