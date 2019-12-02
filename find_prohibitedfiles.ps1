@@ -46,41 +46,10 @@ while ($true) {
     Remove-Item "$answer" -Force
 }
 
-# Find txt files matching patterns
-Remove-Item "C:\stinky_files.txt" -Force -ErrorAction SilentlyContinue | Out-Null
-
-$txt = Get-ChildItem -Path "C:\" -Filter *.txt -Recurse -Attributes !Directory+!System,Hidden | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
-
-$pattern.foreach{
-    Get-Content $txt.FullName | Select-String "$_.Pattern" >> "C:\stinky_files.txt"
-}
-
-Start-Process "C:\stinky_files.txt"
-
-# Delete ones you possibly find
-while ($true) {
-    Clear-Host
-    if ($null -ne $answer) {
-        Write-Output "$answer has been deleted as hard as an Armenian in 1915."
-        Write-Output "`n"
-    }
-
-    Write-Output "Found sketchy .txt files..."
-    Write-Output "`n"
-    $answer = Read-Host "Enter the path to a file to YEET it off the VM"
-
-    if ($answer -eq "n") {
-        break
-    }
-
-    takeown /f "$answer"
-    icacls "$answer" /grant ${env:USERNAME}:`(F`)
-    "$answer" >> "C:\deleted_files.txt"
-    Remove-Item "$answer" -Force
-}
-
 # Find rest of extensions
 Remove-Item "C:\stinky_files.txt" -Force -ErrorAction SilentlyContinue | Out-Null
+
+Write-Output "Finding rest of extensions..."
 
 $ext.foreach{
     # Get the files
@@ -108,6 +77,40 @@ while ($true) {
     }
 
     Write-Output "Found cringe files..."
+    Write-Output "`n"
+    $answer = Read-Host "Enter the path to a file to YEET it off the VM"
+
+    if ($answer -eq "n") {
+        break
+    }
+
+    takeown /f "$answer"
+    icacls "$answer" /grant ${env:USERNAME}:`(F`)
+    "$answer" >> "C:\deleted_files.txt"
+    Remove-Item "$answer" -Force
+}
+
+# Find txt files matching patterns
+Remove-Item "C:\stinky_files.txt" -Force -ErrorAction SilentlyContinue | Out-Null
+
+$txt = Get-ChildItem -Path "C:\" -Filter *.txt -Recurse -Attributes !Directory+!System,Hidden | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
+
+Write-Output "Finding patterns in txt files..."
+$pattern.foreach{
+    Get-Content $txt.FullName | Select-String "$_.Pattern" >> "C:\stinky_files.txt"
+}
+
+Start-Process "C:\stinky_files.txt"
+
+# Delete ones you possibly find
+while ($true) {
+    Clear-Host
+    if ($null -ne $answer) {
+        Write-Output "$answer has been deleted as hard as an Armenian in 1915."
+        Write-Output "`n"
+    }
+
+    Write-Output "Found sketchy .txt files..."
     Write-Output "`n"
     $answer = Read-Host "Enter the path to a file to YEET it off the VM"
 
