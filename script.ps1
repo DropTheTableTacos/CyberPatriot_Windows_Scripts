@@ -394,12 +394,12 @@ function Set-FirefoxConfig {
     if ((Test-Path "$env:programfiles\Mozilla Firefox") -eq $True) {
         Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles\Mozilla Firefox\browser\override.ini" -Force
         Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles\Mozilla Firefox\mozilla.cfg" -Force
-        Copy-Item "$compfiles\firefox_config\local-settings.js" "$env:programfiles\Mozilla Firefox\defaults\pref\local-settings.js" -Force
+        Copy-Item "$compfiles\firefox_config\autoconfig.js" "$env:programfiles\Mozilla Firefox\defaults\pref\autoconfig.js" -Force
     } else {
         # 32 bit
         Copy-Item "$compfiles\firefox_config\override.ini" "$env:programfiles(x86)\Mozilla Firefox\browser\override.ini" -Force
         Copy-Item "$compfiles\firefox_config\mozilla.cfg" "$env:programfiles(x86)\Mozilla Firefox\mozilla.cfg" -Force
-        Copy-Item "$compfiles\firefox_config\local-settings.js" "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\local-settings.js" -Force
+        Copy-Item "$compfiles\firefox_config\autoconfig.js" "$env:programfiles(x86)\Mozilla Firefox\defaults\pref\autoconfig.js" -Force
     }
 
     Add-Progress "Firefox config files copied"
