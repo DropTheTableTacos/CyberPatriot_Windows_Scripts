@@ -1,5 +1,7 @@
 $ext = Import-Lists extensions | Where-Object Action -eq "Delete"
 
+Write-Output "Files that have been deleted:`n" >> "C:\deleted_files.txt"
+
 $ext.foreach{
     # Get the files
     $files += Get-ChildItem -Path "C:\" -Filter $_.Name -Recurse -Attributes !Directory+!System,Hidden | Where-Object FullName -notmatch "C:\\Users\\$env:USERNAME\\Desktop\\Script" | Where-Object FullName -notmatch "C:\\CyberPatriot"
@@ -12,10 +14,7 @@ $ext.foreach{
         }
     }
 
-    Write-Output "Files that have been deleted:"
-    Write-Output "`n"
-
     $files.FullName | Remove-Item -Force
+    $files.FullName >> "C:\deleted_files.txt"
 }
 
-$files.FullName >> "C:\deleted_files.txt"

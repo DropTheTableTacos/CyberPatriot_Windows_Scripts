@@ -812,12 +812,14 @@ if ($args -eq "a") {
         Invoke-Expression -Command "$_.Name"
     }
 
-    $sep_functs = $functions | Where-Object Type -match "Auto_Seperate"
-    Clear-Host
-    Write-Output "Run these functions manually cause they are dumb when I try to execute automatically."
-    Write-Output "`n"
-    $sep_functs
-    exit
+	# Run gamer seperate scripts
+    Disable-Features
+	Install-Programs
+	Remove-ProhibitedFiles
+	Disable-Services
+	Update-Windows
+	Start-CiscatRegistry
+	Import-IERegistry
 }
 
 $banner = Get-Random -Maximum "4"
