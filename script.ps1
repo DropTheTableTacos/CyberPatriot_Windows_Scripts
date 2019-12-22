@@ -1,99 +1,12 @@
 # Jackson's Epic Powershell Script That Has A 100% Guaranteed Chance Of Not Breaking During The Competition
 
-# Get OS name
-function Get-OS {
-    $os_name = (Get-CimInstance CIM_OperatingSystem).Name
-    $os_list = "Windows 10","Server 2016"
+# Auto Functions
 
-    $os_list.foreach{
-        if ($os_name -match $_) {
-            $os_name = $_
-
-            # Change name to shorter, gooder version
-            if ($os_name -in "Windows 10") {return $os_name.Remove(3,5)}
-            if ($os_name -in "Server 2016") {return $os_name.Remove(6,1)}
-        }
-    }
-}
-
-# Import lists
-function Import-Lists {
-    return Import-Csv "$compfiles\lists\$args.csv"
-}
-
-# README
+# Open README
 function Open-Readme {
     Start-Process "C:\CyberPatriot\README.url"
 
     Write-Output "README opened."
-}
-
-# Get bad users list
-function Get-BadUsers {
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
-    $goodusers = ($gooduserlist).Split(";",2)
-
-    # Add readme users to file if needed
-    if ($null -eq $gooduserlist) {
-        Open-Readme
-        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
-        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
-        Start-Process "$compfiles\lists\good_users.txt"
-
-        Pause
-    }
-
-    # Compare and get bad users
-    (Compare-Object $goodusers $users_nobuiltin).foreach{
-        return $_.InputObject
-    }
-}
-
-# Get bad admin list
-function Get-BadAdmins {
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
-    $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Split(";",2)
-
-    # Add readme users to file if needed
-    if ($null -eq $gooduserlist) {
-        Open-Readme
-        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
-        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
-        Start-Process "$compfiles\lists\good_users.txt"
-
-        Pause
-    }
-
-    # Compare and get bad admins
-    (Compare-Object $goodadmins $admins_nobuiltin).foreach{
-        return $_.InputObject
-    }
-}
-
-# Set logon message to username and password
-function Set-LogonMessage {
-    # Change password
-    Set-LocalUser $env:username -Password $pass
-
-    # Set logon message
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "legalnoticecaption" -PropertyType "String" -Value "Username: $env:username" -Force
-    New-Item -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Force | New-ItemProperty -Name "legalnoticetext" -PropertyType "String" -Value "Password: abc123ABC123@@" -Force
-
-    Write-Output "Set logon message to useful thing."
-}
-
-# Add to progress log
-function Add-Progress {
-    Write-Output "$args`n" >> "$desktop\progress.txt"
-}
-
-# Import aliases
-function Import-Alias {
-    $functions = Import-Lists functions
-
-    $functions.foreach{
-        Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
-    }
 }
 
 # SCT Baselines
@@ -176,34 +89,6 @@ function Remove-Admins {
 
         Add-Progress "Admin(s) have been deleted"
     }
-}
-
-# Disable services
-function Disable-Services {
-    Invoke-Expression "cmd /c start powershell {$compfiles\disable_services.ps1}"
-
-    Add-Progress "Lame services disabled and good ones enabled."
-    Write-Output "Bad services disabled and good ones enabled."
-}
-
-# Check forensics questions
-function Open-Forensics {
-    (Get-ChildItem "$desktop\Forensics Question *.txt").foreach{
-        Start-Process $_
-    }
-
-    Pause
-
-    Add-Progress "Forensics Questions checked out"
-    Write-Output "Opened the forensics questions, brah."
-}
-
-# Delete prohibited files
-function Remove-ProhibitedFiles {
-	Invoke-Expression "cmd /c start powershell {$compfiles\remove_prohibitedfiles.ps1}"
-
-    Add-Progress "Media files deleted"
-    Write-Output "Bad media files deleted."
 }
 
 # Change passwords
@@ -300,64 +185,33 @@ function Disable-Users {
     }
 }
 
-# Windows Update
-function Update-Windows {
-    Invoke-Expression "cmd /c start powershell {$compfiles\update_windows.ps1}"
+# Activate/Disable users
+function Enable-Users {
+    if ($args -in "man","manual","m") {
+        Open-Readme
 
-    Write-Output "Automatic Windows Update has been configured and the service was started."
-    Add-Progress "Windows Update configured and started"
-}
+        while ($true) {
+            Clear-Host
 
-# Install gucci programs
-function Install-Programs {
-    Invoke-Expression "cmd /c start powershell {$compfiles\install_programs.ps1}"
+            Get-Users nobuiltin
+            Write-Output "`n"
+            $answer = Read-Host "Enter username to enable"
 
-    Add-Progress "Good security programs installed"
-    Write-Output "Gucci security programs installed."
-}
+            if ($answer -eq "n") {
+                break
+            }
 
-# Disable features
-function Disable-Features {
-    Invoke-Expression "cmd /c start powershell {$compfiles\disable_features.ps1}"
-
-    Add-Progress "Disabled lame features"
-    Write-Output "Lame features disabled, or one could say, clapped"
-}
-
-# Delete shares
-function Remove-Shares {
-    while ($true) {
-        Clear-Host
-
-        net share
-        Write-Output "`n"
-
-        $answer = Read-Host "Choose a sketchy share to delete"
-
-        if ($answer -eq "n") {
-            Add-Progress "Sketchy shares deleted"
-            break
+            Enable-LocalUser $answer
+        }
+    } else {
+        $users_nobuiltin.foreach{
+            Enable-LocalUser $_
         }
 
-        net share $answer /delete
+        Add-Progress "All users (except built-in Admin and Guest) enabled"
+
+        Write-Output "All users (except built-in Admin and Guest) enabled."
     }
-}
-
-# Remove programs
-function Remove-Programs {
-    Start-Process "$env:ProgramFiles\IObit\IObit Uninstaller\IObitUninstaler.exe"
-    Write-Output "REMOVE PROGRAMS!!1!"
-
-    Add-Progress "Sketchy programs removed"
-}
-
-# Remove stinky malware
-function Remove-Malware {
-    Start-Process "$env:programfiles\Malwarebytes\Anti-Malware\mbam.exe"
-    Start-Process "$env:programfiles\Microsoft Baseline Security Analyzer 2\mbsa.exe"
-    Write-Output "REMOVE MALWARE!!1!"
-
-    Add-Progress "Malware absolutely yeeted on"
 }
 
 # Disable remote desktop
@@ -367,6 +221,14 @@ function Disable-RemoteDesktop {
 
     Add-Progress "Remote Desktop disabled"
     Write-Output "Disable remote desktop."
+}
+
+# Enable Windows Defender
+function Enable-WindowsDefender {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Force | New-ItemProperty -Name "DisableAntiSpyware" -PropertyType "DWord" -Value "0" -Force
+
+    Add-Progress "Enabled Windows Defender."
+    Write-Output "Enabled Windows Defender."
 }
 
 # Secure screensaver with password gamer
@@ -406,6 +268,148 @@ function Set-FirefoxConfig {
     Write-Output "Firefox swole settings copied."
 }
 
+# Enable internet explorer
+function Enable-InternetExplorer {
+    # Enable IE
+    if ((Test-OSIs32Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue}
+    if ((Test-OSIs64Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue}
+
+    Add-Progress "Enabled Internet Explorer"
+    Write-Output "Enabled the gamer internet explorer."
+}
+
+# Delete applocker rules
+function Remove-AppLocker {
+    Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
+
+    Add-Progress "AppLocker policies cleared"
+    Write-Output "AppLocker policies cleared."
+}
+
+# enable uac because that would be a good idea though its already enabled by default but whatever frick off
+function Enable-UAC {
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "EnableLUA" -PropertyType "DWord" -Value "1" -Force
+
+    Add-Progress "UAC Enabled"
+    Write-Output "Enabled UAC"
+}
+
+# Enable SmartScreen
+function Enable-SmartScreen {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Force | New-ItemProperty -Name "EnableSmartScreen" -PropertyType "DWord" -Value "2" -Force
+
+    Add-Progress "Enabled SmartScreen."
+    Write-Output "Enabled SmartScreen."
+}
+
+# Check forensics questions
+function Open-Forensics {
+    (Get-ChildItem "$desktop\Forensics Question *.txt").foreach{
+        Start-Process $_
+    }
+
+    Pause
+
+    Add-Progress "Forensics Questions checked out"
+    Write-Output "Opened the forensics questions, brah."
+}
+
+# Auto (but separate script) Functions
+
+# Disable features
+function Disable-Features {
+    Invoke-Expression "cmd /c start powershell {$compfiles\disable_features.ps1}"
+
+    Add-Progress "Disabled lame features"
+    Write-Output "Lame features disabled, or one could say, clapped"
+}
+
+# Install gucci programs
+function Install-Programs {
+    Invoke-Expression "cmd /c start powershell {$compfiles\install_programs.ps1}"
+
+    Add-Progress "Good security programs installed"
+    Write-Output "Gucci security programs installed."
+}
+
+# Delete prohibited files
+function Remove-ProhibitedFiles {
+	Invoke-Expression "cmd /c start powershell {$compfiles\remove_prohibitedfiles.ps1}"
+
+    Add-Progress "Media files deleted"
+    Write-Output "Bad media files deleted."
+}
+
+# Disable services
+function Disable-Services {
+    Invoke-Expression "cmd /c start powershell {$compfiles\disable_services.ps1}"
+
+    Add-Progress "Lame services disabled and good ones enabled."
+    Write-Output "Bad services disabled and good ones enabled."
+}
+
+# Windows Update
+function Update-Windows {
+    Invoke-Expression "cmd /c start powershell {$compfiles\update_windows.ps1}"
+
+    Write-Output "Automatic Windows Update has been configured and the service was started."
+    Add-Progress "Windows Update configured and started"
+}
+
+# CISCAT Registry batch file
+function Start-CiscatRegistry {
+    Invoke-Expression "cmd /c start powershell {$compfiles\start_ciscatregistry.ps1}"
+
+    Add-Progress "CISCAT Registry script run"
+    Write-Output "CISCAT Registry script run"
+}
+
+# IE registry gamers
+function Import-IERegistry {
+    Invoke-Expression "cmd /c start powershell {$compfiles\import_ieregistry.ps1}"
+
+    Add-Progress "Set CISCAT Internet Explorer registry settings"
+    Write-Output "Imported IE Registry settings"
+}
+
+# Manual Functions
+
+# Delete shares
+function Remove-Shares {
+    while ($true) {
+        Clear-Host
+
+        net share
+        Write-Output "`n"
+
+        $answer = Read-Host "Choose a sketchy share to delete"
+
+        if ($answer -eq "n") {
+            Add-Progress "Sketchy shares deleted"
+            break
+        }
+
+        net share $answer /delete
+    }
+}
+
+# Remove programs
+function Remove-Programs {
+    Start-Process "$env:ProgramFiles\IObit\IObit Uninstaller\IObitUninstaler.exe"
+    Write-Output "REMOVE PROGRAMS!!1!"
+
+    Add-Progress "Sketchy programs removed"
+}
+
+# Remove stinky malware
+function Remove-Malware {
+    Start-Process "$env:programfiles\Malwarebytes\Anti-Malware\mbam.exe"
+    Start-Process "$env:programfiles\Microsoft Baseline Security Analyzer 2\mbsa.exe"
+    Write-Output "REMOVE MALWARE!!1!"
+
+    Add-Progress "Malware absolutely yeeted on"
+}
+
 # Delete user folders of bad users
 function Remove-BadUserFolders {
     $global:badusers = Get-BadUsers
@@ -431,6 +435,20 @@ function Update-Programs {
     Add-Progress "Hopefully got those gamer program updates"
 }
 
+# Unlock the users that may be locked yo
+function Unlock-Users {
+	lusrmgr.msc
+
+	Clear-Host
+	Write-Output "Gotta check locked users manually, sorry son."
+	Write-Output "Powershell didn't come through for us this time."
+	Write-Output "`n"
+	Pause
+	
+	Add-Progress "Unlocked locked users"
+	Write-Output "Unlocked locked users"
+}
+
 # Find prohibited files
 function Find-ProhibitedFiles {
     Invoke-Expression "cmd /c start powershell {$compfiles\find_prohibitedfiles.ps1}"
@@ -448,87 +466,6 @@ function Start-Sysinternals {
     }
 
     Add-Progress "Ran sysinternals stuff"
-}
-
-# CISCAT Registry batch file
-function Start-CiscatRegistry {
-    Invoke-Expression "cmd /c start powershell {$compfiles\start_ciscatregistry.ps1}"
-
-    Add-Progress "CISCAT Registry script run"
-    Write-Output "CISCAT Registry script run"
-}
-
-# IE registry gamers
-function Import-IERegistry {
-    Invoke-Expression "cmd /c start powershell {$compfiles\import_ieregistry.ps1}"
-
-    Add-Progress "Set CISCAT Internet Explorer registry settings"
-    Write-Output "Imported IE Registry settings"
-}
-
-# Enable internet explorer
-function Enable-InternetExplorer {
-    # Enable IE
-    if ((Test-OSIs32Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue}
-    if ((Test-OSIs64Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue}
-
-    Add-Progress "Enabled Internet Explorer"
-    Write-Output "Enabled the gamer internet explorer."
-}
-
-# Delete applocker rules
-function Remove-AppLocker {
-    Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
-
-    Add-Progress "AppLocker policies cleared"
-    Write-Output "AppLocker policies cleared."
-}
-
-# Activate/Disable users
-function Enable-Users {
-    if ($args -in "man","manual","m") {
-        Open-Readme
-
-        while ($true) {
-            Clear-Host
-
-            Get-Users nobuiltin
-            Write-Output "`n"
-            $answer = Read-Host "Enter username to enable"
-
-            if ($answer -eq "n") {
-                break
-            }
-
-            Enable-LocalUser $answer
-        }
-    } else {
-        $users_nobuiltin.foreach{
-            Enable-LocalUser $_
-        }
-
-        Add-Progress "All users (except built-in Admin and Guest) enabled"
-
-        Write-Output "All users (except built-in Admin and Guest) enabled."
-    }
-}
-
-# enable uac because that would be a good idea though its already enabled by default but whatever frick off
-function Enable-UAC {
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "EnableLUA" -PropertyType "DWord" -Value "1" -Force
-
-    Add-Progress "UAC Enabled"
-    Write-Output "Enabled UAC"
-}
-
-# Cat-Lite scanner
-function Start-CatLite {
-    if ($os -eq "Win10") {
-        Start-Process "$cmderbin\cis-cat-lite\CISCAT.jar"
-    } else {
-        Clear-Host
-        Write-Output "Sorry mate, you can't use the Cat-Lite scanner. Cause it aint Windows 10."
-    }
 }
 
 # Setup backup
@@ -551,6 +488,27 @@ function Enable-Backup {
         }
 
         wbadmin start backup -backupTarget:${answer}: -include:C: -quiet -allCritical
+    }
+}
+
+# Firewall exceptions check
+function View-FirewallExceptions {
+    Clear-Host
+    Write-Output "Check firewall exceptions, bud"
+    Firewall.cpl
+
+    Add-Progress "Firewall exceptions checked."
+}
+
+# Utility Functions
+
+# Cat-Lite scanner
+function Start-CatLite {
+    if ($os -eq "Win10") {
+        Start-Process "$cmderbin\cis-cat-lite\CISCAT.jar"
+    } else {
+        Clear-Host
+        Write-Output "Sorry mate, you can't use the Cat-Lite scanner. Cause it aint Windows 10."
     }
 }
 
@@ -592,6 +550,25 @@ function Add-Users {
     }
 
     Add-Progress "User(s) have been added"
+}
+
+# Add groups function cause why not
+function Add-Groups {
+    while ($true) {
+        Clear-Host
+
+        Get-LocalGroup
+        Write-Output "`n"
+        $answer = Read-Host "Enter a group name to add"
+
+        if ($answer -eq "n") {
+            break
+        }
+
+        New-LocalGroup -Name $answer
+    }
+
+    Add-Progress "Group(s) have been added"
 }
 
 # Copy script to profile
@@ -658,25 +635,6 @@ function Enable-RemoteDesktop {
     Write-Output "Remote desktop enabled."
 }
 
-# Add groups function cause why not
-function Add-Groups {
-    while ($true) {
-        Clear-Host
-
-        Get-LocalGroup
-        Write-Output "`n"
-        $answer = Read-Host "Enter a group name to add"
-
-        if ($answer -eq "n") {
-            break
-        }
-
-        New-LocalGroup -Name $answer
-    }
-
-    Add-Progress "Group(s) have been added"
-}
-
 # Replace ease of access menu with powershell because reasons
 function Replace-EaseOfAccess {
     # Take ownership
@@ -736,42 +694,95 @@ function Start-InitialSetup {
     #>
 }
 
-# Enable Windows Defender
-function Enable-WindowsDefender {
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Force | New-ItemProperty -Name "DisableAntiSpyware" -PropertyType "DWord" -Value "0" -Force
+# Script-Use Only Functions
 
-    Add-Progress "Enabled Windows Defender."
-    Write-Output "Enabled Windows Defender."
+# Get OS name
+function Get-OS {
+    $os_name = (Get-CimInstance CIM_OperatingSystem).Name
+    $os_list = "Windows 10","Server 2016"
+
+    $os_list.foreach{
+        if ($os_name -match $_) {
+            $os_name = $_
+
+            # Change name to shorter, gooder version
+            if ($os_name -in "Windows 10") {return $os_name.Remove(3,5)}
+            if ($os_name -in "Server 2016") {return $os_name.Remove(6,1)}
+        }
+    }
 }
 
-function Unlock-Users {
-	lusrmgr.msc
-
-	Clear-Host
-	Write-Output "Gotta check locked users manually, sorry son."
-	Write-Output "Powershell didn't come through for us this time."
-	Write-Output "`n"
-	Pause
-	
-	Add-Progress "Unlocked locked users"
-	Write-Output "Unlocked locked users"
+# Import lists
+function Import-Lists {
+    return Import-Csv "$compfiles\lists\$args.csv"
 }
 
-# Enable SmartScreen
-function Enable-SmartScreen {
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Force | New-ItemProperty -Name "EnableSmartScreen" -PropertyType "DWord" -Value "2" -Force
+# Get bad users list
+function Get-BadUsers {
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
+    $goodusers = ($gooduserlist).Split(";",2)
 
-    Add-Progress "Enabled SmartScreen."
-    Write-Output "Enabled SmartScreen."
+    # Add readme users to file if needed
+    if ($null -eq $gooduserlist) {
+        Open-Readme
+        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
+        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
+        Start-Process "$compfiles\lists\good_users.txt"
+
+        Pause
+    }
+
+    # Compare and get bad users
+    (Compare-Object $goodusers $users_nobuiltin).foreach{
+        return $_.InputObject
+    }
 }
 
-# Firewall exceptions check
-function View-FirewallExceptions {
-    Clear-Host
-    Write-Output "Check firewall exceptions, bud"
-    Firewall.cpl
+# Get bad admin list
+function Get-BadAdmins {
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
+    $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Split(";",2)
 
-    Add-Progress "Firewall exceptions checked."
+    # Add readme users to file if needed
+    if ($null -eq $gooduserlist) {
+        Open-Readme
+        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
+        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
+        Start-Process "$compfiles\lists\good_users.txt"
+
+        Pause
+    }
+
+    # Compare and get bad admins
+    (Compare-Object $goodadmins $admins_nobuiltin).foreach{
+        return $_.InputObject
+    }
+}
+
+# Set logon message to username and password
+function Set-LogonMessage {
+    # Change password
+    Set-LocalUser $env:username -Password $pass
+
+    # Set logon message
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "legalnoticecaption" -PropertyType "String" -Value "Username: $env:username" -Force
+    New-Item -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Force | New-ItemProperty -Name "legalnoticetext" -PropertyType "String" -Value "Password: abc123ABC123@@" -Force
+
+    Write-Output "Set logon message to useful thing."
+}
+
+# Add to progress log
+function Add-Progress {
+    Write-Output "$args`n" >> "$desktop\progress.txt"
+}
+
+# Import aliases
+function Import-Alias {
+    $functions = Import-Lists functions
+
+    $functions.foreach{
+        Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
+    }
 }
 
 # Initial Setup
