@@ -833,76 +833,8 @@ if ($args -eq "a") {
 	Import-IERegistry
 }
 
-$banner = Get-Random -Maximum "4"
-
 Clear-Host
 
-# Show a random banner lmao
-if ($banner -eq "0") {
-    Write-Output "__     __                 "
-    Write-Output "\ \   / /                 "
-    Write-Output " \ \_/ /___ _ __   ____   "
-    Write-Output "  \   / _  | '_ \ / _  |  "
-    Write-Output "   | | (_| | | | | (_| |  "
-    Write-Output "  _|_|\__,_|_| |_|\__, |  "
-    Write-Output " / ____|           __/ |  "
-    Write-Output "| |  __  ____ _ __|___/__ "
-    Write-Output "| | |_ |/ _  | '_ \ / _  |"
-    Write-Output "| |__| | (_| | | | | (_| |"
-    Write-Output " \_____|\__,_|_| |_|\__, |"
-    Write-Output "                     __/ |"
-    Write-Output "                    |___/ "
-}
-
-if ($banner -eq "1") {
-    Write-Output "  _____ _           _     _    _       "
-    Write-Output " / ____| |         | |   | |  | |      "
-    Write-Output "| (___ | |__  _   _| |_  | |  | |_ __  "
-    Write-Output " \___ \| '_ \| | | | __| | |  | | '_ \ "
-    Write-Output " ____) | | | | |_| | |_  | |__| | |_) |"
-    Write-Output "|_____/|_| |_|\__,_|\__|  \____/| .__/ "
-    Write-Output "|  _ \                          | |    "
-    Write-Output "| |_) | ___   ___  _ ______   __|_| __ "
-    Write-Output "|  _ < / _ \ / _ \| '_   _ \ / _ \ '__|"
-    Write-Output "| |_) | (_) | (_) | | | | | |  __/ |   "
-    Write-Output "|____/ \___/ \___/|_| |_| |_|\___|_|   "
-}
-
-if ($banner -eq "2") {
-    Write-Output " _    _ _        ____  _       "
-    Write-Output "| |  | | |      / __ \| |      "
-    Write-Output "| |  | | |__   | |  | | |__    "
-    Write-Output "| |  | | '_ \  | |  | | '_ \   "
-    Write-Output "| |__| | | | | | |__| | | | |  "
-    Write-Output " \____/|_| |_|  \____/|_| |_|  "
-    Write-Output " / ____| | (_)     | |         "
-    Write-Output "| (___ | |_ _ _ __ | | ___   _ "
-    Write-Output " \___ \| __| | '_ \| |/ / | | |"
-    Write-Output " ____) | |_| | | | |   <| |_| |"
-    Write-Output "|_____/ \__|_|_| |_|_|\_\\__, |"
-    Write-Output "                          __/ |"
-    Write-Output "                         |___/ "
-}
-
-if ($banner -eq "3") {
-    Write-Output "  _____                _____ _ _                "
-    Write-Output " / ____|              / ____(_) |               "
-    Write-Output "| (___   ____ _   _  | (___  _| | _____         "
-    Write-Output " \___ \ / _  | | | |  \___ \| | |/ / _ \        "
-    Write-Output " ____) | (_| | |_| |  ____) | |   <  __/        "
-    Write-Output "|_____/ \__,_|\__, | |_____/|_|_|\_\___|        "
-    Write-Output "               __/ |                            "
-    Write-Output " _____  _     |___/   _     _   _               "
-    Write-Output "|  __ \(_)     | |   | |   | \ | |              "
-    Write-Output "| |__) |_  ____| |__ | |_  |  \| | _____      __"
-    Write-Output "|  _  /| |/ _  | '_ \| __| | .   |/ _ \ \ /\ / /"
-    Write-Output "| | \ \| | (_| | | | | |_  | |\  | (_) \ V  V / "
-    Write-Output "|_|  \_\_|\__, |_| |_|\__| |_| \_|\___/ \_/\_/  "
-    Write-Output "           __/ |                                "
-    Write-Output "          |___/                                 "
-}
-
-Write-Output "`n"
 Write-Output "Welcome to Jackson's chad powershell script."
 Write-Output "Remember, don't be an idiot."
 Write-Output "`n"
