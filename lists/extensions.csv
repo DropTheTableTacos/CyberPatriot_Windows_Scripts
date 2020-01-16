@@ -82,3 +82,5 @@ Name,Action
 *.start,Find
 *.bru,Find
 *.bad,Find
+*.p12,Delete
+*.pfx,Delete
