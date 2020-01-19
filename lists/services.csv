@@ -261,7 +261,6 @@ scardsvr,Disabled
 scdeviceenum,Disabled
 scpolicysvc,Disabled
 seclogon,Disabled
-seclogon,Manual
 sens,Disabled
 sensordataser,Disabledvice
 sensorservice,Disabled
