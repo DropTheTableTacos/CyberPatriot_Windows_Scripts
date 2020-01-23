@@ -13,11 +13,8 @@ function Open-Readme {
 function Import-SCT {
     Set-Location "$cmderbin"
 
-    # Import Microsoft recommended baselines like an absolute chad
-    .\LGPO.exe /g "$sct\MS"
-
-    # Import chad custom baselines too
-    .\LGPO.exe /g "$sct\Custom\Good"
+    # Import chad baselines
+    .\LGPO.exe /g "$sct\EpicChadComboGPO"
 
     if ($args -eq "bad") {
         .\LGPO.exe /g "$sct\Custom\Bad"

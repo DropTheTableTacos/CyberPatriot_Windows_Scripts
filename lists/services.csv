@@ -333,7 +333,6 @@ wscsvc,Automatic
 wuauserv,Automatic
 wwansvc,Disabled
 xbgm,Disabled
-xbgm,Manual
 xblauthmanager,Disabled
 xblgamesave,Disabled
 xboxgip,Disabled
