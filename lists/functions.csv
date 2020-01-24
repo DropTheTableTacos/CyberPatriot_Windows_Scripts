@@ -1,4 +1,5 @@
 Name,Alias,Type
+Copy-AdminTemplates,cat,Auto
 Open-Readme,or,Auto
 Import-SCT,isct,Auto
 Remove-Users,ru,Auto
@@ -35,6 +36,8 @@ Find-ProhibitedFiles,fpf,Manual_Seperate
 Start-Sysinternals,ssys,Manual
 Enable-Backup,eb,Manual
 View-FirewallExceptions,vfe,Manual
+Set-HivePermissions,shp,Manual
+Set-LogPermissions,slp,Manual
 Start-CatLite,scl,Utility
 Add-Admins,aa,Utility
 Add-Users,au,Utility

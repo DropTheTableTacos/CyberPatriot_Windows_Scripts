@@ -2,11 +2,22 @@
 
 # Auto Functions
 
+# Copy administrative templates from STIG
+function Copy-AdminTemplates {
+    Copy-Item "$admintemp\*.admx" "$env:systemroot\PolicyDefinitions"
+    Copy-Item "$admintemp\en-US\*.adml" "$env:systemroot\PolicyDefinitions\en-US"
+
+    Add-Progress "STIG Administrative templates copied."
+    Write-Output "STIG Administrative templates copied."
+}
+
 # Open README
 function Open-Readme {
     Start-Process "C:\CyberPatriot\README.url"
 
     Write-Output "README opened."
+
+    Pause
 }
 
 # SCT Baselines
@@ -782,6 +793,31 @@ function Import-Alias {
     }
 }
 
+# Check permissions of registry hives
+function Set-HivePermissions {
+    Clear-Host
+    Write-Output "Check the permissions of registry hives."
+
+    Start-Process "$compfiles\hivepermissions.txt"
+    Start-Process regedit.exe
+
+    Write-Output "Default permissions set on registry hives."
+	Add-Progress "Default permissions set on registry hives."
+}
+
+# Check permissions of event log things
+function Set-LogPermissions {
+    Clear-Host
+    Write-Output "Check the permissions of event log things."
+    Write-Output "`n"
+    Write-Output "Application, Security, System"
+
+    explorer "$env:systemroot\System32\winevt"
+
+    Write-Output "Default permissions set on event log things."
+	Add-Progress "Default permissions set on event log things."
+}
+
 # Initial Setup
 if ($null -eq (Get-InstalledModule -Name "Carbon")) {Start-InitialSetup}
 if ($null -eq (Get-InstalledModule -Name "PSWindowsUpdate")) {Start-InitialSetup}
@@ -795,6 +831,7 @@ Copy-ToProfile
 $global:desktop = "$env:userprofile\Desktop"
 $global:compfiles = "$desktop\Script"
 $global:sct = "$compfiles\sctbaselines"
+$global:admintemp = "$compfiles\admintemplates"
 $global:cmderbin = "$compfiles\cmder\bin"
 $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine)
