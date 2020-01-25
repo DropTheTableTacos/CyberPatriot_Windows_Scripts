@@ -16,6 +16,7 @@ by Jackson Kauflin
 12. Verify applocker policies are yeeted
 13. check features (appwiz.cpl)
 14. check permissions on important folders
+	- ftp server/web server if server has it
     - no idea what constitutes important folders. just attempt to look for permissions stuff.
 15. double check all things that script covered manually
 16. compare windows to linux vulnerabilities

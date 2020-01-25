@@ -661,15 +661,14 @@ function Replace-EaseOfAccess {
 
 # Install chocolatey function ez
 function Install-Chocolatey {
-	if ((Test-Path $env:programdata\chocolatey) -eq $False) {
-        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-        choco feature enable -n allowGlobalConfirmation
-        choco feature enable -n useFipsCompliantChecksums
+    choco feature enable -n allowGlobalConfirmation
+    choco feature enable -n useFipsCompliantChecksums
 
-		Write-Output "Chocolatey installed."
-		Add-Progress "Chocolatey installed."
-    }
+	Write-Output "Chocolatey installed."
+	Add-Progress "Chocolatey installed."
 }
 
 # Allow cmder, stop scoring, etc. to work lol
