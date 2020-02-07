@@ -1,9 +1,6 @@
-if ((Test-Path $env:programdata\chocolatey) -eq $false) {
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+Install-Chocolatey
 
-    choco feature enable -n allowGlobalConfirmation
-    choco feature enable -n useFipsCompliantChecksums
-}
+Pause
 
 # Install tings
 choco install firefox ie11 malwarebytes patch-my-pc iobit-uninstaller --ignorechecksum --force
