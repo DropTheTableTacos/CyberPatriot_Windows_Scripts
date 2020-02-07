@@ -1,0 +1,23 @@
+Drop The Table Tacos - EPIC and CHAD Windows Checklist
+by Jackson Kauflin
+
+1. Run all the functions lol
+    - Like actually make sure to run all of them. Don't get lazy halfway through. Be focused.
+2. Verify firefox settings are good and set them if not
+3. Verify internet explorer settings are good and set them if not
+4. Double check removed users
+5. Double check removed admins
+6. check local users and groups (lusrmgr.msc)
+7. installroot (cmder/bin) for attempting certificates
+8. Verify Remote Desktop state (sysdm.cpl)
+9. Check Windows components settings (gpedit)
+10. Verify screensaver makes you logon on resume
+11. Verify hosts file is cleared
+12. Verify applocker policies are yeeted
+13. check features (appwiz.cpl)
+14. check permissions on important folders
+	- ftp server/web server if server has it
+    - no idea what constitutes important folders. just attempt to look for permissions stuff.
+15. double check all things that script covered manually
+16. compare windows to linux vulnerabilities
+17. look through past comp vulns using the mega chad spreadsheet
