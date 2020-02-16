@@ -2,11 +2,22 @@
 
 # Auto Functions
 
+# Copy administrative templates from STIG
+function Copy-AdminTemplates {
+    Copy-Item "$admintemp\*.admx" "$env:systemroot\PolicyDefinitions"
+    Copy-Item "$admintemp\en-US\*.adml" "$env:systemroot\PolicyDefinitions\en-US"
+
+    Add-Progress "STIG Administrative templates copied."
+    Write-Output "STIG Administrative templates copied."
+}
+
 # Open README
 function Open-Readme {
     Start-Process "C:\CyberPatriot\README.url"
 
     Write-Output "README opened."
+
+    Pause
 }
 
 # SCT Baselines
@@ -497,6 +508,31 @@ function View-FirewallExceptions {
     Add-Progress "Firewall exceptions checked."
 }
 
+# Check permissions of registry hives
+function Set-HivePermissions {
+    Clear-Host
+    Write-Output "Check the permissions of registry hives."
+
+    Start-Process "$compfiles\hivepermissions.txt"
+    Start-Process regedit.exe
+
+    Write-Output "Default permissions set on registry hives."
+	Add-Progress "Default permissions set on registry hives."
+}
+
+# Check permissions of event log things
+function Set-LogPermissions {
+    Clear-Host
+    Write-Output "Check the permissions of event log things."
+    Write-Output "`n"
+    Write-Output "Application, Security, System"
+
+    explorer "$env:systemroot\System32\winevt"
+
+    Write-Output "Default permissions set on event log things."
+	Add-Progress "Default permissions set on event log things."
+}
+
 # Utility Functions
 
 # Cat-Lite scanner
@@ -650,15 +686,14 @@ function Replace-EaseOfAccess {
 
 # Install chocolatey function ez
 function Install-Chocolatey {
-	if ((Test-Path $env:programdata\chocolatey) -eq $False) {
-        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-        choco feature enable -n allowGlobalConfirmation
-        choco feature enable -n useFipsCompliantChecksums
+    choco feature enable -n allowGlobalConfirmation
+    choco feature enable -n useFipsCompliantChecksums
 
-		Write-Output "Chocolatey installed."
-		Add-Progress "Chocolatey installed."
-    }
+	Write-Output "Chocolatey installed."
+	Add-Progress "Chocolatey installed."
 }
 
 # Allow cmder, stop scoring, etc. to work lol
@@ -795,6 +830,7 @@ Copy-ToProfile
 $global:desktop = "$env:userprofile\Desktop"
 $global:compfiles = "$desktop\Script"
 $global:sct = "$compfiles\sctbaselines"
+$global:admintemp = "$compfiles\admintemplates"
 $global:cmderbin = "$compfiles\cmder\bin"
 $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine)
@@ -813,30 +849,3 @@ $global:badadmins = Get-BadAdmins
 # Create aliases
 $functions = Import-Lists functions
 $functions.foreach{Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force}
-
-# Determine type of execute, then execute
-if ($args -eq "a") {
-    ($functions | Where-Object Type -match "^Auto$").foreach{
-        Invoke-Expression -Command "$_.Name"
-    }
-
-	# Run gamer seperate scripts
-    Disable-Features
-	Install-Programs
-	Remove-ProhibitedFiles
-	Disable-Services
-	Update-Windows
-	Start-CiscatRegistry
-	Import-IERegistry
-}
-
-Clear-Host
-
-Write-Output "Welcome to Jackson's chad powershell script."
-Write-Output "Remember, don't be an idiot."
-Write-Output "`n"
-Write-Output "To list all available functions:"
-Write-Output "Type 'Get-Functions' (or gf)"
-Write-Output "`n"
-Write-Output "To run the script in auto mode:"
-Write-Output "Type 'Start-Script a' (or ss a)"
