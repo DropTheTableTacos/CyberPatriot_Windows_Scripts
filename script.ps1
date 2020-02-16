@@ -4,11 +4,6 @@
     Invoke-Expression -Command "$_.Name"
 }
 
-($functions | Where-Object Type -match "^Auto_Seperate$").foreach{
-    Invoke-Expression -Command "$_.Name"
-}
-
-<#
 # Run gamer seperate scripts
 Disable-Features
 Install-Programs
@@ -17,4 +12,3 @@ Disable-Services
 Update-Windows
 Start-CiscatRegistry
 Import-IERegistry
-#>
