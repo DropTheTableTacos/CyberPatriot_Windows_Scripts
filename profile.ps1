@@ -500,7 +500,7 @@ function Enable-Backup {
 }
 
 # Firewall exceptions check
-function View-FirewallExceptions {
+function Get-FirewallExceptions {
     Clear-Host
     Write-Output "Check firewall exceptions, bud"
     Firewall.cpl
@@ -669,7 +669,7 @@ function Enable-RemoteDesktop {
 }
 
 # Replace ease of access menu with powershell because reasons
-function Replace-EaseOfAccess {
+function Set-EaseOfAccess {
     # Take ownership
     takeown /f "C:\Windows\System32\utilman.exe"
     icacls "C:\Windows\System32\utilman.exe" /grant ${env:username}:`(F`)
@@ -697,7 +697,7 @@ function Install-Chocolatey {
 }
 
 # Allow cmder, stop scoring, etc. to work lol
-function Fix-Programs {
+function Unblock-Programs {
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "ValidateAdminCodeSignatures" -PropertyType "DWord" -Value "0" -Force
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "EnableUIADesktopToggle" -PropertyType "DWord" -Value "0" -Force
 

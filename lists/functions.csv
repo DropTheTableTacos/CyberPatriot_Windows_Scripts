@@ -30,12 +30,12 @@ Remove-Shares,rshare,Manual
 Remove-Programs,rp,Manual
 Remove-Malware,rm,Manual
 Remove-BadUserFolders,rbuf,Manual
-Update-Programs,up,Manual
+Update-Programs,updatep,Manual
 Unlock-Users,uu,Manual
 Find-ProhibitedFiles,fpf,Manual_Seperate
 Start-Sysinternals,ssys,Manual
 Enable-Backup,eb,Manual
-View-FirewallExceptions,vfe,Manual
+Get-FirewallExceptions,gfe,Manual
 Set-HivePermissions,shp,Manual
 Set-LogPermissions,slp,Manual
 Start-CatLite,scl,Utility
@@ -50,9 +50,9 @@ Start-Script,ss,Utility
 Open-ScoringReport,osr,Utility
 Open-StopScoring,oss,Utility
 Enable-RemoteDesktop,erd,Utility
-Replace-EaseOfAccess,reoa,Utility
+Set-EaseOfAccess,seoa,Utility
 Install-Chocolatey,ic,Utility
-Fix-Programs,fp,Utility
+Unblock-Programs,unblockp,Utility
 Start-InitialSetup,sis,Utility
 Get-OS,gos,ScriptOnly
 Import-Lists,il,ScriptOnly
