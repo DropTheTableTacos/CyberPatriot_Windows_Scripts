@@ -31,9 +31,6 @@ function Import-SCT {
         .\LGPO.exe /g "$sct\Custom\Bad"
     }
 
-    # Allow cmder and stop scoring, etc. to actually run lol
-    Fix-Programs
-
     # Set logon message
     Set-LogonMessage
 
