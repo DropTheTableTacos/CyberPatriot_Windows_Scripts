@@ -815,5 +815,5 @@ $functions.foreach{Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -For
 Set-PSDebug -Trace 0
 Set-LogonMessage
 Import-Alias
-Replace-EaseOfAccess
+Set-EaseOfAccess
 Copy-ToProfile
