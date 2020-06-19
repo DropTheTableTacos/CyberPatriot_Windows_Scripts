@@ -791,13 +791,6 @@ function Import-Alias {
     }
 }
 
-# Initial Setup
-Set-PSDebug -Trace 0
-Set-LogonMessage
-Import-Alias
-Replace-EaseOfAccess
-Copy-ToProfile
-
 # Variables lol
 $global:desktop = "$env:userprofile\Desktop"
 $global:compfiles = "$desktop\Script"
@@ -817,3 +810,10 @@ if ($args -eq "nul") {$global:badadmins = Get-BadAdmins} else {$global:badadmins
 # Create aliases
 $functions = Import-Lists functions
 $functions.foreach{Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force}
+
+# Initial Setup
+Set-PSDebug -Trace 0
+Set-LogonMessage
+Import-Alias
+Replace-EaseOfAccess
+Copy-ToProfile
