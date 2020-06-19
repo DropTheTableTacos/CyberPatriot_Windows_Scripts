@@ -675,17 +675,16 @@ function Enable-RemoteDesktop {
 # Replace ease of access menu with powershell because reasons
 function Set-EaseOfAccess {
     # Take ownership
-    takeown /f "C:\Windows\System32\utilman.exe"
-    icacls "C:\Windows\System32\utilman.exe" /grant ${env:username}:`(F`)
-    takeown /f "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
-    icacls "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" /grant ${env:username}:`(F`)
+    takeown /f "C:\Windows\System32\utilman.exe" >null
+    icacls "C:\Windows\System32\utilman.exe" /grant ${env:username}:`(F`) >null
+    takeown /f "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" >null
+    icacls "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" /grant ${env:username}:`(F`) >null
 
     # Replace files
     Move-Item "C:\Windows\System32\utilman.exe" "C:\Windows\System32\utilman1.exe" -Force -ErrorAction SilentlyContinue
     Copy-Item "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "C:\Windows\System32\utilman.exe" -Force -ErrorAction SilentlyContinue
 
     Add-Progress "Replaced ease of access menu with powershell. (in case of lockout)"
-    Write-Output "Replaced ease of access menu with powershell. (in case of lockout)"
 }
 
 # Install chocolatey function ez
