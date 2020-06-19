@@ -40,7 +40,8 @@ function Import-SCT {
 
 # Delete users
 function Remove-Users {
-    if ($badusers -eq $null) {$args = "m"}
+    if ($null -eq $badusers) {$args = "m"}
+    if ($manual -eq $true) {$args = "m"}
 
     if ($args -in "m","man","manual") {
         while ($true) {
@@ -72,7 +73,8 @@ function Remove-Users {
 
 # Delete Admins
 function Remove-Admins {
-    if ($badadmins -eq $null) {$args = "m"}
+    if ($null -eq $badadmins) {$args = "m"}
+    if ($manual -eq $true) {$args = "m"}
 
     if ($args -in "m","man","manual") {
         while ($true) {
@@ -102,6 +104,8 @@ function Remove-Admins {
 
 # Change passwords
 function Set-Passwords {
+    if ($manual -eq $true) {$args = "m"}
+
     if ($args -in "m","man","manual") {
         while ($true) {
             Clear-Host
@@ -139,6 +143,8 @@ function Enable-Firewall {
 
 # Ensure user passwords expire
 function Set-PasswordExpire {
+    if ($manual -eq $true) {$args = "m"}
+
     if ($args -in "m","man","manual") {
         while ($true) {
             Clear-Host
@@ -165,6 +171,8 @@ function Set-PasswordExpire {
 
 # Disable Users
 function Disable-Users {
+    if ($manual -eq $true) {$args = "m"}
+
     if ($args -in "m","man","manual") {
         Open-Readme
 
@@ -196,6 +204,8 @@ function Disable-Users {
 
 # Activate/Disable users
 function Enable-Users {
+    if ($manual -eq $true) {$args = "m"}
+
     if ($args -in "man","manual","m") {
         Open-Readme
 
@@ -225,8 +235,8 @@ function Enable-Users {
 
 # Disable remote desktop
 function Disable-RemoteDesktop {
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fDenyTSConnections" -PropertyType "DWord" -Value "1" -Force
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fAllowToGetHelp" -PropertyType "DWord" -Value "0" -Force
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fDenyTSConnections" -PropertyType "DWord" -Value "1" -Force | Out-Null
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fAllowToGetHelp" -PropertyType "DWord" -Value "0" -Force | Out-Null
 
     Add-Progress "Remote Desktop disabled"
     Write-Output "Disable remote desktop."
@@ -234,7 +244,7 @@ function Disable-RemoteDesktop {
 
 # Enable Windows Defender
 function Enable-WindowsDefender {
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Force | New-ItemProperty -Name "DisableAntiSpyware" -PropertyType "DWord" -Value "0" -Force
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Force | New-ItemProperty -Name "DisableAntiSpyware" -PropertyType "DWord" -Value "0" -Force | Out-Null
 
     Add-Progress "Enabled Windows Defender."
     Write-Output "Enabled Windows Defender."
@@ -242,8 +252,8 @@ function Enable-WindowsDefender {
 
 # Secure screensaver with password gamer
 function Protect-Screensaver {
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" -Force | New-ItemProperty -Name "ScreenSaverIsSecure" -PropertyType "DWord" -Value "1" -Force
-    New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" -Force | New-ItemProperty -Name "ScreenSaverIsSecure" -PropertyType "DWord" -Value "1" -Force
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" -Force | New-ItemProperty -Name "ScreenSaverIsSecure" -PropertyType "DWord" -Value "1" -Force | Out-Null
+    New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Control Panel\Desktop" -Force | New-ItemProperty -Name "ScreenSaverIsSecure" -PropertyType "DWord" -Value "1" -Force | Out-Null
 
     Add-Progress "Screensaver secured with password"
     Write-Output "Secured screensaver with a password."
@@ -295,7 +305,7 @@ function Remove-AppLocker {
 
 # enable uac because that would be a good idea though its already enabled by default but whatever frick off
 function Enable-UAC {
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "EnableLUA" -PropertyType "DWord" -Value "1" -Force
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "EnableLUA" -PropertyType "DWord" -Value "1" -Force | Out-Null
 
     Add-Progress "UAC Enabled"
     Write-Output "Enabled UAC"
@@ -303,7 +313,7 @@ function Enable-UAC {
 
 # Enable SmartScreen
 function Enable-SmartScreen {
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Force | New-ItemProperty -Name "EnableSmartScreen" -PropertyType "DWord" -Value "2" -Force
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Force | New-ItemProperty -Name "EnableSmartScreen" -PropertyType "DWord" -Value "2" -Force | Out-Null
 
     Add-Progress "Enabled SmartScreen."
     Write-Output "Enabled SmartScreen."
@@ -604,8 +614,6 @@ function Add-Groups {
 # Copy script to profile
 function Copy-ToProfile {
     Copy-Item "$env:userprofile\Desktop\Script\profile.ps1" "$env:systemroot\System32\WindowsPowerShell\v1.0\profile.ps1" -Force
-    
-    Write-Output "Script copied to pshell profile."
 }
 
 # List admins
@@ -658,7 +666,7 @@ function Open-StopScoring {
 
 # Enable remote desktop
 function Enable-RemoteDesktop {
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fDenyTSConnections" -PropertyType "DWord" -Value "0" -Force
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fDenyTSConnections" -PropertyType "DWord" -Value "0" -Force | Out-Null
 
     Add-Progress "Remote desktop enabled."
     Write-Output "Remote desktop enabled."
@@ -694,8 +702,8 @@ function Install-Chocolatey {
 
 # Allow cmder, stop scoring, etc. to work lol
 function Unblock-Programs {
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "ValidateAdminCodeSignatures" -PropertyType "DWord" -Value "0" -Force
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "EnableUIADesktopToggle" -PropertyType "DWord" -Value "0" -Force
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "ValidateAdminCodeSignatures" -PropertyType "DWord" -Value "0" -Force | Out-Null
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "EnableUIADesktopToggle" -PropertyType "DWord" -Value "0" -Force | Out-Null
 
     Write-Output "Cmder, stop scoring, etc. fixed."
 }
@@ -771,10 +779,8 @@ function Set-LogonMessage {
     Set-LocalUser $env:username -Password $pass
 
     # Set logon message
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "legalnoticecaption" -PropertyType "String" -Value "Username: $env:username" -Force
-    New-Item -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Force | New-ItemProperty -Name "legalnoticetext" -PropertyType "String" -Value "Password: abc123ABC123@@" -Force
-
-    Write-Output "Set logon message to useful thing."
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "legalnoticecaption" -PropertyType "String" -Value "Username: $env:username" -Force | Out-Null
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "legalnoticetext" -PropertyType "String" -Value "Password: abc123ABC123@@" -Force | Out-Null
 }
 
 # Add to progress log
@@ -804,8 +810,14 @@ $global:users = (Get-LocalUser).Name
 $global:users_nobuiltin = (Get-LocalUser | Where-Object Description -notmatch "." | Where-Object Name -ne "defaultuser0").Name
 $global:admins = (Get-LocalGroupMember Administrators).Name.Trim(($env:COMPUTERNAME | Out-String)).Trim("\")
 $global:admins_nobuiltin = $admins | Select-String -NotMatch "Administrator"
-if ($args -eq "nul") {$global:badusers = Get-BadUsers} else {$global:badusers = $null}
-if ($args -eq "nul") {$global:badadmins = Get-BadAdmins} else {$global:badadmins = $null}
+if ($args -eq "nul") {
+    $global:badusers = Get-BadUsers
+    $global:badadmins = Get-BadAdmins
+} else {
+    $global:badusers = $null
+    $global:badadmins = $null
+}
+if ($args -eq "m") {$global:manual = $true}
 
 # Create aliases
 $functions = Import-Lists functions
@@ -817,3 +829,13 @@ Set-LogonMessage
 Import-Alias
 Set-EaseOfAccess
 Copy-ToProfile
+
+# Start message
+Write-Output "To view functions:"
+Write-Output "    Get-Functions (gf)"
+Write-Output " "
+Write-Output "To run script:"
+Write-Output "    Start-Script (ss)"
+Write-Output "        Available args:"
+Write-Output "            nouserlist (nul)"
+Write-Output "            manual (m)"
