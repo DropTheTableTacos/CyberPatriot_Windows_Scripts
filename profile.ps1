@@ -40,6 +40,8 @@ function Import-SCT {
 
 # Delete users
 function Remove-Users {
+    if ($badusers -eq $null) {$args = "m"}
+
     if ($args -in "m","man","manual") {
         while ($true) {
             Clear-Host
@@ -70,6 +72,8 @@ function Remove-Users {
 
 # Delete Admins
 function Remove-Admins {
+    if ($badadmins -eq $null) {$args = "m"}
+
     if ($args -in "m","man","manual") {
         while ($true) {
             Clear-Host
@@ -247,8 +251,6 @@ function Protect-Screensaver {
 
 # Hosts file
 function Clear-Hosts {
-    Reset-CHostsFile
-
     Copy-Item "$compfiles\hosts" "$env:SystemRoot\System32\drivers\etc\hosts" -Force
 
     Add-Progress "Hosts file cleared, ez."
@@ -417,8 +419,6 @@ function Remove-Malware {
 
 # Delete user folders of bad users
 function Remove-BadUserFolders {
-    $global:badusers = Get-BadUsers
-
     $badusers.foreach{
         Remove-Item C:\Users\$_ -Recurse -Force
     }
@@ -555,7 +555,7 @@ function Add-Admins {
             break
         }
 
-        Add-CGroupMember Administrators $answer
+        Add-LocalGroupMember Administrators $answer
     }
 
     Add-Progress "Admin(s) have been added"
@@ -603,8 +603,8 @@ function Add-Groups {
 
 # Copy script to profile
 function Copy-ToProfile {
-    Copy-Item "$env:userprofile\Desktop\Script\script.ps1" "$env:userprofile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
-
+    Copy-Item "$env:userprofile\Desktop\Script\profile.ps1" "$env:systemroot\System32\WindowsPowerShell\v1.0\profile.ps1" -Force
+    
     Write-Output "Script copied to pshell profile."
 }
 
@@ -643,8 +643,7 @@ function Get-Functions {
 
 # Run script easily function
 function Start-Script {
-    Copy-ToProfile
-    . $profile "$args"
+    . "$compfiles\script.ps1" "$args"
 }
 
 # Open Scoring report
@@ -701,28 +700,6 @@ function Unblock-Programs {
     Write-Output "Cmder, stop scoring, etc. fixed."
 }
 
-# Run initial setup manually
-function Start-InitialSetup {
-    # Install Carbon and PSWindowsUpdate modules
-
-    # Disable Use FIPS compliant checksums (Allow install of modules)
-    <#
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "0" -Force
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "0" -Force
-    #>
-
-    #Set-PSRepository -Name "PSGallery" -InstallationPolicy "Trusted"
-    Install-PackageProvider -Name "NuGet" -MinimumVersion "2.8.5.201" -Force
-    Install-Module -Name "Carbon" -AllowClobber -Force
-    Install-Module -Name "PSWindowsUpdate" -AllowClobber -Force
-
-    # Re-enable Use FIPS compliant algorithms
-    <#
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | New-ItemProperty -Name "Enabled" -PropertyType "DWord" -Value "1" -Force
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Force | New-ItemProperty -Name "FIPSAlgorithmPolicy" -PropertyType "DWord" -Value "1" -Force
-    #>
-}
-
 # Script-Use Only Functions
 
 # Get OS name
@@ -770,7 +747,7 @@ function Get-BadUsers {
 # Get bad admin list
 function Get-BadAdmins {
     $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
-    $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Split(";",2)
+    $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Trim(";")
 
     # Add readme users to file if needed
     if ($null -eq $gooduserlist) {
@@ -815,8 +792,6 @@ function Import-Alias {
 }
 
 # Initial Setup
-if ($null -eq (Get-InstalledModule -Name "Carbon")) {Start-InitialSetup}
-if ($null -eq (Get-InstalledModule -Name "PSWindowsUpdate")) {Start-InitialSetup}
 Set-PSDebug -Trace 0
 Set-LogonMessage
 Import-Alias
@@ -832,16 +807,12 @@ $global:cmderbin = "$compfiles\cmder\bin"
 $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 [System.Environment]::SetEnvironmentVariable("Path","%systemroot%;%systemroot%\system32;%systemroot%\system32\Wbem;%programfiles%;%programfiles(x86)%;%systemroot%\System32\WindowsPowerShell\v1.0;%programdata%\chocolatey\bin;%programfiles%\Git\bin;%compfiles%;%sct%;%desktop%;%cmderbin%",[System.EnvironmentVariableTarget]::Machine)
 $global:os = Get-OS
-$global:users = Get-CUser
-$global:users_nobuiltin = $users | Where-Object Description -eq $null | Where-Object Name -ne "defaultuser0"
-$global:admins = $users.foreach{
-    if ((Test-CGroupMember "Administrators" $_) -eq $true) {return $_}
-}
-$global:admins_nobuiltin = $users_nobuiltin.foreach{
-    if ((Test-CGroupMember "Administrators" $_) -eq $true) {return $_}
-}
-$global:badusers = Get-BadUsers
-$global:badadmins = Get-BadAdmins
+$global:users = (Get-LocalUser).Name
+$global:users_nobuiltin = (Get-LocalUser | Where-Object Description -notmatch "." | Where-Object Name -ne "defaultuser0").Name
+$global:admins = (Get-LocalGroupMember Administrators).Name.Trim(($env:COMPUTERNAME | Out-String)).Trim("\")
+$global:admins_nobuiltin = $admins | Select-String -NotMatch "Administrator"
+if ($args -eq "nul") {$global:badusers = Get-BadUsers} else {$global:badusers = $null}
+if ($args -eq "nul") {$global:badadmins = Get-BadAdmins} else {$global:badadmins = $null}
 
 # Create aliases
 $functions = Import-Lists functions
