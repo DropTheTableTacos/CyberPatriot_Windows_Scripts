@@ -43,8 +43,6 @@ Add-Admins,aa,Utility
 Add-Users,au,Utility
 Add-Groups,ag,Utility
 Copy-ToProfile,ctp,Utility
-Get-Admins,ga,Utility
-Get-Users,gu,Utility
 Get-Functions,gf,Utility
 Start-Script,ss,Utility
 Open-ScoringReport,osr,Utility
@@ -53,7 +51,6 @@ Enable-RemoteDesktop,erd,Utility
 Set-EaseOfAccess,seoa,Utility
 Install-Chocolatey,ic,Utility
 Unblock-Programs,unblockp,Utility
-Start-InitialSetup,sis,Utility
 Get-OS,gos,ScriptOnly
 Import-Lists,il,ScriptOnly
 Get-BadUsers,gbu,ScriptOnly

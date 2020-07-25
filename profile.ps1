@@ -47,7 +47,7 @@ function Remove-Users {
         while ($true) {
             Clear-Host
 
-            Get-Users nobuiltin
+            Write-Output "$users_nobuiltin"
             Write-Output "`n"
             $answer = Read-Host "Enter a username to delete"
 
@@ -80,7 +80,7 @@ function Remove-Admins {
         while ($true) {
             Clear-Host
 
-            Get-Admins
+            Write-Output "$admins"
             Write-Output "`n"
             $answer = Read-Host "Enter a username to delete"
 
@@ -110,7 +110,7 @@ function Set-Passwords {
         while ($true) {
             Clear-Host
 
-            Get-Users
+            Write-Output "$users"
             Write-Output "`n"
 
             Write-Output "NOTE: Passwords are set to: abc123ABC123@@"
@@ -149,7 +149,7 @@ function Set-PasswordExpire {
         while ($true) {
             Clear-Host
 
-            Get-Users
+            Write-Output "$users"
             Write-Output "`n"
             $answer = Read-Host "Enter username to enable password expiration for"
 
@@ -179,7 +179,7 @@ function Disable-Users {
         while ($true) {
             Clear-Host
 
-            Get-Users
+            Write-Output "$users"
             Write-Output "`n"
             $answer = Read-Host "Enter username to disable"
 
@@ -212,7 +212,7 @@ function Enable-Users {
         while ($true) {
             Clear-Host
 
-            Get-Users nobuiltin
+            Write-Output "$users_nobuiltin"
             Write-Output "`n"
             $answer = Read-Host "Enter username to enable"
 
@@ -288,8 +288,8 @@ function Set-FirefoxConfig {
 # Enable internet explorer
 function Enable-InternetExplorer {
     # Enable IE
-    if ((Test-OSIs32Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue}
-    if ((Test-OSIs64Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue}
+    if (($env:PROCESSOR_ARCHITECTURE) -eq "x86") {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue}
+    if (($env:PROCESSOR_ARCHITECTURE) -eq "AMD64") {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue}
 
     Add-Progress "Enabled Internet Explorer"
     Write-Output "Enabled the gamer internet explorer."
@@ -557,8 +557,8 @@ function Add-Admins {
     while ($true) {
         Clear-Host
 
-        Get-Admins
-        Get-Users
+        Write-Output "$admins"
+        Write-Output "$users"
         $answer = Read-Host "Enter a username to add"
 
         if ($answer -eq "n") {
@@ -578,7 +578,7 @@ function Add-Users {
     while ($true) {
         Clear-Host
 
-        Get-Users
+        Write-Output "$users"
         Write-Output "`n"
         $answer = Read-Host "Enter a username to add"
 
@@ -614,32 +614,6 @@ function Add-Groups {
 # Copy script to profile
 function Copy-ToProfile {
     Copy-Item "$env:userprofile\Desktop\Script\profile.ps1" "$env:systemroot\System32\WindowsPowerShell\v1.0\profile.ps1" -Force
-}
-
-# List admins
-function Get-Admins {
-    if ($args -eq "nobuiltin") {
-        $users_nobuiltin.foreach{
-            if ((test-groupmember Administrators $_) -eq $true) {
-                Write-Output "$_"
-            }
-        }
-    } else {
-        $users.foreach{
-            if ((test-groupmember Administrators $_) -eq $true) {
-                Write-Output "$_"
-            }
-        }
-    }
-}
-
-# List users
-function Get-Users {
-    if ($args -eq "nobuiltin") {
-        $users_nobuiltin | Select-Object Name
-    } else {
-        $users | Select-Object Name
-    }
 }
 
 # List functions
@@ -732,8 +706,7 @@ function Import-Lists {
 
 # Get bad users list
 function Get-BadUsers {
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
-    $goodusers = ($gooduserlist).Split(";",2)
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" | Out-Null
 
     # Add readme users to file if needed
     if ($null -eq $gooduserlist) {
@@ -741,9 +714,10 @@ function Get-BadUsers {
         Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
         Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
         Start-Process "$compfiles\lists\good_users.txt"
-
         Pause
     }
+
+    $goodusers = ($gooduserlist).Trim(";")
 
     # Compare and get bad users
     (Compare-Object $goodusers $users_nobuiltin).foreach{
@@ -753,14 +727,15 @@ function Get-BadUsers {
 
 # Get bad admin list
 function Get-BadAdmins {
+    Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
+    Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
+
     $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
     $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Trim(";")
 
     # Add readme users to file if needed
     if ($null -eq $gooduserlist) {
         Open-Readme
-        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
-        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
         Start-Process "$compfiles\lists\good_users.txt"
 
         Pause
@@ -810,11 +785,11 @@ $global:users_nobuiltin = (Get-LocalUser | Where-Object Description -notmatch ".
 $global:admins = (Get-LocalGroupMember Administrators).Name.Trim(($env:COMPUTERNAME | Out-String)).Trim("\")
 $global:admins_nobuiltin = $admins | Select-String -NotMatch "Administrator"
 if ($args -eq "nul") {
-    $global:badusers = Get-BadUsers
-    $global:badadmins = Get-BadAdmins
-} else {
     $global:badusers = $null
     $global:badadmins = $null
+} else {
+    $global:badusers = Get-BadUsers
+    $global:badadmins = Get-BadAdmins
 }
 if ($args -eq "m") {$global:manual = $true}
 
