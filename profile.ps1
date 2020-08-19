@@ -288,8 +288,8 @@ function Set-FirefoxConfig {
 # Enable internet explorer
 function Enable-InternetExplorer {
     # Enable IE
-    if ((Test-OSIs32Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue}
-    if ((Test-OSIs64Bit) -eq $true) {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue}
+    if (($env:PROCESSOR_ARCHITECTURE) -eq "x86") {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-x86' -all -ErrorAction SilentlyContinue}
+    if (($env:PROCESSOR_ARCHITECTURE) -eq "AMD64") {Enable-WindowsOptionalFeature -Online -FeatureName 'Internet-Explorer-Optional-amd64' -all -ErrorAction SilentlyContinue}
 
     Add-Progress "Enabled Internet Explorer"
     Write-Output "Enabled the gamer internet explorer."
@@ -727,14 +727,15 @@ function Get-BadUsers {
 
 # Get bad admin list
 function Get-BadAdmins {
+    Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
+    Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
+
     $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
     $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Trim(";")
 
     # Add readme users to file if needed
     if ($null -eq $gooduserlist) {
         Open-Readme
-        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
-        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
         Start-Process "$compfiles\lists\good_users.txt"
 
         Pause
