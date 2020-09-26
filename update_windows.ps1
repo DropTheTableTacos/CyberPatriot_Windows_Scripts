@@ -1,15 +1,20 @@
-# Set windows update service to auto and start
-    
-Set-Service wuauserv -startuptype Automatic
+# Update windows
+
+# Install & import PSWindowsUpdate module
+New-Item -Path "HKLM:\SOFTWARE\Microsoft\.NetFramework\v4.0.30319" -Force | New-ItemProperty -Name "SchUseStrongCrypto" -PropertyType "DWord" -Value "1" -Force | Out-Null
+New-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NetFramework\v4.0.30319" -Force | New-ItemProperty -Name "SchUseStrongCrypto" -PropertyType "DWord" -Value "1" -Force | Out-Null
+Install-Module PowershellGet -Force
+Set-PSRepository PSGallery -InstallationPolicy Trusted
+Install-Module PSWindowsUpdate
+Import-Module PSWindowsUpdate
+
+# Install recommended & minor updates
+Set-WUSettings -AutoInstallMinorUpdates -IncludeRecommendedUpdates
+
+# Start Windows Update service
+Set-Service wuauserv -StartupType Automatic
 Start-Service wuauserv
 
-# Enable automatic updates
-New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" -Force | New-ItemProperty -Name NoAutoUpdate -PropertyType DWord -Value "0" -Force
-New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" -Force | New-ItemProperty -Name AUOptions -PropertyType DWord -Value "4" -Force
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | New-ItemProperty -Name NoAutoUpdate -PropertyType DWord -Value "0" -Force
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | New-ItemProperty -Name AUOptions -PropertyType DWord -Value "4" -Force
-
-# Get microsoft update server and start update, auto too fam
-Add-WUServiceManager -MicrosoftUpdate -Silent
-Set-WUSettings -AutoInstallMinorUpdates -IncludeRecommendedUpdates
-Get-WindowsUpdate -AcceptAll -ForceDownload -ForceInstall -Install
+# Install Windows Updates
+Add-WUServiceManager -ServiceID 7971f918-a847-4430-9279-4a52d1efe18d
+Install-WindowsUpdate -MicrosoftUpdate -AcceptAll
