@@ -19,8 +19,8 @@ if ($args -eq "nul") {
     $global:badadmins = Get-BadAdmins
 }
 
-# Add cmder/bin to PATH
-$env:Path = "$Env:CMDER_ROOT\bin;$Env:CMDER_ROOT\vendor\bin;$env:Path;$Env:CMDER_ROOT"
+# Add folders to PATH
+$env:Path = "$Env:CMDER_ROOT\bin;$Env:CMDER_ROOT\vendor\bin;$Env:CMDER_ROOT;$Env:CMDER_ROOT\bin\ciscatlite;$Env:CMDER_ROOT\bin\ripgrep;$Env:CMDER_ROOT\bin\sysinternals;$env:Path;"
 
 # Cat-Lite scanner
 function Start-CatLite {
