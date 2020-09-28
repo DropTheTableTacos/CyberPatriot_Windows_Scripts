@@ -8,10 +8,52 @@ Add-Progress "Started Windows update."
 Write-Output "Started Windows update."
 
 # Apply GPO
-LGPO /g "$gpo\EpicChadComboGPO"
 
-Add-Progress "GPO imported."
-Write-Output "GPO imported."
+# Update registry.pol files
+LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Win10\Machine\registry.pol"
+LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Win10\User\registry.pol"
+
+LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Server2016\DC\Machine\registry.pol"
+LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Server2016\DC\User\registry.pol"
+
+LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Server2016\MS\Machine\registry.pol"
+LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Server2016\MS\User\registry.pol"
+
+LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Server2019\DC\Machine\registry.pol"
+LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Server2019\DC\User\registry.pol"
+
+LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Server2019\MS\Machine\registry.pol"
+LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Server2019\MS\User\registry.pol"
+
+# Import GPO
+if ($os -eq "Win10") {
+    LGPO /g "$gpos\Win10"
+}
+
+if ($os -eq "Server2016") {
+    if ((Get-CimInstance CIM_OperatingSystem).ProductType -eq "2") {
+        LGPO /g "$gpos\Server2016\DC"
+    } else {
+        LGPO /g "$gpos\Server2016\MS"
+    }
+    
+}
+
+if ($os -eq "Server2019") {
+    if ((Get-CimInstance CIM_OperatingSystem).ProductType -eq "2") {
+        LGPO /g "$gpos\Server2019\DC"
+    } else {
+        LGPO /g "$gpos\Server2019\MS"
+    }
+    
+}
+
+# Set useful login screen text
+New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "LegalNoticeText" -PropertyType String -Value "Password: $pass" -Force
+New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "LegalNoticeCaption" -PropertyType String -Value "Username: $env:USERNAME" -Force
+
+Add-Progress "GPO imported. Local security policy, auditing, other GP, all registry settings covered."
+Write-Output "GPO imported. Local security policy, auditing, other GP, all registry settings covered."
 
 # Remove unauthorized users
 $badusers.foreach{
@@ -73,6 +115,8 @@ $answer = Read-Host "Disable remote desktop? (y/n)"
 if ($answer -eq "y") {
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fDenyTSConnections" -PropertyType "DWord" -Value "1" -Force | Out-Null
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fAllowToGetHelp" -PropertyType "DWord" -Value "0" -Force | Out-Null
+
+    $global:rd_enable = $true
 
     Add-Progress "Remote desktop disabled."
     Write-Output "Remote desktop disabled."
@@ -167,11 +211,11 @@ Invoke-Expression "cmd /c start powershell {$compfiles\remove_prohibitedfiles.ps
 Add-Progress "Prohibited files deleted."
 Write-Output "Prohibited files deleted."
 
-# Disable unnecessary services
-Invoke-Expression "cmd /c start powershell {$compfiles\disable_services.ps1}"
+# Configure services
+Invoke-Expression "cmd /c start powershell {$compfiles\configure_services.ps1}"
 
-Add-Progress "Disabled unnecessary services."
-Write-Output "Disabled unnecessary services."
+Add-Progress "Configured services."
+Write-Output "Configured services."
 
 # Enable automatic windows update
 New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" -Force | New-ItemProperty -Name "NoAutoUpdate" -PropertyType "DWord" -Value "0" -Force | Out-Null
@@ -182,7 +226,7 @@ New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -For
 Add-Progress "Enabled automatic windows update."
 Write-Output "Enabled automatic windows update."
 
-# Massive registry script
+# Massive registry GPO
 Invoke-Expression "cmd /c start powershell {$compfiles\registry_script.ps1}"
 
 Add-Progress "Ran massive registry script."

@@ -126,7 +126,6 @@ Sense,Manual
 SensorDataService,Disabled
 SensorService,Disabled
 SensrSvc,Disabled
-SessionEnv,Disabled
 SgrmBroker,Automatic
 SharedAccess,Disabled
 SharedRealitySvc,Manual
@@ -141,7 +140,6 @@ SysMain,Automatic
 SystemEventsBroker,Automatic
 TabletInputService,Disabled
 TapiSrv,Manual
-TermService,Disabled
 Themes,Automatic
 TieringEngineService,Manual
 TimeBroker,Manual
@@ -265,7 +263,6 @@ sens,Disabled
 sensordataser,Disabledvice
 sensorservice,Disabled
 sensrsvc,Disabled
-sessionenv,Disabled
 sharedaccess,Disabled
 shpamsvc,Disabled
 simptcp,Disabled
@@ -286,7 +283,6 @@ swprv,Manual
 sysmain,Disabled
 tabletinputservice,Disabled
 tbs,Disabled
-termservice,Disabled
 tlntsvr,Disabled
 trkwks,Disabled
 tzautoupdate,Disabled

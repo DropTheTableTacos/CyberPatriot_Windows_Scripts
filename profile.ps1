@@ -4,7 +4,7 @@
 $global:desktop = "$env:userprofile\Desktop"
 $global:compfiles = "$desktop\Script"
 $global:installers = "$compfiles\installers"
-$global:gpo = "$compfiles\gpo"
+$global:gpos = "$compfiles\gpos"
 $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 $global:os = Get-OS
 $global:users = (Get-LocalUser).Name

@@ -1,5 +1,7 @@
+# Find prohibited files
+
 # Remove existing output file if it exists
-Remove-Item "C:\stinky_files.txt" -Force -ErrorAction SilentlyContinue | Out-Null
+Remove-Item "C:\prohib_files.txt" -Force -ErrorAction SilentlyContinue | Out-Null
 
 $ext = Import-Lists extensions | Where-Object Action -eq "Find"
 $def_files = Import-Lists win10_defaultfiles
