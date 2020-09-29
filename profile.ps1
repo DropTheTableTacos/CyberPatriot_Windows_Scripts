@@ -111,14 +111,14 @@ function Import-Lists {
 function Get-BadUsers {
     $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" | Out-Null
 
-    <# Add readme users to file if needed
-    if ($null -eq $gooduserlist) {
+    # Add readme users to file if needed
+    if ($autouser -eq $true) {
         Open-Readme
         Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
         Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
         Start-Process "$compfiles\lists\good_users.txt"
         Pause
-    }#>
+    }
 
     $goodusers = ($gooduserlist).Trim(";")
 
@@ -130,19 +130,18 @@ function Get-BadUsers {
 
 # Get bad admin list
 function Get-BadAdmins {
-    #Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
-    #Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" | Out-Null
 
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt"
-    $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Trim(";")
-
-    <# Add readme users to file if needed
-    if ($null -eq $gooduserlist) {
+    # Add readme users to file if needed
+    if ($autouser -eq $true) {
         Open-Readme
+        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
+        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
         Start-Process "$compfiles\lists\good_users.txt"
-
         Pause
-    }#>
+    }
+
+    $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Trim(";")
 
     # Compare and get bad admins
     (Compare-Object $goodadmins $admins_nobuiltin).foreach{

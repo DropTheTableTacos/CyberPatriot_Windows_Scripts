@@ -56,6 +56,13 @@ Add-Progress "GPO imported. Local security policy, auditing, other GP, all regis
 Write-Output "GPO imported. Local security policy, auditing, other GP, all registry settings covered."
 
 # Remove unauthorized users
+
+# Check if user list exists
+if ($null -eq $badusers) {
+    $global:autouser = $true
+    $global:badusers = Get-BadUsers
+}
+
 $badusers.foreach{
     Remove-LocalUser $_
     Add-Progress "Removed unauthorized user $_"
@@ -63,6 +70,13 @@ $badusers.foreach{
 }
 
 # Remove unauthorized admins
+
+# Check if user list exists
+if ($null -eq $badadmins) {
+    $global:autouser = $true
+    $global:badadmins = Get-BadAdmins
+}
+
 $badadmins.foreach{
     Remove-LocalGroupMember "Administrators" $_
     Add-Progress "Removed unauthorized admin $_"
@@ -226,12 +240,6 @@ New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -For
 Add-Progress "Enabled automatic windows update."
 Write-Output "Enabled automatic windows update."
 
-# Massive registry GPO
-Invoke-Expression "cmd /c start powershell {$compfiles\registry_script.ps1}"
-
-Add-Progress "Ran massive registry script."
-Write-Output "Ran massive registry script."
-
 # Remove C share
 Remove-FileShare -Name C
 
@@ -251,6 +259,13 @@ Add-Progress "Removed malware."
 Write-Output "Removed malware."
 
 # Delete unauthorized user folders
+
+# Check if user list exists
+if ($null -eq $badusers) {
+    $global:autouser = $true
+    $global:badusers = Get-BadUsers
+}
+
 $badusers.foreach{
     Remove-Item C:\Users\$_ -Recurse -Force
 }
@@ -338,24 +353,3 @@ explorer "$env:systemroot\System32\winevt"
 
 Write-Output "Set default permissions on event logs."
 Add-Progress "Set default permissions on event logs."
-
-# Create aliases
-$functions = Import-Lists functions
-$functions.foreach{Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force}
-
-# Initial Setup
-Set-PSDebug -Trace 0
-Set-LogonMessage
-Import-Alias
-Set-EaseOfAccess
-Copy-ToProfile
-
-# Start message
-Write-Output "To view functions:"
-Write-Output "    Get-Functions (gf)"
-Write-Output " "
-Write-Output "To run script:"
-Write-Output "    Start-Script (ss)"
-Write-Output "        Available args:"
-Write-Output "            nouserlist (nul)"
-Write-Output "            manual (m)"
