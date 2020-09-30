@@ -74,22 +74,18 @@ function Set-EaseOfAccess {
     # Replace files
     Move-Item "C:\Windows\System32\utilman.exe" "C:\Windows\System32\utilman1.exe" -Force -ErrorAction SilentlyContinue
     Copy-Item "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "C:\Windows\System32\utilman.exe" -Force -ErrorAction SilentlyContinue
-
-    Add-Progress "Replaced ease of access menu with powershell. (in case of lockout)"
 }
 
 # Allow cmder, stop scoring, etc. to work lol
 function Unblock-Programs {
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "ValidateAdminCodeSignatures" -PropertyType "DWord" -Value "0" -Force | Out-Null
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Force | New-ItemProperty -Name "EnableUIADesktopToggle" -PropertyType "DWord" -Value "0" -Force | Out-Null
-
-    Write-Output "Cmder, stop scoring, etc. fixed."
 }
 
 # Get OS name
 function Get-OS {
     $os_name = (Get-CimInstance CIM_OperatingSystem).Name
-    $os_list = "Windows 10","Server 2016"
+    $os_list = "Windows 10","Server 2016","Server 2019"
 
     $os_list.foreach{
         if ($os_name -match $_) {
@@ -98,6 +94,7 @@ function Get-OS {
             # Change name to shorter, gooder version
             if ($os_name -in "Windows 10") {return $os_name.Remove(3,5)}
             if ($os_name -in "Server 2016") {return $os_name.Remove(6,1)}
+            if ($os_name -in "Server 2019") {return $os_name.Remove(6,1)}
         }
     }
 }
@@ -109,8 +106,6 @@ function Import-Lists {
 
 # Get bad users list
 function Get-BadUsers {
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" | Out-Null
-
     # Add readme users to file if needed
     if ($autouser -eq $true) {
         Open-Readme
@@ -120,6 +115,7 @@ function Get-BadUsers {
         Pause
     }
 
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" | Out-Null
     $goodusers = ($gooduserlist).Trim(";")
 
     # Compare and get bad users
@@ -130,8 +126,6 @@ function Get-BadUsers {
 
 # Get bad admin list
 function Get-BadAdmins {
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" | Out-Null
-
     # Add readme users to file if needed
     if ($autouser -eq $true) {
         Open-Readme
@@ -141,6 +135,7 @@ function Get-BadAdmins {
         Pause
     }
 
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" | Out-Null
     $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Trim(";")
 
     # Compare and get bad admins
@@ -155,12 +150,9 @@ function Add-Progress {
 }
 
 # Import aliases
-function Import-Alias {
-    $functions = Import-Lists functions
-
-    $functions.foreach{
-        Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
-    }
+$functions = Import-Lists functions
+$functions.foreach{
+    Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
 }
 
 Set-EaseOfAccess
