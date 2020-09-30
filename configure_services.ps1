@@ -28,5 +28,10 @@ if ($rd_enable) {
     $rd_services.foreach{
         Set-Service $_.Name -startuptype Automatic
         Start-Service $_.Name -ErrorAction SilentlyContinue
+    } else {
+    $rd_services = "termservice","sessionenv"
+    $rd_services.foreach{
+        Stop-Service $_.Name -ErrorAction SilentlyContinue
+        Set-Service $_.Name -startuptype Disabled -ErrorAction SilentlyContinue
     }
 }
