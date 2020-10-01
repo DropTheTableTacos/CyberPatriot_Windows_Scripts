@@ -267,3 +267,98 @@ User
 Software\Policies\Microsoft\WindowsMediaPlayer
 PreventCodecDownload
 DWORD:1
+
+User
+Software\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers
+DisableAutoplay
+DWORD:1
+
+User
+Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+Hidden
+DWORD:1
+
+User
+Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+HideFileExt
+DWORD:0
+
+User
+Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+ShowSuperHidden
+DWORD:1
+
+User
+Software\Policies\Microsoft\Internet Explorer\PhishingFilter
+EnabledV8
+DWORD:1
+
+User
+Software\Policies\Microsoft\Internet Explorer\PhishingFilter
+EnabledV9
+DWORD:1
+
+User
+System\CurrentControlSet\Services\CDROM
+AutoRun
+DWORD:1
+
+User
+Software\Microsoft\Windows\CurrentVersion\policies\Explorer
+NoDriveTypeAutorun
+DWORD:255
+
+User
+Software\Microsoft\Windows\CurrentVersion\policies\Explorer
+NoAutorun
+DWORD:1
+
+User
+Software\Microsoft\Windows\CurrentVersion\Internet Settings
+DisablePasswordCaching
+DWORD:1
+
+User
+Software\Microsoft\Internet Explorer\Main
+DoNotTrack
+DWORD:1
+
+User
+Software\Microsoft\Internet Explorer\Download
+RunInvalidSignatures
+DWORD:1
+
+User
+Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_LOCALMACHINE_LOCKDOWN\Settings
+LOCALMACHINE_CD_UNLOCK
+DWORD:1
+
+User
+Software\Microsoft\Windows\CurrentVersion\Internet Settings
+WarnonBadCertRecving
+DWORD:1
+
+User
+Software\Microsoft\Windows\CurrentVersion\Internet Settings
+WarnOnPostRedirect
+DWORD:1
+
+User
+Software\Microsoft\Windows\CurrentVersion\Internet Settings
+WarnonZoneCrossing
+DWORD:1
+
+User
+Software\Microsoft\Windows\Windows Error Reporting
+DontShowUI
+DWORD:1
+
+User
+Software\Microsoft\Siuf\Rules
+NumberOfSIUFInPeriod
+DWORD:0
+
+User
+Software\Microsoft\Windows\CurrentVersion\Policies\Explorer
+NoRecentDocsHistory
+DWORD:1

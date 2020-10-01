@@ -1720,6 +1720,11 @@ DWORD:0
 
 Computer
 Software\Policies\Microsoft\Windows\DeliveryOptimization
+DownloadMode
+DWORD:0
+
+Computer
+Software\Policies\Microsoft\Windows\DeliveryOptimization
 DODownloadMode
 DWORD:0
 
@@ -1761,6 +1766,11 @@ DWORD:1
 Computer
 Software\Policies\Microsoft\MicrosoftEdge\Main
 HideLocalHostIP
+DWORD:1
+
+Computer
+Software\Policies\Microsoft\Windows\OneDrive
+DisableFileSync
 DWORD:1
 
 Computer
@@ -1864,12 +1874,7 @@ OSPassphrase
 DWORD:0
 
 Computer
-System\CurrentControlSet\Control\Terminal Server
-fDenyTSConnections
-DWORD:0
-
-Computer
-SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+Software\Microsoft\Windows\CurrentVersion\Policies\System
 ValidateAdminCodeSignatures
 DWORD:0
 
@@ -1964,7 +1969,7 @@ NoJITSetup
 DWORD:1
 
 Computer
-SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings
+Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings
 EnableSPDY3_0
 DWORD:1
 
@@ -2074,12 +2079,12 @@ Isolation
 SZ:PMEM
 
 Computer
-SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings
+Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings
 ProxyHttp1.1
 DWORD:1
 
 Computer
-SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings
+Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings
 EnableHttp1_1
 DWORD:1
 
@@ -4405,18 +4410,8 @@ DWORD:0
 
 Computer
 Software\Policies\Microsoft\Windows\DataCollection
-AllowTelemetry
-DWORD:1
-
-Computer
-Software\Policies\Microsoft\Windows\DataCollection
 LimitEnhancedDiagnosticDataWindowsAnalytics
 DWORD:1
-
-Computer
-Software\Policies\Microsoft\Windows\DeliveryOptimization
-DODownloadMode
-DWORD:2
 
 Computer
 Software\Policies\Microsoft\Windows\Device Metadata
@@ -5206,7 +5201,7 @@ DWORD:1
 Computer
 Software\Policies\Microsoft\Windows NT\Terminal Services
 fEnableSmartCard
-DWORD:1
+DWORD:0
 
 Computer
 Software\Policies\Microsoft\Windows NT\Terminal Services
@@ -5266,7 +5261,7 @@ DWORD:1
 Computer
 Software\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
 LogFilePath
-SZ:%SYSTEMROOT%\\System32\\logfiles\\firewall\\domainfw.log
+SZ:%SystemROOT%\\System32\\logfiles\\firewall\\domainfw.log
 
 Computer
 Software\Policies\Microsoft\WindowsFirewall\PrivateProfile
@@ -5306,7 +5301,7 @@ DWORD:16384
 Computer
 Software\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
 LogFilePath
-SZ:%SYSTEMROOT%\\System32\\logfiles\\firewall\\privatefw.log
+SZ:%SystemROOT%\\System32\\logfiles\\firewall\\privatefw.log
 
 Computer
 Software\Policies\Microsoft\WindowsFirewall\PublicProfile
@@ -5356,7 +5351,7 @@ DWORD:1
 Computer
 Software\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
 LogFilePath
-SZ:%SYSTEMROOT%\\System32\\logfiles\\firewall\\publicfw.log
+SZ:%SystemROOT%\\System32\\logfiles\\firewall\\publicfw.log
 
 Computer
 Software\Policies\Microsoft\WindowsInkWorkspace
@@ -5492,3 +5487,173 @@ Computer
 System\CurrentControlSet\Services\Tcpip6\Parameters
 TcpMaxDataRetransmissions
 DWORD:3
+
+Computer
+System\CurrentControlSet\Services\CSC
+Start
+DWORD:4
+
+Computer
+Software\Microsoft\Windows NT\CurrentVersion\Winlogon
+AllocateCDRoms
+DWORD:1
+
+Computer
+System\CurrentControlSet\Control\Session Manager\Memory Management
+ClearPageFileAtShutdown
+DWORD:1
+
+Computer
+Software\Microsoft\Windows NT\CurrentVersion\Winlogon
+AllocateFloppies
+DWORD:1
+
+Computer
+System\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers
+AddPrinterDrivers
+DWORD:1
+
+Computer
+System\CurrentControlSet\Control\Lsa
+AuditBaseObjects
+DWORD:1
+
+Computer
+System\CurrentControlSet\Control\Lsa
+FullPrivilegeAuditing
+DWORD:1
+
+Computer
+Software\Microsoft\Windows\CurrentVersion\Policies\System
+UndockWithoutLogon
+DWORD:0
+
+Computer
+System\CurrentControlSet\services\Netlogon\Parameters
+MaximumPasswordAge
+DWORD:30
+
+Computer
+System\CurrentControlSet\services\LanmanServer\Parameters
+NullSessionPipes
+MULTISZ:
+
+Computer
+System\CurrentControlSet\Control\SecurePipeServers\winreg\AllowedExactPaths
+Machine
+MULTISZ:
+
+Computer
+System\CurrentControlSet\Control\SecurePipeServers\winreg\AllowedPaths
+Machine
+MULTISZ:
+
+Computer
+System\CurrentControlSet\services\LanmanServer\Parameters
+NullSessionShares
+MULTISZ:
+
+Computer
+System\CurrentControlSet\Control\CrashControl
+CrashDumpEnabled
+DWORD:0
+
+Computer
+Software\Microsoft\PolicyManager\default\Settings\AllowSignInOptions
+value
+DWORD:0
+
+Computer
+System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
+UserAuthentication
+DWORD:1
+
+Computer
+System\ControlSet001\Control\Remote Assistance
+CreateEncryptedOnlyTickets
+DWORD:1
+
+Computer
+System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
+fDisableEncryption
+DWORD:0
+
+Computer
+System\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{ab3d0bc5-8878-43b8-9f88-c6c380bc75e8}
+TcpAckFrequency
+DWORD:1
+
+Computer
+System\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{ab3d0bc5-8878-43b8-9f88-c6c380bc75e8}
+TCPNoDelay
+DWORD:1
+
+Computer
+System\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{ab3d0bc5-8878-43b8-9f88-c6c380bc75e8}
+TcpDelAckTicks
+DWORD:0
+
+Computer
+Software\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile
+NetworkThrottlingIndex
+DWORD:ffffffff
+
+Computer
+System\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\FirewallRules
+{2765E0F4-2918-4A46-B9C9-43CDD8FCBA2B}
+SZ:BlockCortana|Action=Block|Active=TRUE|Dir=Out|App=C:\windows\systemapps\microsoft.windows.cortana_cw5n1h2txyewy\searchui.exe|Name=Search and Cortana application|AppPkgId=S-1-15-2-1861897761-1695161497-2927542615-642690995-327840285-2659745135-2630312742|
+
+Computer
+Software\Policies\Microsoft\Windows\Windows Error Reporting
+Disabled
+DWORD:1
+
+Computer
+Software\Policies\Microsoft\Windows\SettingSync
+DisableSettingSync
+DWORD:2
+
+Computer
+Software\Policies\Microsoft\Windows\SettingSync
+DisableSettingSyncUserOverride
+DWORD:1
+
+Computer
+Software\Policies\Microsoft\Windows\CloudContent
+DisableSoftLanding
+DWORD:1
+
+Computer
+Software\Policies\Microsoft\Windows\CloudContent
+DisableWindowsSpotlightFeatures
+DWORD:1
+
+Computer
+Software\Policies\Microsoft\Windows\CloudContent
+DisableWindowsConsumerFeatures
+DWORD:1
+
+Computer
+System\ControlSet001\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener
+Start
+DWORD:0
+
+Computer
+Software\Policies\Microsoft\Windows\AppCompat
+AITEnable
+DWORD:0
+
+Computer
+Software\Policies\Microsoft\Windows\AppCompat
+DisableInventory
+DWORD:1
+
+Computer
+Software\Policies\Microsoft\Windows\AppCompat
+DisablePCA
+DWORD:1
+
+Computer
+Software\Policies\Microsoft\Windows\AppCompat
+DisableUAR
+DWORD:1

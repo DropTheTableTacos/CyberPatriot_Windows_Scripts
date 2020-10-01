@@ -236,6 +236,9 @@ New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Au
 New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" -Force | New-ItemProperty -Name "AUOptions" -PropertyType "DWord" -Value "4" -Force | Out-Null
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | New-ItemProperty -Name "NoAutoUpdate" -PropertyType "DWord" -Value "0" -Force | Out-Null
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | New-ItemProperty -Name "AUOptions" -PropertyType "DWord" -Value "4" -Force | Out-Null
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\Auto Update" -Force | New-ItemProperty -Name "ElevateNonAdmins" -PropertyType "DWord" -Value "1" -Force | Out-Null
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\Auto Update" -Force | New-ItemProperty -Name "IncludeRecommendedUpdates" -PropertyType "DWord" -Value "1" -Force | Out-Null
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\Auto Update" -Force | New-ItemProperty -Name "ScheduledInstallTime" -PropertyType "DWord" -Value "22" -Force | Out-Null
 
 Add-Progress "Enabled automatic windows update."
 Write-Output "Enabled automatic windows update."
