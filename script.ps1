@@ -130,10 +130,15 @@ if ($answer -eq "y") {
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fDenyTSConnections" -PropertyType "DWord" -Value "1" -Force | Out-Null
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fAllowToGetHelp" -PropertyType "DWord" -Value "0" -Force | Out-Null
 
-    $global:rd_enable = $true
+    $global:rd_enable = $false
 
     Add-Progress "Remote desktop disabled."
     Write-Output "Remote desktop disabled."
+} else {
+    $global:rd_enable = $true
+
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fDenyTSConnections" -PropertyType "DWord" -Value "0" -Force | Out-Null
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Force | New-ItemProperty -Name "fAllowToGetHelp" -PropertyType "DWord" -Value "1" -Force | Out-Null
 }
 
 # Enable Windows Defender

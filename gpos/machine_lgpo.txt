@@ -644,11 +644,6 @@ fAllowUnsolicited
 DWORD:0
 
 Computer
-Software\Policies\Microsoft\Windows NT\Terminal Services
-fAllowToGetHelp
-DWORD:0
-
-Computer
 Software\Policies\Microsoft\Windows NT\Rpc
 EnableAuthEpResolution
 DWORD:1
@@ -5112,11 +5107,6 @@ Computer
 Software\Policies\Microsoft\Windows NT\Terminal Services
 fUseMailto
 DELETE
-
-Computer
-Software\Policies\Microsoft\Windows NT\Terminal Services
-fAllowToGetHelp
-DWORD:0
 
 Computer
 Software\Policies\Microsoft\Windows NT\Terminal Services
