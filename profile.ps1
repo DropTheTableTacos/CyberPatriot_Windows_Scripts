@@ -1,24 +1,5 @@
 # Profile
 
-# Variables
-$global:desktop = "$env:userprofile\Desktop"
-$global:compfiles = "$desktop\Script"
-$global:installers = "$compfiles\installers"
-$global:gpos = "$compfiles\gpos"
-$global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
-$global:os = Get-OS
-$global:users = (Get-LocalUser).Name
-$global:users_nobuiltin = (Get-LocalUser | Where-Object Description -notmatch "." | Where-Object Name -ne "defaultuser0").Name
-$global:admins = (Get-LocalGroupMember Administrators).Name.Trim(($env:COMPUTERNAME | Out-String)).Trim("\")
-$global:admins_nobuiltin = $admins | Select-String -NotMatch "Administrator"
-if ($args -eq "nul") {
-    $global:badusers = $null
-    $global:badadmins = $null
-} else {
-    $global:badusers = Get-BadUsers
-    $global:badadmins = Get-BadAdmins
-}
-
 # Add folders to PATH
 $env:Path = "$Env:CMDER_ROOT\bin;$Env:CMDER_ROOT\vendor\bin;$Env:CMDER_ROOT;$Env:CMDER_ROOT\bin\ciscatlite;$Env:CMDER_ROOT\bin\ripgrep;$Env:CMDER_ROOT\bin\sysinternals;$env:Path;"
 
@@ -147,6 +128,25 @@ function Get-BadAdmins {
 # Add to progress log
 function Add-Progress {
     Write-Output "$args`n" >> "$desktop\progress.txt"
+}
+
+# Variables
+$global:desktop = "$env:userprofile\Desktop"
+$global:compfiles = "$desktop\Script"
+$global:installers = "$compfiles\installers"
+$global:gpos = "$compfiles\gpos"
+$global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
+$global:os = Get-OS
+$global:users = (Get-LocalUser).Name
+$global:users_nobuiltin = (Get-LocalUser | Where-Object Description -notmatch "." | Where-Object Name -ne "defaultuser0").Name
+$global:admins = (Get-LocalGroupMember Administrators).Name.Trim(($env:COMPUTERNAME | Out-String)).Trim("\")
+$global:admins_nobuiltin = $admins | Select-String -NotMatch "Administrator"
+if ($args -eq "nul") {
+    $global:badusers = $null
+    $global:badadmins = $null
+} else {
+    $global:badusers = Get-BadUsers
+    $global:badadmins = Get-BadAdmins
 }
 
 # Import aliases
