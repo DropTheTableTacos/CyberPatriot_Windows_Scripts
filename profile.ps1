@@ -155,6 +155,25 @@ $functions.foreach{
     Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
 }
 
+# Variables
+$global:desktop = "$env:userprofile\Desktop"
+$global:compfiles = "$desktop\Script"
+$global:installers = "$compfiles\installers"
+$global:gpos = "$compfiles\gpos"
+$global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
+$global:os = Get-OS
+$global:users = (Get-LocalUser).Name
+$global:users_nobuiltin = (Get-LocalUser | Where-Object Description -notmatch "." | Where-Object Name -ne "defaultuser0").Name
+$global:admins = (Get-LocalGroupMember Administrators).Name.Trim(($env:COMPUTERNAME | Out-String)).Trim("\")
+$global:admins_nobuiltin = $admins | Select-String -NotMatch "Administrator"
+if ($args -eq "nul") {
+    $global:badusers = $null
+    $global:badadmins = $null
+} else {
+    $global:badusers = Get-BadUsers
+    $global:badadmins = Get-BadAdmins
+}
+
 Set-EaseOfAccess
 Unblock-Programs
 Import-Alias
