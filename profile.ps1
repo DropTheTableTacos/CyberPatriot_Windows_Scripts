@@ -149,12 +149,6 @@ if ($args -eq "nul") {
     $global:badadmins = Get-BadAdmins
 }
 
-# Import aliases
-$functions = Import-Lists functions
-$functions.foreach{
-    Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
-}
-
 # Variables
 $global:desktop = "$env:userprofile\Desktop"
 $global:compfiles = "$desktop\Script"
@@ -172,6 +166,12 @@ if ($args -eq "nul") {
 } else {
     $global:badusers = Get-BadUsers
     $global:badadmins = Get-BadAdmins
+}
+
+# Import aliases
+$functions = Import-Lists functions
+$functions.foreach{
+    Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
 }
 
 Set-EaseOfAccess
