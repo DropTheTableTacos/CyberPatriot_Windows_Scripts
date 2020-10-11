@@ -207,6 +207,7 @@ Write-Output "Enabled SmartScreen."
 (Get-ChildItem "$desktop\Forensics Question *.txt").foreach{
     Start-Process $_
 }
+Write-Output "Do the forensics questions or work on them while other stuff runs in the background."
 Pause
 
 Add-Progress "Opened the forensics questions."
@@ -225,7 +226,7 @@ Add-Progress "Installed security programs."
 Write-Output "Installed security programs."
 
 # Delete prohibited files
-Invoke-Expression "cmd /c start powershell {$compfiles\remove_prohibitedfiles.ps1}"
+Invoke-Expression "cmd /c $compfiles\rm_prohibfiles.bat"
 
 Add-Progress "Prohibited files deleted."
 Write-Output "Prohibited files deleted."
