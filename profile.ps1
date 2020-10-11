@@ -96,7 +96,7 @@ function Get-BadUsers {
         Pause
     }
 
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" | Out-Null
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" 2> $null
     $goodusers = ($gooduserlist).Trim(";")
 
     # Compare and get bad users
@@ -116,7 +116,7 @@ function Get-BadAdmins {
         Pause
     }
 
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" | Out-Null
+    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" 2> $null
     $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Trim(";")
 
     # Compare and get bad admins
@@ -149,31 +149,15 @@ if ($args -eq "nul") {
     $global:badadmins = Get-BadAdmins
 }
 
-# Variables
-$global:desktop = "$env:userprofile\Desktop"
-$global:compfiles = "$desktop\Script"
-$global:installers = "$compfiles\installers"
-$global:gpos = "$compfiles\gpos"
-$global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
-$global:os = Get-OS
-$global:users = (Get-LocalUser).Name
-$global:users_nobuiltin = (Get-LocalUser | Where-Object Description -notmatch "." | Where-Object Name -ne "defaultuser0").Name
-$global:admins = (Get-LocalGroupMember Administrators).Name.Trim(($env:COMPUTERNAME | Out-String)).Trim("\")
-$global:admins_nobuiltin = $admins | Select-String -NotMatch "Administrator"
-if ($args -eq "nul") {
-    $global:badusers = $null
-    $global:badadmins = $null
-} else {
-    $global:badusers = Get-BadUsers
-    $global:badadmins = Get-BadAdmins
-}
-
 # Import aliases
-$functions = Import-Lists functions
-$functions.foreach{
-    Set-Alias -Name $_.Alias -Value $_.Name -Option AllScope -Force
-}
+Set-Alias -Name scl -Value Start-CatLite -Option AllScope -Force
+Set-Alias -Name gf -Value Get-Functions -Option AllScope -Force
+Set-Alias -Name osr -Value Open-ScoringReport -Option AllScope -Force
+Set-Alias -Name oss -Value Open-StopScoring -Option AllScope -Force
+Set-Alias -Name seoa -Value Set-EaseOfAccess -Option AllScope -Force
+Set-Alias -Name up -Value Unblock-Programs -Option AllScope -Force
 
 Set-EaseOfAccess
 Unblock-Programs
-Import-Alias
+
+clear
