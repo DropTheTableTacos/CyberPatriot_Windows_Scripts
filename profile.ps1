@@ -160,4 +160,4 @@ Set-Alias -Name up -Value Unblock-Programs -Option AllScope -Force
 Set-EaseOfAccess
 Unblock-Programs
 
-clear
+cls
