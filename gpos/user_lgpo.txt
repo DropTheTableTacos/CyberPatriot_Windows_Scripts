@@ -362,3 +362,8 @@ User
 Software\Microsoft\Windows\CurrentVersion\Policies\Explorer
 NoRecentDocsHistory
 DWORD:1
+
+User
+Software\Policies\Microsoft\Windows\Control Panel\Desktop
+ScreenSaverIsSecure
+DWORD:1
