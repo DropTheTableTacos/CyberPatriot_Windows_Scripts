@@ -124,6 +124,18 @@ function Remove-BadUserFolders {
 
 # Apply GPO
 function Apply-GPO {
+    if ((Test-Path "C:\gpo") -eq $false) {
+        mkdir "C:\gpo"
+    }
+
+    # Get files
+    if ((Test-Path "C:\gpo\machine_lgpo.txt") -eq $false) {
+        Start-BitsTransfer -Source "https://raw.githubusercontent.com/DropTheTableTacos/CyberPatriot_Windows_Scripts/master/gpos/machine_lgpo.txt?token=ACNBU4BKBO53E2BLNMTQNB27UJCH6" -Destination "C:\gpo\machine_lgpo.txt"
+    }
+    if ((Test-Path "C:\gpo\user_lgpo.txt") -eq $false) {
+        Start-BitsTransfer -Source "https://raw.githubusercontent.com/DropTheTableTacos/CyberPatriot_Windows_Scripts/master/gpos/user_lgpo.txt?token=ACNBU4BN6JNEDEMUNGNQPFC7UJCG2" -Destination "C:\gpo\user_lgpo.txt"
+    }
+
     # Update registry.pol files
     LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Win10\Machine\registry.pol"
     LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Win10\User\registry.pol"
@@ -170,7 +182,7 @@ function Apply-GPO {
 }
 
 # Delete applocker policies
-function Delete-AppLockerPolicies {
+function Remove-AppLockerPolicies {
     Set-AppLockerPolicy -XMLPolicy "$compfiles\begoneapplocker.xml"
     Add-Progress "Deleted AppLocker policies."
     Write-Output "Deleted AppLocker policies."
@@ -548,6 +560,15 @@ function Set-FirefoxConfig {
 #  Miscellaneous
 # ---------------
 
+# Open README
+function Open-Readme {
+    Start-Process "C:\CyberPatriot\README.url"
+
+    Write-Output "README opened."
+
+    Pause
+}
+
 # Import lists
 function Import-Lists {
     return Import-Csv "$compfiles\lists\$args.csv"
@@ -557,7 +578,7 @@ function Import-Lists {
 function Install-Chocolatey {
     Set-ExecutionPolicy Bypass -Scope Process -Force
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 }
 
 # Install IObit uninstaller
@@ -733,4 +754,4 @@ Set-Alias -Name up -Value Unblock-Programs -Option AllScope -Force
 Set-EaseOfAccess
 Unblock-Programs
 
-cls
+Clear-Host
