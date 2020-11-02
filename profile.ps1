@@ -32,6 +32,7 @@ function Open-ForensicsQuestions {
 
 # Remove unauthorized users
 function Remove-Users {
+    $global:badusers = Get-BadUsers
     # Check if user list exists
     if ($null -eq $badusers) {
         $global:autouser = $true
@@ -46,6 +47,7 @@ function Remove-Users {
 
 # Remove unauthorized admins
 function Remove-Admins {
+    $global:badadmins = Get-BadAdmins
     # Check if user list exists
     if ($null -eq $badadmins) {
         $global:autouser = $true
@@ -97,6 +99,7 @@ function Enable-AllAuthorizedUsers {
 
 # Delete unauthorized user folders
 function Remove-BadUserFolders {
+    $global:badusers = Get-BadUsers
     if ($null -eq $badusers) {
         $global:autouser = $true
         $global:badusers = Get-BadUsers
@@ -682,40 +685,50 @@ function Get-OS {
 # Get bad users list
 function Get-BadUsers {
     # Add readme users to file if needed
-    if ($autouser -eq $true) {
-        Open-Readme
-        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
-        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
-        Start-Process "$compfiles\lists\good_users.txt"
-        Pause
+    if ((Test-Path "C:\ulist_no") -eq $true) {
+        break
     }
+    if ((Test-Path "C:\ulist_yes") -eq $true) {
+        if ((Test-Path "C:\good_users.txt") -eq $false) {
+            Open-Readme
+            Write-Output "Put README users in this text file. (replace this text)" >> "C:\good_users.txt"
+            Write-Output "Put a semicolon at the end of each administrator." >> "C:\good_users.txt"
+            Start-Process "C:\good_users.txt"
+            Pause
+        }
 
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" 2> $null
-    $goodusers = ($gooduserlist).Trim(";")
+        $gooduserlist = Get-Content "C:\good_users.txt" 2> $null
+        $goodusers = ($gooduserlist).Trim(";")
 
-    # Compare and get bad users
-    (Compare-Object $goodusers $users_nobuiltin).foreach{
-        return $_.InputObject
+        # Compare and get bad users
+        (Compare-Object $goodusers $users_nobuiltin).foreach{
+            return $_.InputObject
+        }
     }
 }
 
 # Get bad admin list
 function Get-BadAdmins {
     # Add readme users to file if needed
-    if ($autouser -eq $true) {
-        Open-Readme
-        Write-Output "Put README users in this text file. (replace this text)" >> "$compfiles\lists\good_users.txt"
-        Write-Output "Put a semicolon at the end of each administrator." >> "$compfiles\lists\good_users.txt"
-        Start-Process "$compfiles\lists\good_users.txt"
-        Pause
+    if ((Test-Path "C:\ulist_no") -eq $true) {
+        break
     }
+    if ((Test-Path "C:\ulist_yes") -eq $true) {
+        if ((Test-Path "C:\good_users.txt") -eq $false) {
+            Open-Readme
+            Write-Output "Put README users in this text file. (replace this text)" >> "C:\good_users.txt"
+            Write-Output "Put a semicolon at the end of each administrator." >> "C:\good_users.txt"
+            Start-Process "C:\good_users.txt"
+            Pause
+        }
 
-    $gooduserlist = Get-Content "$compfiles\lists\good_users.txt" 2> $null
-    $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Trim(";")
+        $gooduserlist = Get-Content "C:\good_users.txt" 2> $null
+        $goodadmins = ($gooduserlist | Select-String ";" | Out-String -Stream).Trim(";")
 
-    # Compare and get bad admins
-    (Compare-Object $goodadmins $admins_nobuiltin).foreach{
-        return $_.InputObject
+        # Compare and get bad users
+        (Compare-Object $goodadmins $users_nobuiltin).foreach{
+            return $_.InputObject
+        }
     }
 }
 
@@ -735,13 +748,6 @@ $global:users = (Get-LocalUser).Name
 $global:users_nobuiltin = (Get-LocalUser | Where-Object Description -notmatch "." | Where-Object Name -ne "defaultuser0").Name
 $global:admins = (Get-LocalGroupMember Administrators).Name.Trim(($env:COMPUTERNAME | Out-String)).Trim("\")
 $global:admins_nobuiltin = $admins | Select-String -NotMatch "Administrator"
-if ($args -eq "nul") {
-    $global:badusers = $null
-    $global:badadmins = $null
-} else {
-    $global:badusers = Get-BadUsers
-    $global:badadmins = Get-BadAdmins
-}
 
 # Import aliases
 Set-Alias -Name scl -Value Start-CatLite -Option AllScope -Force

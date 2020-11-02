@@ -24,18 +24,7 @@ $functions = $(
     "Enable-IE",
     "Remove-AppLockerPolicies",
     "Set-UACHigh",
-    "Open-ForensicsQuestions",
-    "Remove-Shares",
-    "Remove-UnwantedSoftware",
-    "Remove-Malware",
-    "Update-Applications",
-    "Remove-ProhibitedFiles",
-    "Find-ProhibitedFiles",
-    "Enable-Backup",
-    "Set-FirewallExceptions",
-    "Set-RegHivePerms",
-    "Set-EventLogPerms",
-    "Run-Sysinternals"
+    "Open-ForensicsQuestions"
 )
 
 # Functions that need to be run in seperate shell
@@ -48,13 +37,28 @@ $functions_sep = $(
     "Install-IOBitUnlocker",
     "Disable-Services",
     "Enable-Services",
-    "Enable-ServerBackup",
     "Start-CatLite"
 )
 
+# Functions part to (to run after functions_sep)
+$functions_pt2 = $(
+    "Remove-Shares",
+    "Remove-UnwantedSoftware",
+    "Remove-Malware",
+    "Update-Applications",
+    "Remove-ProhibitedFiles",
+    "Find-ProhibitedFiles",
+    "Enable-Backup",
+    "Enable-ServerBackup",
+    "Set-FirewallExceptions",
+    "Set-RegHivePerms",
+    "Set-EventLogPerms",
+    "Run-Sysinternals"
+)
+
 # Check remote desktop enabled or disabled
-while ($true) {
-    if ((Test-Path "C:\rd_*") -eq $false) {
+if ((Test-Path "C:\rd_*") -eq $false) {
+    while ($true) {
         $answer = Read-Host "Enable or Disable remote desktop? [e/d]"
         if ($answer -eq "e") {
             New-Item "C:\rd_enable"
@@ -69,12 +73,24 @@ while ($true) {
     }
 }
 
-if ((Test-Path "C:\rd_enable") -eq $true) {
-    $functions[10] = Enable-RemoteDesktop
-} else {
-    $functions[10] = Disable-RemoteDesktop
+# Check user list or no
+if ((Test-Path "C:\ulist_*") -eq $false) {
+    while ($true) {
+        $answer = Read-Host "Create the user list? [y/n]"
+        if ($answer -eq "y") {
+            New-Item "C:\ulist_yes"
+            break
+        }
+        if ($answer -eq "n") {
+            New-Item "C:\ulist_no"
+            break
+        } else {
+            Write-Output "Type 'y' or 'n', idiot."
+        }
+    }
 }
 
 # Run the functions epic
 $functions.foreach{Invoke-Expression $_}
 $functions_sep.foreach{Start-Process powershell "$_"}
+$functions_pt2.foreach{Invoke-Expression $_}
