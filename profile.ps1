@@ -33,11 +33,6 @@ function Open-ForensicsQuestions {
 # Remove unauthorized users
 function Remove-Users {
     $global:badusers = Get-BadUsers
-    # Check if user list exists
-    if ($null -eq $badusers) {
-        $global:autouser = $true
-        $global:badusers = Get-BadUsers
-    }
     $badusers.foreach{
         Remove-LocalUser $_
         Add-Progress "Removed unauthorized user $_"
@@ -100,11 +95,6 @@ function Enable-AllAuthorizedUsers {
 # Delete unauthorized user folders
 function Remove-BadUserFolders {
     $global:badusers = Get-BadUsers
-    if ($null -eq $badusers) {
-        $global:autouser = $true
-        $global:badusers = Get-BadUsers
-    }
-
     $badusers.foreach{
         Remove-Item C:\Users\$_ -Recurse -Force
     }
@@ -140,39 +130,39 @@ function Apply-GPO {
     }
 
     # Update registry.pol files
-    LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Win10\Machine\registry.pol"
-    LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Win10\User\registry.pol"
+    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Win10\Machine\registry.pol"
+    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Win10\User\registry.pol"
 
-    LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Server2016\DC\Machine\registry.pol"
-    LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Server2016\DC\User\registry.pol"
+    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Server2016\DC\Machine\registry.pol"
+    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Server2016\DC\User\registry.pol"
 
-    LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Server2016\MS\Machine\registry.pol"
-    LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Server2016\MS\User\registry.pol"
+    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Server2016\MS\Machine\registry.pol"
+    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Server2016\MS\User\registry.pol"
 
-    LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Server2019\DC\Machine\registry.pol"
-    LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Server2019\DC\User\registry.pol"
+    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Server2019\DC\Machine\registry.pol"
+    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Server2019\DC\User\registry.pol"
 
-    LGPO /r "$gpos\machine_lgpo.txt" /w "$gpos\Server2019\MS\Machine\registry.pol"
-    LGPO /r "$gpos\user_lgpo.txt" /w "$gpos\Server2019\MS\User\registry.pol"
+    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Server2019\MS\Machine\registry.pol"
+    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Server2019\MS\User\registry.pol"
 
     # Import GPO
     if ($os -eq "Win10") {
-        LGPO /g "$gpos\Win10"
+        LGPO /g "$compfiles\gpos\Win10"
     }
 
     if ($os -eq "Server2016") {
         if ((Get-CimInstance CIM_OperatingSystem).ProductType -eq "2") {
-            LGPO /g "$gpos\Server2016\DC"
+            LGPO /g "$compfiles\gpos\Server2016\DC"
         } else {
-            LGPO /g "$gpos\Server2016\MS"
+            LGPO /g "$compfiles\gpos\Server2016\MS"
         }    
     }
 
     if ($os -eq "Server2019") {
         if ((Get-CimInstance CIM_OperatingSystem).ProductType -eq "2") {
-            LGPO /g "$gpos\Server2019\DC"
+            LGPO /g "$compfiles\gpos\Server2019\DC"
         } else {
-            LGPO /g "$gpos\Server2019\MS"
+            LGPO /g "$compfiles\gpos\Server2019\MS"
         }
     }
 
@@ -447,7 +437,6 @@ function Update-Applications {
     patchmypc
 
     Start-Process "$installers\firefox.msi"
-    Start-Process "$installers\notepadplusplus.exe"
 
     Add-Progress "Third-party applications updated."
     Write-Output "Third-party applications updated."
@@ -460,14 +449,20 @@ function Update-Applications {
 
 # Remove prohibited files
 function Remove-ProhibitedFiles {
-    # run batch file from github
+    Start-BitsTransfer -Source "https://raw.githubusercontent.com/DropTheTableTacos/CyberPatriot_Windows_Scripts/master/rm_prohibfiles.bat?token=ACNBU4EIR5KX5QOOBRUWSRS7W432C" -Destination "$compfiles\rm_prohibfiles.bat"
+    
+    Start-Process {"$compfiles\rm_prohibfiles.bat"}
+
     Add-Progress "Prohibited files deleted."
     Write-Output "Prohibited files deleted."
 }
 
 # Find prohibited files
 function Find-ProhibitedFiles {
-    # run batch file from github
+    Start-BitsTransfer -Source "https://raw.githubusercontent.com/DropTheTableTacos/CyberPatriot_Windows_Scripts/master/find_prohibitedfiles.bat?token=ACNBU4AP46TWV73DUY4EL427W44WS" -Destination "$compfiles\find_prohibitedfiles.bat"
+    
+    Start-Process {"$compfiles\find_prohibitedfiles.bat"}
+
     Add-Progress "Prohibited files found."
     Write-Output "Prohibited files found."
 }
@@ -497,8 +492,8 @@ function Remove-UnwantedSoftware {
 
             $cringeprogram = Read-Host "`nType any sketcy folders you see"
 
-            if ($cringeprogram -eq "n") {
-                break
+            :a if ($cringeprogram -eq "n") {
+                break a
             }
 
             Copy-Item "$_" "$desktop\programfolderbackup"
@@ -741,7 +736,6 @@ function Add-Progress {
 $global:desktop = "$env:userprofile\Desktop"
 $global:compfiles = "$desktop\Script"
 $global:installers = "$compfiles\installers"
-$global:gpos = "$compfiles\gpos"
 $global:pass = "abc123ABC123@@" | ConvertTo-SecureString -AsPlainText -Force
 $global:os = Get-OS
 $global:users = (Get-LocalUser).Name

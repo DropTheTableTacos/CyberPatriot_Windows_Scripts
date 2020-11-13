@@ -61,11 +61,13 @@ if ((Test-Path "C:\rd_*") -eq $false) {
     while ($true) {
         $answer = Read-Host "Enable or Disable remote desktop? [e/d]"
         if ($answer -eq "e") {
-            New-Item "C:\rd_enable"
+            New-Item "C:\rd_enable" | Out-Null
+            $functions[10] = Enable-RemoteDesktop
             break
         }
         if ($answer -eq "d") {
-            New-Item "C:\rd_disable"
+            New-Item "C:\rd_disable" | Out-Null
+            $functions[10] = Disable-RemoteDesktop
             break
         } else {
             Write-Output "Type 'e' or 'd', idiot."
@@ -78,11 +80,11 @@ if ((Test-Path "C:\ulist_*") -eq $false) {
     while ($true) {
         $answer = Read-Host "Create the user list? [y/n]"
         if ($answer -eq "y") {
-            New-Item "C:\ulist_yes"
+            New-Item "C:\ulist_yes" | Out-Null
             break
         }
         if ($answer -eq "n") {
-            New-Item "C:\ulist_no"
+            New-Item "C:\ulist_no" | Out-Null
             break
         } else {
             Write-Output "Type 'y' or 'n', idiot."
