@@ -117,33 +117,21 @@ function Remove-BadUserFolders {
 
 # Apply GPO
 function Apply-GPO {
-    if ((Test-Path "C:\gpo") -eq $false) {
-        mkdir "C:\gpo"
-    }
-
-    # Get files
-    if ((Test-Path "C:\gpo\machine_lgpo.txt") -eq $false) {
-        Start-BitsTransfer -Source "https://raw.githubusercontent.com/DropTheTableTacos/CyberPatriot_Windows_Scripts/master/gpos/machine_lgpo.txt?token=ACNBU4BKBO53E2BLNMTQNB27UJCH6" -Destination "C:\gpo\machine_lgpo.txt"
-    }
-    if ((Test-Path "C:\gpo\user_lgpo.txt") -eq $false) {
-        Start-BitsTransfer -Source "https://raw.githubusercontent.com/DropTheTableTacos/CyberPatriot_Windows_Scripts/master/gpos/user_lgpo.txt?token=ACNBU4BN6JNEDEMUNGNQPFC7UJCG2" -Destination "C:\gpo\user_lgpo.txt"
-    }
-
     # Update registry.pol files
-    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Win10\Machine\registry.pol"
-    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Win10\User\registry.pol"
+    LGPO /r "$compfiles\gpos\machine_lgpo.txt" /w "$compfiles\gpos\Win10\Machine\registry.pol"
+    LGPO /r "$compfiles\gpos\user_lgpo.txt" /w "$compfiles\gpos\Win10\User\registry.pol"
 
-    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Server2016\DC\Machine\registry.pol"
-    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Server2016\DC\User\registry.pol"
+    LGPO /r "$compfiles\gpos\machine_lgpo.txt" /w "$compfiles\gpos\Server2016\DC\Machine\registry.pol"
+    LGPO /r "$compfiles\gpos\user_lgpo.txt" /w "$compfiles\gpos\Server2016\DC\User\registry.pol"
 
-    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Server2016\MS\Machine\registry.pol"
-    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Server2016\MS\User\registry.pol"
+    LGPO /r "$compfiles\gpos\machine_lgpo.txt" /w "$compfiles\gpos\Server2016\MS\Machine\registry.pol"
+    LGPO /r "$compfiles\gpos\user_lgpo.txt" /w "$compfiles\gpos\Server2016\MS\User\registry.pol"
 
-    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Server2019\DC\Machine\registry.pol"
-    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Server2019\DC\User\registry.pol"
+    LGPO /r "$compfiles\gpos\machine_lgpo.txt" /w "$compfiles\gpos\Server2019\DC\Machine\registry.pol"
+    LGPO /r "$compfiles\gpos\user_lgpo.txt" /w "$compfiles\gpos\Server2019\DC\User\registry.pol"
 
-    LGPO /r "C:\gpo\machine_lgpo.txt" /w "$compfiles\gpos\Server2019\MS\Machine\registry.pol"
-    LGPO /r "C:\gpo\user_lgpo.txt" /w "$compfiles\gpos\Server2019\MS\User\registry.pol"
+    LGPO /r "$compfiles\gpos\machine_lgpo.txt" /w "$compfiles\gpos\Server2019\MS\Machine\registry.pol"
+    LGPO /r "$compfiles\gpos\user_lgpo.txt" /w "$compfiles\gpos\Server2019\MS\User\registry.pol"
 
     # Import GPO
     if ($os -eq "Win10") {
