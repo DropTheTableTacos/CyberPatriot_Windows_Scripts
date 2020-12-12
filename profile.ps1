@@ -183,22 +183,15 @@ function Enable-Firewall {
     Write-Output "Firewall enabled."
 }
 
-# Install Malwarebyes
-function Install-Malwarebytes {
-    # Install chocolatey if it isn't installed
-    if ((Test-Path "C:\ProgramData\chocolatey\choco.exe") -eq $false) {
-        Install-Chocolatey
-    }
-    choco install malwarebyes
-}
+# Install security/utility programs
+function Install-Programs {
+    Start-Process "$installers\mbam.exe"
+    Start-Process "$installers\mbsa.msi"
+    Start-Process "$installers\iobituninstaller.exe"
+    Start-Process "$installers\iobitunlocker.exe"
 
-# Install MBSA
-function Install-MBSA {
-    # Install chocolatey if it isn't installed
-    if ((Test-Path "C:\ProgramData\chocolatey\choco.exe") -eq $false) {
-        Install-Chocolatey
-    }
-    choco install mbsa
+    Add-Progress "Installed security/utility programs."
+    Write-Output "Installed security/utility programs."
 }
 
 
@@ -309,7 +302,6 @@ function Enable-Backup {
     Add-Progress "Setup backup."
     Write-Output "Setup backup."
 }
-
 
 
 # ------------------
@@ -558,31 +550,6 @@ function Open-Readme {
 # Import lists
 function Import-Lists {
     return Import-Csv "$compfiles\lists\$args.csv"
-}
-
-# Install chocolatey
-function Install-Chocolatey {
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-}
-
-# Install IObit uninstaller
-function Install-IOBitUninstaller {
-    # Install chocolatey if it isn't installed
-    if ((Test-Path "C:\ProgramData\chocolatey\choco.exe") -eq $false) {
-        Install-Chocolatey
-    }
-    choco install iobit-uninstaller
-}
-
-# Install IObit uninstaller
-function Install-IOBitUnlocker {
-    # Install chocolatey if it isn't installed
-    if ((Test-Path "C:\ProgramData\chocolatey\choco.exe") -eq $false) {
-        Install-Chocolatey
-    }
-    https://www.iobit.com/en/iobit-unlocker.php#
 }
 
 # Add folders to PATH

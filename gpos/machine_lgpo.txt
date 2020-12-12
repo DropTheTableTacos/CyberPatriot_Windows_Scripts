@@ -5586,7 +5586,7 @@ DWORD:0
 Computer
 Software\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile
 NetworkThrottlingIndex
-DWORD:ffffffff
+DWORD:1
 
 Computer
 System\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\FirewallRules
