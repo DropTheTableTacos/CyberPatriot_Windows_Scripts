@@ -5682,3 +5682,8 @@ Computer
 Software\Policies\Microsoft\Windows\WindowsUpdate\Auto Update
 ScheduledInstallTime
 DWORD:22
+
+Computer
+Software\Microsoft\Windows NT\CurrentVersion\SystemRestore
+DisableSR
+DWORD:0
