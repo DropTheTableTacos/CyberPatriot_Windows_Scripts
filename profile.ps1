@@ -45,7 +45,6 @@ function Remove-Admins {
     $global:badadmins = Get-BadAdmins
     # Check if user list exists
     if ($null -eq $badadmins) {
-        $global:autouser = $true
         $global:badadmins = Get-BadAdmins
     }
     $badadmins.foreach{
